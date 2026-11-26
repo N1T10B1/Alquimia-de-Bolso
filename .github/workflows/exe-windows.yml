@@ -1,0 +1,53 @@
+# Gera o .exe de Windows (Tauri) e o .zip da versão de navegador para o itch.io.
+# Roda sozinho quando o jogar.html ou a pasta desktop/ mudam, e também pelo botão
+# "Run workflow" na aba Actions. Os arquivos ficam em "Artifacts", no fim da página da execução.
+name: Gerar exe e zip do itch.io
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - jogar.html
+      - desktop/**
+      - .github/workflows/exe-windows.yml
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri
+
+      - name: Instalar o Tauri
+        working-directory: desktop
+        run: npm ci
+
+      - name: Gerar o exe
+        working-directory: desktop
+        run: npm run build
+
+      - name: Montar os pacotes do itch.io
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force saida, portatil, web | Out-Null
+          Copy-Item "desktop/src-tauri/target/release/Alquimia de Bolso.exe" portatil/
+          Compress-Archive -Path portatil/* -DestinationPath "saida/alquimia-de-bolso-windows.zip"
+          Copy-Item desktop/src-tauri/target/release/bundle/nsis/*.exe saida/
+          Copy-Item jogar.html web/index.html
+          Compress-Archive -Path web/* -DestinationPath "saida/alquimia-de-bolso-web.zip"
+          Get-ChildItem saida
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alquimia-de-bolso-itch
+          path: saida/
+          retention-days: 30
