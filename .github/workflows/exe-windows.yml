@@ -11,6 +11,9 @@ on:
       - desktop/**
       - .github/workflows/exe-windows.yml
 
+permissions:
+  contents: write
+
 jobs:
   windows:
     runs-on: windows-latest
@@ -41,7 +44,7 @@ jobs:
           New-Item -ItemType Directory -Force saida, portatil, web | Out-Null
           Copy-Item "desktop/src-tauri/target/release/Alquimia de Bolso.exe" portatil/
           Compress-Archive -Path portatil/* -DestinationPath "saida/alquimia-de-bolso-windows.zip"
-          Copy-Item desktop/src-tauri/target/release/bundle/nsis/*.exe saida/
+          Get-ChildItem desktop/src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1 | Copy-Item -Destination saida/alquimia-de-bolso-instalador.exe
           Copy-Item jogar.html web/index.html
           Compress-Archive -Path web/* -DestinationPath "saida/alquimia-de-bolso-web.zip"
           Get-ChildItem saida
@@ -51,3 +54,17 @@ jobs:
           name: alquimia-de-bolso-itch
           path: saida/
           retention-days: 30
+
+      # Link público e fixo para baixar: github.com/N1T10B1/Alquimia-de-Bolso/releases/tag/demo-v1.28
+      - name: Publicar no Releases do GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: demo-v1.28
+          name: Alquimia de Bolso — demo v1.28
+          body: |
+            Demo da Alquimia de Bolso para Windows 10/11.
+            - alquimia-de-bolso-windows.zip: extraia e abra "Alquimia de Bolso.exe" (portátil, sem instalar)
+            - alquimia-de-bolso-instalador.exe: instalador com atalho no menu Iniciar
+            - alquimia-de-bolso-web.zip: versão de navegador para o itch.io
+          files: saida/*
+          make_latest: true

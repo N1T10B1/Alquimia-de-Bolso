@@ -47,7 +47,7 @@ O que as páginas mais visitadas de jogos "cozy" no itch.io têm em comum, e que
 3. **Uploads**:
    - `alquimia-de-bolso-web.zip` → marque **This file will be played in the browser**.
    - `alquimia-de-bolso-windows.zip` → marque o ícone do **Windows**. Nome de exibição: "Windows (portátil, sem instalar)".
-   - `Alquimia de Bolso_1.28.0_x64-setup.exe` (opcional) → **Windows**. Nome: "Windows (instalador)".
+   - `alquimia-de-bolso-instalador.exe` (opcional) → **Windows**. Nome: "Windows (instalador)".
 4. **Embed options** (aparece depois do upload do zip do navegador):
    - Viewport: **1280 x 720**. Marque **Mobile friendly** (o jogo tem layout de celular) e **Fullscreen button**. Deixe **Automatically start on page load** desmarcado, para o som não tocar antes do clique.
    - Se achar a coluna larga demais em notebook, use 960 x 600: a página volta para a largura padrão.
@@ -87,9 +87,10 @@ O `.exe` é feito com **Tauri**: uma janela de Windows que abre o próprio `joga
 
 - Código: pasta `desktop/` do repositório.
 - Receita: `.github/workflows/exe-windows.yml`. Roda sozinha toda vez que o `jogar.html` ou a pasta `desktop/` mudam no GitHub, e também pelo botão **Run workflow** em **Actions → Gerar exe e zip do itch.io**.
-- Resultado: em **Actions**, abra a execução mais recente (bolinha verde) e baixe **alquimia-de-bolso-itch** no fim da página, em "Artifacts". Dentro vêm três arquivos:
+- Link fixo para baixar (sem login): https://github.com/N1T10B1/Alquimia-de-Bolso/releases/tag/demo-v1.28
+- Também fica em **Actions**, abra a execução mais recente (bolinha verde) e baixe **alquimia-de-bolso-itch** no fim da página, em "Artifacts". Dentro vêm três arquivos:
   - `alquimia-de-bolso-windows.zip`: o `.exe` portátil (abre com duplo clique, sem instalar).
-  - `Alquimia de Bolso_1.28.0_x64-setup.exe`: instalador, cria atalho no menu Iniciar.
+  - `alquimia-de-bolso-instalador.exe`: instalador, cria atalho no menu Iniciar.
   - `alquimia-de-bolso-web.zip`: a versão de navegador para o itch.io (é o `jogar.html` renomeado para `index.html`).
 
 Sobre o `.exe`:
