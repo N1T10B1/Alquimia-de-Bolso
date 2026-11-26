@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "O jogo só usa o botão voltar do Android e o sair do app.",
+  "windows": ["main"],
+  "permissions": ["core:default", "core:app:allow-exit"]
+}

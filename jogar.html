@@ -142,6 +142,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .dialog-title { margin: 6px 0 10px; font-family: var(--font-title); font-weight: 600; font-size: 32px; line-height: 1.1; color: var(--gold); text-shadow: 2px 2px 0 var(--edge); }
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
 .dialog-actions .btn { flex: 1 1 150px; }
+.pause-actions { flex-direction: column; align-items: stretch; }
+.pause-actions .btn { flex: 0 0 auto; }
 .dialog-victory .dialog-body { background: linear-gradient(180deg, #4b3a6e, #34254f); }
 
 .noscript { padding: 16px; text-align: center; }
@@ -2486,6 +2488,19 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
       </div>
     </dialog>
   </div>
+
+  <!-- ===== Pausa (v1.29): botão voltar do celular ou Esc no balcão ===== -->
+  <dialog id="pause-dialog" class="dialog paper dialog-pause" aria-labelledby="pause-title">
+    <div class="dialog-body">
+      <h2 id="pause-title" class="dialog-title">Pausa</h2>
+      <p>A botica espera: os clientes não perdem a paciência enquanto o caderno está fechado.</p>
+      <div class="dialog-actions pause-actions">
+        <button type="button" class="btn btn-primary" data-pause="resume" autofocus>Voltar ao balcão</button>
+        <button type="button" class="btn" data-pause="options">Opções</button>
+        <button type="button" class="btn" data-pause="menu">Menu principal</button>
+      </div>
+    </div>
+  </dialog>
 
   <!-- ===== Páginas de papel do menu ===== -->
   <dialog id="confirm-dialog" class="dialog paper" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
@@ -6141,6 +6156,8 @@ function createMenu(doc, handlers) {
     };
   }
 
+  function openOptions() { fillOptions(); openDialog(dialogs.options); }
+
   function activate(action) {
     switch (action) {
       case 'continue': call('onContinue'); break;
@@ -6154,7 +6171,7 @@ function createMenu(doc, handlers) {
         openDialog(dialogs.book);
         break;
       }
-      case 'options': fillOptions(); openDialog(dialogs.options); break;
+      case 'options': openOptions(); break;
       case 'credits': openDialog(dialogs.credits); break;
       default: break;
     }
@@ -6216,7 +6233,7 @@ function createMenu(doc, handlers) {
     form.addEventListener('change', () => call('onOptions', readOptions()));
   }
 
-  return { show, hide };
+  return { show, hide, openOptions };
 }
 
 return { createMenu };
@@ -7278,6 +7295,87 @@ function createNightShader(doc) {
 return { createNightShader };
 })();
 
+// ---- src/voltar.js ----
+__mods.voltar = (() => {
+// v1.29 — botão voltar do celular (Android, app Tauri) e a página de Pausa.
+// O voltar faz uma coisa por vez, sempre "um passo para trás":
+//   1. uma página aberta (livro, caldeirão, prateleira, opções, pausa...) → fecha e volta ao balcão;
+//   2. no balcão, sem nada aberto → abre a Pausa;
+//   3. no menu principal → sai do app.
+// História de abertura, fim de jogo e fim da demo têm botões próprios: lá o voltar não faz nada.
+// No computador, Esc no balcão também abre a Pausa (Esc já fecha as páginas sozinho).
+
+function createBackButton(doc, { onPause, onResume, onMenu, openOptions } = {}) {
+  const byId = (id) => doc.getElementById(id);
+  const pause = byId('pause-dialog');
+  const app = byId('app');
+  const menuScreen = byId('menu-screen');
+
+  const visible = (el) => !!el && !el.hidden;
+  // telas que o voltar não deve atravessar
+  const blocking = () => visible(byId('intro'))
+    || [...doc.querySelectorAll('.tut-end, #gameover, #fimdemo')].some(visible);
+  // a página de papel por cima de tudo (a última aberta fica depois no HTML)
+  const topDialog = () => [...doc.querySelectorAll('dialog[open]')].pop() || null;
+  const inShop = () => visible(app) && !visible(menuScreen);
+
+  function openPause() {
+    if (!pause || pause.open || !inShop()) return;
+    try { pause.showModal(); } catch { pause.setAttribute('open', ''); }
+    onPause?.();
+  }
+  function closeDialog(d) {
+    try { if (d.open) d.close(); else d.removeAttribute('open'); } catch { d.removeAttribute('open'); }
+  }
+
+  if (pause) {
+    pause.addEventListener('click', (ev) => {
+      const action = ev.target.closest('[data-pause]')?.dataset.pause;
+      if (ev.target === pause || action === 'resume') closeDialog(pause);
+      else if (action === 'options') openOptions?.();
+      else if (action === 'menu') { closeDialog(pause); onMenu?.(); }
+    });
+    pause.addEventListener('close', () => {
+      // as Opções abertas por cima da Pausa fecham junto
+      const opts = byId('options-dialog');
+      if (opts && opts.open) closeDialog(opts);
+      // o evento chega depois: se foi para o menu principal, a loja já está escondida
+      if (inShop()) onResume?.();
+    });
+  }
+
+  // Um passo para trás. Devolve false quando não há para onde voltar (menu principal: sair).
+  function back() {
+    if (blocking()) return true;
+    const d = topDialog();
+    if (d) { closeDialog(d); return true; }
+    if (inShop()) { openPause(); return true; }
+    return false;
+  }
+
+  doc.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape' || ev.defaultPrevented) return;
+    if (blocking() || topDialog() || !inShop()) return;
+    ev.preventDefault();
+    openPause();
+  });
+
+  // Android (app Tauri): o Tauri entrega o botão voltar para a página em vez de fechar o app.
+  const tauriApp = globalThis.__TAURI__ && globalThis.__TAURI__.app;
+  const android = /Android/i.test(globalThis.navigator?.userAgent || '');
+  if (tauriApp && android && typeof tauriApp.onBackButtonPress === 'function') {
+    tauriApp.onBackButtonPress(() => {
+      if (back()) return;
+      Promise.resolve(tauriApp.exit?.(0)).catch(() => {});
+    }).catch((err) => console.warn('[voltar] botão voltar indisponível', err));
+  }
+
+  return { back, openPause, isPaused: () => !!(pause && pause.open) };
+}
+
+return { createBackButton };
+})();
+
 // ---- src/main.js ----
 __mods.main = (() => {
 // Integração: liga menu, engine, progressão, persistência, interface e áudio.
@@ -7298,6 +7396,7 @@ const { seedTutorialDay } = __mods.story;
 const { createIntro, createTutorial } = __mods.abertura;
 const { createScrollbars } = __mods.rolagem;
 const { createNightShader } = __mods.noite;
+const { createBackButton } = __mods.voltar;
 
 const audio = createAudio();
 const getUpgradeName = (id) => UPGRADES.find((u) => u.id === id)?.name ?? id;
@@ -7635,6 +7734,13 @@ const intro = createIntro(document);
 const tutorial = createTutorial(document, { getState: () => state });
 createScrollbars(document);
 createNightShader(document);
+// v1.29 — botão voltar do celular e página de Pausa (o tempo da loja para enquanto ela está aberta)
+createBackButton(document, {
+  onPause() { playing = false; tutorial.pause(); persist(); },
+  onResume() { playing = true; lastTick = performance.now(); tutorial.resume(); },
+  onMenu: () => handlers.onMenu(),
+  openOptions: () => menu.openOptions(),
+});
 if (hasSave()) tutorial.resume();
 tutorial.pause();
 if (loaded.status === 'corrupt') {

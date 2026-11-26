@@ -103,6 +103,11 @@ jobs:
           export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
           node preparar.mjs
           npx tauri android init --ci
+          # Nossa MainActivity: jogo entre a barra de notificação e a de navegação (tarjas escuras)
+          ATIVIDADE=$(find src-tauri/gen/android/app/src/main/java -name MainActivity.kt | head -1)
+          PACOTE=$(sed -n 's/^package //p' "$ATIVIDADE")
+          sed "s/__PACOTE__/$PACOTE/" android/MainActivity.kt > "$ATIVIDADE"
+          echo "MainActivity trocada em $ATIVIDADE ($PACOTE)"
           npx tauri icon icone.png
           npx tauri android build --apk --target aarch64 --target armv7 --ci
 
