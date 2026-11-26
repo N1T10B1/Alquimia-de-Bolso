@@ -160,3 +160,6 @@ Feito: 12 receitas novas (24 no total, 8 por categoria), com as artes do Rafael 
 - Tela antes do menu: título, frasco que enche e frases ("Acendendo a vela…"). CSS em `carregamento.css` (no `<head>`) e imagens em `assets/carregamento/` (provisórias: fundo do menu desfocado e frasco da Cura). Prompt da arte definitiva: `arte/prompt-tela-carregamento.md`.
 - `tools/build-standalone.mjs` agora põe a tela no começo do `jogar.html` e corta o `styles.css` e os módulos em pedaços, com `__carga.etapa(x)` entre eles: o frasco enche conforme o arquivo chega pela rede. Some depois das fontes e do fundo do menu decodificados (mínimo 1,4 s, limite 9 s).
 - Verificado no Chromium a ~1,3 MB/s (aparece em menos de 1 s, menu em ~9,6 s) e por file:// (~2,2 s), PC 1280×800 e celular 390×844, sem erros. 120 testes passando.
+## v1.29 (26/11/2026) — raios atrás do caldeirão
+
+- No hover/foco do caldeirão do balcão, os raios de tinta agora ficam atrás da arte do caldeirão (a arte foi para `.pot-hotspot::before`, acima dos raios) e mantêm a proporção do quadro (300 x 310). Antes eles ficavam por cima e esticados na largura, o que deformava a coroa.
