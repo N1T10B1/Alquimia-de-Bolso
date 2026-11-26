@@ -303,6 +303,19 @@
     </dialog>
   </div>
 
+  <!-- ===== Pausa (v1.29): botão voltar do celular ou Esc no balcão ===== -->
+  <dialog id="pause-dialog" class="dialog paper dialog-pause" aria-labelledby="pause-title">
+    <div class="dialog-body">
+      <h2 id="pause-title" class="dialog-title">Pausa</h2>
+      <p>A botica espera: os clientes não perdem a paciência enquanto o caderno está fechado.</p>
+      <div class="dialog-actions pause-actions">
+        <button type="button" class="btn btn-primary" data-pause="resume" autofocus>Voltar ao balcão</button>
+        <button type="button" class="btn" data-pause="options">Opções</button>
+        <button type="button" class="btn" data-pause="menu">Menu principal</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- ===== Páginas de papel do menu ===== -->
   <dialog id="confirm-dialog" class="dialog paper" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
     <div class="dialog-body">

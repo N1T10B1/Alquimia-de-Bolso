@@ -16,6 +16,7 @@ import { seedTutorialDay } from './story.js';
 import { createIntro, createTutorial } from './abertura.js';
 import { createScrollbars } from './rolagem.js';
 import { createNightShader } from './noite.js';
+import { createBackButton } from './voltar.js';
 
 const audio = createAudio();
 const getUpgradeName = (id) => UPGRADES.find((u) => u.id === id)?.name ?? id;
@@ -353,6 +354,13 @@ const intro = createIntro(document);
 const tutorial = createTutorial(document, { getState: () => state });
 createScrollbars(document);
 createNightShader(document);
+// v1.29 — botão voltar do celular e página de Pausa (o tempo da loja para enquanto ela está aberta)
+createBackButton(document, {
+  onPause() { playing = false; tutorial.pause(); persist(); },
+  onResume() { playing = true; lastTick = performance.now(); tutorial.resume(); },
+  onMenu: () => handlers.onMenu(),
+  openOptions: () => menu.openOptions(),
+});
 if (hasSave()) tutorial.resume();
 tutorial.pause();
 if (loaded.status === 'corrupt') {

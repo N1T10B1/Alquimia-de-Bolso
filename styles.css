@@ -129,6 +129,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .dialog-title { margin: 6px 0 10px; font-family: var(--font-title); font-weight: 600; font-size: 32px; line-height: 1.1; color: var(--gold); text-shadow: 2px 2px 0 var(--edge); }
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
 .dialog-actions .btn { flex: 1 1 150px; }
+.pause-actions { flex-direction: column; align-items: stretch; }
+.pause-actions .btn { flex: 0 0 auto; }
 .dialog-victory .dialog-body { background: linear-gradient(180deg, #4b3a6e, #34254f); }
 
 .noscript { padding: 16px; text-align: center; }

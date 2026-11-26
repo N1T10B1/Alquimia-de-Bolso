@@ -54,6 +54,6 @@ html.reduce-motion .carga, html.reduce-motion .carga-frasco::after, html.reduce-
 @media (orientation: portrait), (max-aspect-ratio: 4/5) {
   /* No celular a porta fica embaixo: o título e o frasco sobem para a parede lisa do meio. */
   .carga { background-image: url("assets/carregamento/fundo-celular.webp"); background-position: center bottom; place-items: start center; }
-  .carga-miolo { margin-top: 24vh; gap: clamp(6px, 1.4vh, 14px); }
+  .carga-miolo { margin-top: 19vh; gap: clamp(6px, 1.4vh, 14px); }
   .carga-frasco { width: clamp(72px, 12vh, 120px); }
 }

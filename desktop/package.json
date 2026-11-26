@@ -1,0 +1,15 @@
+{
+  "name": "alquimia-de-bolso-desktop",
+  "private": true,
+  "version": "1.28.0",
+  "description": "Empacota o jogar.html como programa de Windows (.exe) com Tauri",
+  "scripts": {
+    "tauri": "tauri",
+    "preparar": "node preparar.mjs",
+    "icone": "tauri icon icone.png",
+    "build": "node preparar.mjs && tauri icon icone.png && tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.5.0"
+  }
+}

@@ -92,6 +92,8 @@ export function createMenu(doc, handlers) {
     };
   }
 
+  function openOptions() { fillOptions(); openDialog(dialogs.options); }
+
   function activate(action) {
     switch (action) {
       case 'continue': call('onContinue'); break;
@@ -105,7 +107,7 @@ export function createMenu(doc, handlers) {
         openDialog(dialogs.book);
         break;
       }
-      case 'options': fillOptions(); openDialog(dialogs.options); break;
+      case 'options': openOptions(); break;
       case 'credits': openDialog(dialogs.credits); break;
       default: break;
     }
@@ -167,5 +169,5 @@ export function createMenu(doc, handlers) {
     form.addEventListener('change', () => call('onOptions', readOptions()));
   }
 
-  return { show, hide };
+  return { show, hide, openOptions };
 }
