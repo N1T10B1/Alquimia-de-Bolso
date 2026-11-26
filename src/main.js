@@ -17,10 +17,11 @@ import { createIntro, createTutorial } from './abertura.js';
 import { createScrollbars } from './rolagem.js';
 import { createNightShader } from './noite.js';
 import { createBackButton } from './voltar.js';
+import { L, aplicaIdiomaHTML, guardaIdioma, LANG } from './idioma.js';
 
 const audio = createAudio();
 const getUpgradeName = (id) => UPGRADES.find((u) => u.id === id)?.name ?? id;
-const getCustomerName = (id) => CUSTOMERS.find((c) => c.id === id)?.name ?? 'O cliente';
+const getCustomerName = (id) => CUSTOMERS.find((c) => c.id === id)?.name ?? L('O cliente', 'The customer');
 const root = document.documentElement;
 let state;
 let options;
@@ -39,7 +40,17 @@ function applyOptions() {
   root.dataset.quality = options.quality;
 }
 
+// v1.30 — troca de idioma: guarda a escolha, salva o caderno e recarrega o jogo no idioma novo.
+function setLanguage(lang) {
+  if (!lang || lang === LANG) return false;
+  if (!guardaIdioma(lang)) return false;
+  if (hasSave()) persist();
+  location.reload();
+  return true;
+}
+
 function setOptions(next) {
+  if (next && setLanguage(next.lang)) return;
   const wasOn = options.sound;
   options = sanitizeOptions(next);
   saveOptions(options);
@@ -79,7 +90,7 @@ function checkVictory() {
 // Executa uma ação pura da engine/progressão: em falha nada muda.
 function run(outcome, onSuccess) {
   if (!outcome || !outcome.ok) {
-    const message = outcome?.error?.message || 'Isso não dá para fazer agora.';
+    const message = outcome?.error?.message || L('Isso não dá para fazer agora.', 'You can’t do that right now.');
     ui.notify(message, 'error');
     audio.play('error');
     return false;
@@ -112,7 +123,7 @@ const handlers = {
     run(buyFromMerchant(state, ingredientId, qty), (r) => {
       audio.play('coin');
       const ing = getIngredient(r.ingredientId);
-      ui.notify(`A mercadora embrulhou ${r.qty} ${ing ? ing.name : r.ingredientId} por ${r.cost} moedas.`, 'info');
+      ui.notify(L(`A mercadora embrulhou ${r.qty} ${ing ? ing.name : r.ingredientId} por ${r.cost} moedas.`, `The merchant wrapped up ${r.qty} ${ing ? ing.name : r.ingredientId} for ${r.cost} coins.`), 'info');
     });
   },
   // v1.26 — a mercadora leva o Lodo Instável por um preço melhor que a prateleira
@@ -120,8 +131,8 @@ const handlers = {
     run(sellSludgeToMerchant(state), (r) => {
       audio.play('coin');
       ui.notify(r.left > 0
-        ? `A mercadora levou um Lodo Instável por ${r.price} moedas. "Serve para calafetar barco", diz ela.`
-        : `A mercadora levou um Lodo Instável por ${r.price} moedas. Por hoje, a carroça não leva mais.`, 'info');
+        ? L(`A mercadora levou um Lodo Instável por ${r.price} moedas. "Serve para calafetar barco", diz ela.`, `The merchant took an Unstable Sludge for ${r.price} coins. "Good for caulking boats", she says.`)
+        : L(`A mercadora levou um Lodo Instável por ${r.price} moedas. Por hoje, a carroça não leva mais.`, `The merchant took an Unstable Sludge for ${r.price} coins. The cart can’t take any more today.`), 'info');
     });
   },
   onDismiss(orderId) {
@@ -129,14 +140,14 @@ const handlers = {
     if (outcome.ok) ui.showDismiss(outcome.result);
     run(outcome, () => {
       audio.play('error');
-      ui.notify('O cliente foi embora sem poção (−1 de fama).', 'error');
+      ui.notify(L('O cliente foi embora sem poção (−1 de fama).', 'The customer left without a potion (−1 fame).'), 'error');
     });
   },
   // v1.27 — o senhorio cobra o aluguel atrasado
   onPayLandlord() {
     run(payLandlord(state), (r) => {
       audio.play('coin');
-      ui.notify(`Você pagou ${r.paid} moedas de aluguel atrasado. O senhorio conferiu as moedas, tirou o chapéu e foi embora. A mercadora já vem chegando.`, 'success');
+      ui.notify(L(`Você pagou ${r.paid} moedas de aluguel atrasado. O senhorio conferiu as moedas, tirou o chapéu e foi embora. A mercadora já vem chegando.`, `You paid ${r.paid} coins of overdue rent. The landlord counted the coins, tipped his hat and left. The merchant is on her way.`), 'success');
     });
   },
   onEvict() {
@@ -155,7 +166,7 @@ const handlers = {
     persist();
     ui.hideGameOver();
     ui.resetView();
-    showGame('A botica reabriu num cômodo novo. As receitas do caderno vieram junto.', 'success');
+    showGame(L('A botica reabriu num cômodo novo. As receitas do caderno vieram junto.', 'The apothecary reopened in a new room. The notebook’s recipes came along.'), 'success');
   },
   onGameOverMenu() {
     state = fillOrders(setRelaxed(restartAfterEviction(state, createInitialState()), options.relaxed));
@@ -185,7 +196,7 @@ const handlers = {
   onNextDay() {
     run(startNextDay(state), (r) => {
       audio.play('discover');
-      ui.notify(`Dia ${r.day}: a loja abriu e ${r.customers} clientes devem passar hoje.`, 'success');
+      ui.notify(L(`Dia ${r.day}: a loja abriu e ${r.customers} clientes devem passar hoje.`, `Day ${r.day}: the shop is open and ${r.customers} customers should come by today.`), 'success');
       tutorial.event('nextDay', r);
     });
   },
@@ -201,7 +212,7 @@ const handlers = {
     run(sellItem(state, itemId), (r) => {
       audio.play('coin');
       const item = getItem(r.itemId);
-      ui.notify(`${item ? item.name : r.itemId} vendido no balcão por ${r.price} ${r.price === 1 ? 'moeda' : 'moedas'}.`, 'success');
+      ui.notify(L(`${item ? item.name : r.itemId} vendido no balcão por ${r.price} ${r.price === 1 ? 'moeda' : 'moedas'}.`, `${item ? item.name : r.itemId} sold at the counter for ${r.price} ${r.price === 1 ? 'coin' : 'coins'}.`), 'success');
     });
   },
   onDeliver(orderId, potionId) {
@@ -215,19 +226,19 @@ const handlers = {
       tutorial.event('deliver', r);
       if (r.correct) {
         audio.play('coin');
-        ui.notify(`Acertou! ${name} era o remédio certo. +${r.reward + (r.tip || 0)} moedas${r.bonus ? ` (${r.bonus} de bônus pela receita nova)` : ''}${r.tip ? ` (${r.tip} de gorjeta pela rapidez)` : ''}.`, 'success');
+        ui.notify(L(`Acertou! ${name} era o remédio certo. +${r.reward + (r.tip || 0)} moedas${r.bonus ? ` (${r.bonus} de bônus pela receita nova)` : ''}${r.tip ? ` (${r.tip} de gorjeta pela rapidez)` : ''}.`, `Right on! ${name} was the right remedy. +${r.reward + (r.tip || 0)} coins${r.bonus ? ` (${r.bonus} bonus for the new recipe)` : ''}${r.tip ? ` (${r.tip} tip for speed)` : ''}.`), 'success');
       } else {
         audio.play('error');
         ui.notify(r.revealed
-          ? `${name} não resolve. Agora o pedido ficou claro (−1 de fama; o frasco voltou à prateleira).`
-          : `${name} não resolve. O cliente explicou melhor (−1 de fama; o frasco voltou à prateleira).`, 'error');
+          ? L(`${name} não resolve. Agora o pedido ficou claro (−1 de fama; o frasco voltou à prateleira).`, `${name} doesn’t solve it. Now the request is clear (−1 fame; the flask went back to the shelf).`)
+          : L(`${name} não resolve. O cliente explicou melhor (−1 de fama; o frasco voltou à prateleira).`, `${name} doesn’t solve it. The customer explained better (−1 fame; the flask went back to the shelf).`), 'error');
       }
     });
   },
   onBuyUpgrade(upgradeId) {
     run(buyUpgrade(state, upgradeId), (r) => {
       audio.play('discover');
-      ui.notify(`${getUpgradeName(r.upgradeId)} agora faz parte da botica.`, 'success');
+      ui.notify(L(`${getUpgradeName(r.upgradeId)} agora faz parte da botica.`, `${getUpgradeName(r.upgradeId)} is now part of the apothecary.`), 'success');
     });
   },
   onHint() {
@@ -245,7 +256,7 @@ const handlers = {
   onToggleSound() {
     setOptions({ ...options, sound: !options.sound });
     ui.render(state);
-    ui.notify(options.sound ? 'Som ligado.' : 'Som desligado.', 'info');
+    ui.notify(options.sound ? L('Som ligado.', 'Sound on.') : L('Som desligado.', 'Sound off.'), 'info');
   },
   onMenu() {
     playing = false;
@@ -260,8 +271,9 @@ const menuHandlers = {
   getState: () => state,
   getOptions: () => options,
   onOptions: (next) => setOptions(next),
+  onLanguage: (lang) => setLanguage(lang),
   onContinue() {
-    showGame('A loja está aberta de novo.');
+    showGame(L('A loja está aberta de novo.', 'The shop is open again.'));
     tutorial.resume();
   },
   onNewGame() {
@@ -305,7 +317,7 @@ function tick() {
       if (id === counter) ui.showWalkOut(out.result);
       state = out.state;
       audio.play('error');
-      ui.notify(`${getCustomerName(out.result.customerId)} cansou de esperar e foi embora (−${out.result.fame} de fama).`, 'error');
+      ui.notify(L(`${getCustomerName(out.result.customerId)} cansou de esperar e foi embora (−${out.result.fame} de fama).`, `${getCustomerName(out.result.customerId)} got tired of waiting and left (−${out.result.fame} fame).`), 'error');
     }
     commit(state);
     sinceSave = 0;
@@ -325,7 +337,7 @@ function tickNight(dt) {
   if (t.gone) {
     ui.showMerchantLeft();
     audio.play('error');
-    ui.notify('A mercadora cansou de esperar e seguiu viagem. Ela volta amanhã à noite.', 'error');
+    ui.notify(L('A mercadora cansou de esperar e seguiu viagem. Ela volta amanhã à noite.', 'The merchant got tired of waiting and moved on. She’ll be back tomorrow night.'), 'error');
     persist();
     ui.render(state);
     sinceSave = 0;
@@ -348,6 +360,7 @@ options = savedOptions.found ? savedOptions.options : sanitizeOptions({ sound: !
 state = setRelaxed({ ...state, sound: options.sound }, options.relaxed);
 applyOptions();
 
+aplicaIdiomaHTML(document); // v1.30: textos fixos do index.html no idioma escolhido
 const ui = createUI(document, handlers);
 const menu = createMenu(document, menuHandlers);
 const intro = createIntro(document);
@@ -365,7 +378,7 @@ if (hasSave()) tutorial.resume();
 tutorial.pause();
 if (loaded.status === 'corrupt') {
   clearSave();
-  menu.show('O caderno salvo estava danificado. Comece um novo pelo menu.');
+  menu.show(L('O caderno salvo estava danificado. Comece um novo pelo menu.', 'The saved notebook was damaged. Start a new one from the menu.'));
 } else {
   menu.show();
 }

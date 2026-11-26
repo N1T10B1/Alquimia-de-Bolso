@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const ORDER = ['art', 'data', 'dialogue', 'engine', 'progression', 'storage', 'ui', 'menu', 'audio', 'story', 'abertura', 'rolagem', 'noite', 'voltar', 'main'];
+const ORDER = ['idioma', 'en', 'art', 'data', 'dialogue', 'engine', 'progression', 'storage', 'ui', 'menu', 'audio', 'story', 'abertura', 'rolagem', 'noite', 'voltar', 'main'];
 
 function bundleModule(name) {
   let code = readFileSync(join(root, 'src', `${name}.js`), 'utf8');

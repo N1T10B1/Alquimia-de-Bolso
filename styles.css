@@ -209,6 +209,15 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   position: absolute; left: 6vw; bottom: 16px; margin: 0;
   font-size: 13px; color: #8c8478;
 }
+/* v1.30: troca rápida de idioma no menu (canto de baixo) */
+.menu-lang {
+  position: absolute; right: 4vw; bottom: 10px; display: inline-flex; align-items: center; gap: 7px;
+  min-height: 40px; padding: 6px 14px; border: 1px solid rgba(239, 226, 196, 0.35); border-radius: 999px;
+  background: rgba(18, 19, 27, 0.55); color: #efe2c4; font: 600 15px var(--font-ui); cursor: pointer;
+}
+.menu-lang svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.menu-lang:hover, .menu-lang:focus-visible { border-color: rgba(239, 226, 196, 0.8); background: rgba(18, 19, 27, 0.8); }
+.menu-lang:focus-visible { outline: 2px solid var(--chama, #e8a33c); outline-offset: 2px; }
 @media (orientation: portrait), (max-aspect-ratio: 4/5) {
   .menu-panel {
     left: 50%; transform: translateX(-50%); top: max(24px, 6vh);
@@ -220,6 +229,7 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   .mb.primary { font-size: calc(clamp(22px, 6vw, 34px) * 1.12); }
   .menu-note { margin-left: 0; }
   .menu-version { left: 0; right: 0; text-align: center; }
+  .menu-lang { right: 50%; transform: translateX(50%); bottom: 40px; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .menu-panel { top: 12px; }

@@ -4,7 +4,7 @@
   <!-- Arquivo gerado por tools/build-standalone.mjs. Edite os fontes em src/ e styles.css. -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Alquimia de Bolso, o caderno da boticária: misture ingredientes, descubra 12 poções e atenda os bilhetes dos clientes. Jogo de navegador offline.">
+  <meta name="description" content="Alquimia de Bolso, o caderno da boticária: misture ingredientes, descubra 12 poções e atenda os bilhetes dos clientes. Jogo de navegador offline." data-en-content="Alquimia de Bolso, the apothecary’s notebook: mix ingredients, discover 12 potions and solve your customers’ requests. Offline browser game.">
   <meta name="color-scheme" content="dark">
   <title>Alquimia de Bolso</title>
   <!-- v1.28: edição do jogo. 'demo' = 12 receitas e fim no dia 5; apague esta linha para a edição completa. -->
@@ -77,7 +77,16 @@ html.reduce-motion .carga, html.reduce-motion .carga-frasco::after, html.reduce-
   // Tela de carregamento: o frasco enche por etapas (estilos lidos, código lido, fontes e fundo do menu
   // prontos) e some quando tudo está pronto, com um tempo mínimo para não piscar.
   (function () {
-    var FRASES = ['Acendendo a vela…', 'Moendo as ervas…', 'Tirando o pó dos frascos…', 'Abrindo o caderno…'];
+    // v1.30: o idioma vem da escolha guardada ou do navegador (a mesma regra de src/idioma.js)
+    var EN = (function () {
+      try { var g = localStorage.getItem('alquimia-de-bolso-idioma-v1'); if (g === 'pt' || g === 'en') return g === 'en'; } catch (e) {}
+      var n = navigator.languages && navigator.languages[0] || navigator.language || 'pt';
+      return !/^pt\b/i.test(n);
+    })();
+    if (EN) document.documentElement.lang = 'en';
+    var FRASES = EN
+      ? ['Lighting the candle…', 'Grinding the herbs…', 'Dusting off the flasks…', 'Opening the notebook…']
+      : ['Acendendo a vela…', 'Moendo as ervas…', 'Tirando o pó dos frascos…', 'Abrindo o caderno…'];
     var MINIMO = 1400, LIMITE = 9000;
     var inicio = Date.now(), alvo = 0.08, atual = 0, fim = false, el, frasco, frase, i = 0;
     function semAnimacao() {
@@ -112,6 +121,7 @@ html.reduce-motion .carga, html.reduce-motion .carga-frasco::after, html.reduce-
       monta: function () {
         el = document.getElementById('carga'); if (!el) return;
         frasco = el.querySelector('.carga-frasco'); frase = el.querySelector('.carga-frase');
+        if (EN) el.setAttribute('aria-label', 'Opening the apothecary’s notebook');
         frase.textContent = FRASES[0];
         anda(); setTimeout(trocaFrase, 1600);
       },
@@ -376,6 +386,15 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   position: absolute; left: 6vw; bottom: 16px; margin: 0;
   font-size: 13px; color: #8c8478;
 }
+/* v1.30: troca rápida de idioma no menu (canto de baixo) */
+.menu-lang {
+  position: absolute; right: 4vw; bottom: 10px; display: inline-flex; align-items: center; gap: 7px;
+  min-height: 40px; padding: 6px 14px; border: 1px solid rgba(239, 226, 196, 0.35); border-radius: 999px;
+  background: rgba(18, 19, 27, 0.55); color: #efe2c4; font: 600 15px var(--font-ui); cursor: pointer;
+}
+.menu-lang svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.menu-lang:hover, .menu-lang:focus-visible { border-color: rgba(239, 226, 196, 0.8); background: rgba(18, 19, 27, 0.8); }
+.menu-lang:focus-visible { outline: 2px solid var(--chama, #e8a33c); outline-offset: 2px; }
 @media (orientation: portrait), (max-aspect-ratio: 4/5) {
   .menu-panel {
     left: 50%; transform: translateX(-50%); top: max(24px, 6vh);
@@ -387,6 +406,7 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   .mb.primary { font-size: calc(clamp(22px, 6vw, 34px) * 1.12); }
   .menu-note { margin-left: 0; }
   .menu-version { left: 0; right: 0; text-align: center; }
+  .menu-lang { right: 50%; transform: translateX(50%); bottom: 40px; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .menu-panel { top: 12px; }
@@ -2480,38 +2500,41 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   <!-- ===== Menu principal (tela inicial) ===== -->
   <div id="menu-screen" class="menu-screen">
     <div class="menu-panel">
-      <h1 class="menu-logo">Alquimia<br>de Bolso <small>o caderno da boticária</small></h1>
-      <nav aria-label="Menu principal">
+      <h1 class="menu-logo">Alquimia<br>de Bolso <small data-en="the apothecary’s notebook">o caderno da boticária</small></h1>
+      <nav aria-label="Menu principal" data-en-aria-label="Main menu">
         <ul id="menu-list" class="menu-list">
-          <li id="menu-item-continue"><button type="button" class="mb primary" data-menu="continue">
+          <li id="menu-item-continue"><button type="button" class="mb primary" data-menu="continue" data-en="Continue">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3"/><path d="M7.5 14h9"/></svg>Continuar</button></li>
-          <li><button type="button" class="mb" data-menu="new">
+          <li><button type="button" class="mb" data-menu="new" data-en="New game">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4C13 5 8 10 6 18l-2 2"/><path d="M20 4c-1 6-5 10-11 11"/><path d="M9 15l-2-2"/></svg>Novo jogo</button></li>
-          <li><button type="button" class="mb" data-menu="book">
+          <li><button type="button" class="mb" data-menu="book" data-en="Recipe book">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 3v8l2-1.5L13 11V3"/></svg>Livro de receitas</button></li>
-          <li><button type="button" class="mb" data-menu="options">
+          <li><button type="button" class="mb" data-menu="options" data-en="Options">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Opções</button></li>
-          <li><button type="button" class="mb" data-menu="credits">
+          <li><button type="button" class="mb" data-menu="credits" data-en="Credits">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a2 2 0 0 1 2 2v13a3 3 0 0 1-3 3H7"/><path d="M6 3a2 2 0 0 0-2 2v1h4V5a2 2 0 0 0-2-2zM8 6v12a3 3 0 0 1-3 3"/><path d="M11 9h5M11 13h5"/></svg>Créditos</button></li>
         </ul>
       </nav>
       <p id="menu-note" class="menu-note" role="status" aria-live="polite"></p>
     </div>
-    <p class="menu-version">versão 1.28 · demo</p>
+    <p class="menu-version" data-en="version 1.30 · demo">versão 1.30 · demo</p>
+    <!-- v1.30: troca rápida de idioma (o mesmo das Opções); recarrega o jogo no outro idioma -->
+    <button type="button" id="menu-lang" class="menu-lang" data-lang="en" lang="en" aria-label="Play in English" data-en-aria-label="Jogar em português" data-en-data-lang="pt" data-en-lang="pt-BR">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"/></svg><span data-en="Português">English</span></button>
   </div>
 
   <!-- ===== Fim de jogo: a botica fechou por dívida (v1.27) ===== -->
   <section id="gameover" class="gameover" hidden aria-labelledby="gameover-title" role="dialog" aria-modal="true">
     <div class="gameover-carta">
-      <h2 id="gameover-title" class="gameover-titulo">A botica fechou as portas</h2>
+      <h2 id="gameover-title" class="gameover-titulo" data-en="The apothecary closed its doors">A botica fechou as portas</h2>
       <p id="gameover-sub" class="gameover-sub"></p>
       <div class="gameover-caixa">
-        <h3>Livro-caixa da botica</h3>
+        <h3 data-en="The apothecary’s ledger">Livro-caixa da botica</h3>
         <dl id="gameover-dl"></dl>
       </div>
       <ul class="gameover-botoes">
-        <li><button type="button" class="gameover-btn is-principal" data-action="restart-botica">Recomeçar a botica</button></li>
-        <li><button type="button" class="gameover-btn" data-action="gameover-menu">Menu inicial</button></li>
+        <li><button type="button" class="gameover-btn is-principal" data-action="restart-botica" data-en="Start the apothecary again">Recomeçar a botica</button></li>
+        <li><button type="button" class="gameover-btn" data-action="gameover-menu" data-en="Main menu">Menu inicial</button></li>
       </ul>
     </div>
   </section>
@@ -2519,17 +2542,17 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   <!-- ===== Fim da demo: carta da Mestra Benvinda e resumo da partida (v1.28) ===== -->
   <section id="fimdemo" class="gameover fimdemo" hidden aria-labelledby="fimdemo-title" role="dialog" aria-modal="true">
     <div class="gameover-carta fimdemo-papel">
-      <p class="fimdemo-kicker">Uma carta que veio do mar</p>
-      <h2 id="fimdemo-title" class="gameover-titulo fimdemo-titulo">Notícias da Mestra</h2>
+      <p class="fimdemo-kicker" data-en="A letter from the sea">Uma carta que veio do mar</p>
+      <h2 id="fimdemo-title" class="gameover-titulo fimdemo-titulo" data-en="News from the Mistress">Notícias da Mestra</h2>
       <div id="fimdemo-carta" class="fimdemo-carta"></div>
       <div class="gameover-caixa">
-        <h3>Livro-caixa da demo</h3>
+        <h3 data-en="The demo’s ledger">Livro-caixa da demo</h3>
         <dl id="fimdemo-dl"></dl>
       </div>
-      <p class="fimdemo-obrigado">Fim da demo. Obrigado por jogar! Na versão completa, o caderno ganha mais doze receitas e a botica segue aberta.</p>
+      <p class="fimdemo-obrigado" data-en="End of the demo. Thanks for playing! In the full version, the notebook gains twelve more recipes and the apothecary stays open.">Fim da demo. Obrigado por jogar! Na versão completa, o caderno ganha mais doze receitas e a botica segue aberta.</p>
       <ul class="gameover-botoes">
-        <li><button type="button" class="gameover-btn is-principal" data-action="demo-restart">Começar de novo</button></li>
-        <li><button type="button" class="gameover-btn" data-action="demo-menu">Menu inicial</button></li>
+        <li><button type="button" class="gameover-btn is-principal" data-action="demo-restart" data-en="Start over">Começar de novo</button></li>
+        <li><button type="button" class="gameover-btn" data-action="demo-menu" data-en="Main menu">Menu inicial</button></li>
       </ul>
     </div>
   </section>
@@ -2548,41 +2571,41 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
         <div class="balcao-tampo" aria-hidden="true"></div>
         <div id="balcao-vela" class="balcao-vela"></div>
         <span class="pot-sombra" aria-hidden="true"></span>
-        <button type="button" class="pot-hotspot" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão" title="Clique no caldeirão para misturar"><span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><span class="pot-hotspot-tag">Caldeirão</span></button>
+        <button type="button" class="pot-hotspot" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão" title="Clique no caldeirão para misturar" data-en-aria-label="Open the cauldron" data-en-title="Click the cauldron to mix"><span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><span class="pot-hotspot-tag" data-en="Cauldron">Caldeirão</span></button>
       </div>
 
       <header class="shop-top">
         <div class="hud-wrap">
-          <div id="hud-clock" class="hud-clock" role="img" aria-label="Relógio do dia">
+          <div id="hud-clock" class="hud-clock" role="img" aria-label="Relógio do dia" data-en-aria-label="Clock of the day">
             <span class="clock-disc"></span><span class="clock-frame"></span>
           </div>
-          <div id="hud" class="hud" aria-label="Situação da botica"></div>
+          <div id="hud" class="hud" aria-label="Situação da botica" data-en-aria-label="State of the apothecary"></div>
         </div>
         <div class="shop-actions">
-          <button type="button" class="icon-btn" data-action="open-sheet" data-id="prateleira" aria-label="Abrir a prateleira de poções">
-            <img src="" data-art="cura" alt=""><span class="icon-btn-label">Prateleira</span><span id="shelf-count" class="icon-btn-badge" hidden></span></button>
-          <button type="button" class="icon-btn" data-action="open-sheet" data-id="utensilios" aria-label="Abrir utensílios e dicas">
-            <img src="" data-art="up-lupa" alt=""><span class="icon-btn-label">Utensílios</span></button>
-          <button type="button" id="sound-toggle" class="icon-btn" data-action="sound" aria-pressed="false" aria-label="Efeitos sonoros">
-            <img src="" data-art="sino" alt=""><span class="icon-btn-label sound-label">Som</span></button>
-          <button type="button" class="icon-btn" data-action="menu" aria-label="Voltar ao menu principal">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="icon-btn-label">Menu</span></button>
+          <button type="button" class="icon-btn" data-action="open-sheet" data-id="prateleira" aria-label="Abrir a prateleira de poções" data-en-aria-label="Open the potion shelf">
+            <img src="" data-art="cura" alt=""><span class="icon-btn-label" data-en="Shelf">Prateleira</span><span id="shelf-count" class="icon-btn-badge" hidden></span></button>
+          <button type="button" class="icon-btn" data-action="open-sheet" data-id="utensilios" aria-label="Abrir utensílios e dicas" data-en-aria-label="Open tools and hints">
+            <img src="" data-art="up-lupa" alt=""><span class="icon-btn-label" data-en="Tools">Utensílios</span></button>
+          <button type="button" id="sound-toggle" class="icon-btn" data-action="sound" aria-pressed="false" aria-label="Efeitos sonoros" data-en-aria-label="Sound effects">
+            <img src="" data-art="sino" alt=""><span class="icon-btn-label sound-label" data-en="Sound">Som</span></button>
+          <button type="button" class="icon-btn" data-action="menu" aria-label="Voltar ao menu principal" data-en-aria-label="Back to the main menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="icon-btn-label" data-en="Menu">Menu</span></button>
         </div>
       </header>
 
       <button type="button" id="book-ribbon" class="book-ribbon" data-action="open-sheet" data-id="livro"
-              aria-label="Abrir o livro de receitas (ou arraste a tela para baixo)">
-        <span class="book-ribbon-text">Livro</span><span class="book-ribbon-arrow" aria-hidden="true">⌄</span>
+              aria-label="Abrir o livro de receitas (ou arraste a tela para baixo)" data-en-aria-label="Open the recipe book (or drag the screen down)">
+        <span class="book-ribbon-text" data-en="Book">Livro</span><span class="book-ribbon-arrow" aria-hidden="true">⌄</span>
       </button>
-      <p class="drag-hint" aria-hidden="true">arraste para baixo para abrir o livro</p>
+      <p class="drag-hint" aria-hidden="true" data-en="drag down to open the book">arraste para baixo para abrir o livro</p>
 
       <aside class="queue-wrap" aria-labelledby="queue-title">
-        <h2 id="queue-title" class="queue-title">Na fila</h2>
+        <h2 id="queue-title" class="queue-title" data-en="In line">Na fila</h2>
         <ul id="queue" class="queue"></ul>
       </aside>
 
-      <button type="button" class="pot-counter" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão">
-        <span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><img src="" data-art="caldeirao-bancada" alt=""><span>Caldeirão</span>
+      <button type="button" class="pot-counter" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão" data-en-aria-label="Open the cauldron">
+        <span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><img src="" data-art="caldeirao-bancada" alt=""><span data-en="Cauldron">Caldeirão</span>
       </button>
 
       <section id="talk" class="talk" aria-live="polite" aria-labelledby="talk-name"></section>
@@ -2594,13 +2617,13 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <dialog id="sheet-livro" class="sheet sheet-top" aria-labelledby="h-book">
       <div class="sheet-body">
         <header class="sheet-head">
-          <h2 id="h-book" class="sheet-title book-title" tabindex="-1">Livro de receitas</h2>
-          <button type="button" class="btn btn-small" data-action="close-sheet" aria-label="Fechar o livro">Fechar ⌃</button>
+          <h2 id="h-book" class="sheet-title book-title" tabindex="-1" data-en="Recipe book">Livro de receitas</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" aria-label="Fechar o livro" data-en-aria-label="Close the book" data-en="Close ⌃">Fechar ⌃</button>
         </header>
-        <div class="book-tabs" role="tablist" aria-label="Partes do caderno">
-          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="receitas" aria-selected="true">Receitas</button>
-          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="ingredientes" aria-selected="false" tabindex="-1">Ingredientes</button>
-          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="anotacoes" aria-selected="false" tabindex="-1">Anotações</button>
+        <div class="book-tabs" role="tablist" aria-label="Partes do caderno" data-en-aria-label="Parts of the notebook">
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="receitas" aria-selected="true" data-en="Recipes">Receitas</button>
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="ingredientes" aria-selected="false" tabindex="-1" data-en="Ingredients">Ingredientes</button>
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="anotacoes" aria-selected="false" tabindex="-1" data-en="Notes">Anotações</button>
         </div>
         <div id="book" class="book" role="tabpanel" aria-labelledby="h-book"></div>
       </div>
@@ -2610,8 +2633,8 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <dialog id="sheet-caldeirao" class="sheet sheet-bottom" aria-labelledby="h-cauldron">
       <div class="sheet-body">
         <header class="sheet-head">
-          <h2 id="h-cauldron" class="sheet-title" tabindex="-1">Caldeirão</h2>
-          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+          <h2 id="h-cauldron" class="sheet-title" tabindex="-1" data-en="Cauldron">Caldeirão</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" data-en="Back to the counter">Voltar ao balcão</button>
         </header>
         <div class="brew-layout">
           <div class="brew-col">
@@ -2619,8 +2642,8 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
             <div id="result" class="result" aria-live="polite"></div>
           </div>
           <div class="hand-col">
-            <h3 class="hand-title">Ingredientes <small id="hand-tip" class="tip-inline" hidden>toque numa carta para pôr no caldeirão; vale repetir a mesma</small></h3>
-            <button type="button" class="btn btn-small btn-quiet hand-info" data-action="open-sheet" data-id="livro" data-tab="ingredientes">O que cada ingrediente faz?</button>
+            <h3 class="hand-title" data-en="Ingredients">Ingredientes <small id="hand-tip" class="tip-inline" hidden data-en="tap a card to put it in the cauldron; you can repeat the same one">toque numa carta para pôr no caldeirão; vale repetir a mesma</small></h3>
+            <button type="button" class="btn btn-small btn-quiet hand-info" data-action="open-sheet" data-id="livro" data-tab="ingredientes" data-en="What does each ingredient do?">O que cada ingrediente faz?</button>
             <ul id="hand" class="hand"></ul>
             <div id="quick" class="quick"></div>
           </div>
@@ -2632,8 +2655,8 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <dialog id="sheet-prateleira" class="sheet sheet-bottom" aria-labelledby="h-shelf">
       <div class="sheet-body">
         <header class="sheet-head">
-          <h2 id="h-shelf" class="sheet-title" tabindex="-1">Prateleira</h2>
-          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+          <h2 id="h-shelf" class="sheet-title" tabindex="-1" data-en="Shelf">Prateleira</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" data-en="Back to the counter">Voltar ao balcão</button>
         </header>
         <div id="shelf" class="shelf"></div>
       </div>
@@ -2643,8 +2666,8 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <dialog id="sheet-utensilios" class="sheet sheet-bottom" aria-labelledby="h-tools">
       <div class="sheet-body">
         <header class="sheet-head">
-          <h2 id="h-tools" class="sheet-title" tabindex="-1">Utensílios e dicas</h2>
-          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+          <h2 id="h-tools" class="sheet-title" tabindex="-1" data-en="Tools and hints">Utensílios e dicas</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" data-en="Back to the counter">Voltar ao balcão</button>
         </header>
         <div id="tools" class="tools"></div>
       </div>
@@ -2654,8 +2677,8 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <dialog id="sheet-mercador" class="sheet sheet-bottom" aria-labelledby="h-merchant">
       <div class="sheet-body">
         <header class="sheet-head">
-          <h2 id="h-merchant" class="sheet-title" tabindex="-1">Banca da mercadora</h2>
-          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+          <h2 id="h-merchant" class="sheet-title" tabindex="-1" data-en="The merchant’s stall">Banca da mercadora</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" data-en="Back to the counter">Voltar ao balcão</button>
         </header>
         <div id="merchant" class="merchant"></div>
       </div>
@@ -2664,17 +2687,17 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
     <!-- Livro-caixa: relatório do fim do dia -->
     <dialog id="sheet-caixa" class="sheet sheet-ledger" aria-labelledby="h-ledger">
       <div class="sheet-body ledger-body">
-        <h2 id="h-ledger" class="sheet-title ledger-title" tabindex="-1">Livro-caixa</h2>
+        <h2 id="h-ledger" class="sheet-title ledger-title" tabindex="-1" data-en="Ledger">Livro-caixa</h2>
         <div id="ledger" class="ledger"></div>
       </div>
     </dialog>
 
     <dialog id="victory-dialog" class="dialog paper" aria-labelledby="victory-title" aria-describedby="victory-desc">
       <div class="dialog-body">
-        <h2 id="victory-title" class="dialog-title">O caderno está completo!</h2>
-        <p id="victory-desc">Todas as receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.</p>
+        <h2 id="victory-title" class="dialog-title" data-en="The notebook is complete!">O caderno está completo!</h2>
+        <p id="victory-desc" data-en="All the recipes are in the notebook. The shop stays open: serve your customers, sell potions and try to beat your coin record.">Todas as receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.</p>
         <div class="dialog-actions">
-          <button type="button" class="btn btn-primary" data-action="close-dialog" autofocus>Voltar ao balcão</button>
+          <button type="button" class="btn btn-primary" data-action="close-dialog" autofocus data-en="Back to the counter">Voltar ao balcão</button>
         </div>
       </div>
     </dialog>
@@ -2683,12 +2706,12 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   <!-- ===== Pausa (v1.29): botão voltar do celular ou Esc no balcão ===== -->
   <dialog id="pause-dialog" class="dialog paper dialog-pause" aria-labelledby="pause-title">
     <div class="dialog-body">
-      <h2 id="pause-title" class="dialog-title">Pausa</h2>
-      <p>A botica espera: os clientes não perdem a paciência enquanto o caderno está fechado.</p>
+      <h2 id="pause-title" class="dialog-title" data-en="Paused">Pausa</h2>
+      <p data-en="The apothecary waits: customers don’t lose patience while the notebook is closed.">A botica espera: os clientes não perdem a paciência enquanto o caderno está fechado.</p>
       <div class="dialog-actions pause-actions">
-        <button type="button" class="btn btn-primary" data-pause="resume" autofocus>Voltar ao balcão</button>
-        <button type="button" class="btn" data-pause="options">Opções</button>
-        <button type="button" class="btn" data-pause="menu">Menu principal</button>
+        <button type="button" class="btn btn-primary" data-pause="resume" autofocus data-en="Back to the counter">Voltar ao balcão</button>
+        <button type="button" class="btn" data-pause="options" data-en="Options">Opções</button>
+        <button type="button" class="btn" data-pause="menu" data-en="Main menu">Menu principal</button>
       </div>
     </div>
   </dialog>
@@ -2696,68 +2719,652 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   <!-- ===== Páginas de papel do menu ===== -->
   <dialog id="confirm-dialog" class="dialog paper" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
     <div class="dialog-body">
-      <h2 id="confirm-title" class="dialog-title">Arrancar as páginas?</h2>
-      <p id="confirm-desc">Começar de novo apaga o caderno atual: moedas, receitas descobertas, utensílios e bilhetes. Não dá para desfazer.</p>
+      <h2 id="confirm-title" class="dialog-title" data-en="Tear out the pages?">Arrancar as páginas?</h2>
+      <p id="confirm-desc" data-en="Starting over erases the current notebook: coins, discovered recipes, tools and orders. This can’t be undone.">Começar de novo apaga o caderno atual: moedas, receitas descobertas, utensílios e bilhetes. Não dá para desfazer.</p>
       <div class="dialog-actions">
-        <button type="button" class="btn" data-dialog="close" autofocus>Guardar o caderno</button>
-        <button type="button" class="btn btn-danger" data-dialog="confirm-new">Começar do zero</button>
+        <button type="button" class="btn" data-dialog="close" autofocus data-en="Keep the notebook">Guardar o caderno</button>
+        <button type="button" class="btn btn-danger" data-dialog="confirm-new" data-en="Start from scratch">Começar do zero</button>
       </div>
     </div>
   </dialog>
 
   <dialog id="options-dialog" class="dialog paper" aria-labelledby="options-title">
     <form class="dialog-body options-form" method="dialog">
-      <h2 id="options-title" class="dialog-title">Opções</h2>
-      <label class="opt-row"><input type="checkbox" id="opt-sound"> Efeitos sonoros</label>
-      <label class="opt-row opt-range" for="opt-volume">Volume <output id="opt-volume-out" for="opt-volume">50</output>
+      <h2 id="options-title" class="dialog-title" data-en="Options">Opções</h2>
+      <label class="opt-row" data-en="Sound effects"><input type="checkbox" id="opt-sound"> Efeitos sonoros</label>
+      <label class="opt-row opt-range" for="opt-volume" data-en="Volume">Volume <output id="opt-volume-out" for="opt-volume">50</output>
         <input type="range" id="opt-volume" min="0" max="100" step="5" value="50"></label>
-      <label class="opt-row"><input type="checkbox" id="opt-motion"> Menos animação</label>
-      <label class="opt-row" title="Os clientes não perdem a paciência (sem vela e sem gorjeta)."><input type="checkbox" id="opt-relaxed"> Freguesia sem pressa</label>
+      <label class="opt-row" data-en="Less animation"><input type="checkbox" id="opt-motion"> Menos animação</label>
+      <label class="opt-row" title="Os clientes não perdem a paciência (sem vela e sem gorjeta)." data-en-title="Customers never lose patience (no candle and no tips)." data-en="Relaxed customers"><input type="checkbox" id="opt-relaxed"> Freguesia sem pressa</label>
       <fieldset class="opt-row opt-size">
-        <legend>Tamanho do texto</legend>
-        <label><input type="radio" name="opt-size" value="normal" checked> Normal</label>
-        <label><input type="radio" name="opt-size" value="grande"> Grande</label>
-        <label><input type="radio" name="opt-size" value="maior"> Maior</label>
+        <legend data-en="Text size">Tamanho do texto</legend>
+        <label data-en="Normal"><input type="radio" name="opt-size" value="normal" checked> Normal</label>
+        <label data-en="Large"><input type="radio" name="opt-size" value="grande"> Grande</label>
+        <label data-en="Larger"><input type="radio" name="opt-size" value="maior"> Maior</label>
       </fieldset>
       <fieldset class="opt-row opt-size opt-quality">
-        <legend>Qualidade dos efeitos</legend>
-        <label title="Noite desenhada em hachura pelo navegador (shader)."><input type="radio" name="opt-quality" value="alta" checked> Alta</label>
-        <label title="Para celulares e computadores mais fracos: a noite usa uma imagem pronta."><input type="radio" name="opt-quality" value="leve"> Leve</label>
+        <legend data-en="Effects quality">Qualidade dos efeitos</legend>
+        <label title="Noite desenhada em hachura pelo navegador (shader)." data-en-title="Night drawn in hatching by the browser (shader)." data-en="High"><input type="radio" name="opt-quality" value="alta" checked> Alta</label>
+        <label title="Para celulares e computadores mais fracos: a noite usa uma imagem pronta." data-en-title="For phones and weaker computers: the night uses a ready-made image." data-en="Light"><input type="radio" name="opt-quality" value="leve"> Leve</label>
+      </fieldset>
+      <fieldset class="opt-row opt-size opt-lang">
+        <legend data-en="Language · Idioma">Idioma · Language</legend>
+        <label lang="pt-BR"><input type="radio" name="opt-lang" value="pt"> Português</label>
+        <label lang="en"><input type="radio" name="opt-lang" value="en"> English</label>
       </fieldset>
       <div class="dialog-actions">
-        <button type="submit" class="btn btn-primary" autofocus>Pronto</button>
+        <button type="submit" class="btn btn-primary" autofocus data-en="Done">Pronto</button>
       </div>
     </form>
   </dialog>
 
   <dialog id="credits-dialog" class="dialog paper" aria-labelledby="credits-title">
     <div class="dialog-body credits">
-      <h2 id="credits-title" class="dialog-title">Créditos</h2>
-      <p><strong>Alquimia de Bolso</strong>: ideia, game design e direção de arte de Rafael.</p>
-      <p>Programação feita com o Claude, assistente de IA da Anthropic.</p>
-      <p>Artes dos clientes, dos ingredientes, das poções e da loja ao entardecer: Rafael.</p>
-      <p>Fundo do menu em estilo xilogravura, gerado sob direção de Rafael.</p>
-      <p>Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), sob a licença SIL Open Font License 1.1.</p>
-      <p>Sons sintetizados no próprio navegador.</p>
+      <h2 id="credits-title" class="dialog-title" data-en="Credits">Créditos</h2>
+      <p data-en-html="&lt;strong&gt;Alquimia de Bolso&lt;/strong&gt;: idea, game design and art direction by Rafael."><strong>Alquimia de Bolso</strong>: ideia, game design e direção de arte de Rafael.</p>
+      <p data-en="Programmed with Claude, Anthropic’s AI assistant.">Programação feita com o Claude, assistente de IA da Anthropic.</p>
+      <p data-en="Art for the customers, ingredients, potions and the shop at dusk: Rafael.">Artes dos clientes, dos ingredientes, das poções e da loja ao entardecer: Rafael.</p>
+      <p data-en="Woodcut-style menu background, generated under Rafael’s direction.">Fundo do menu em estilo xilogravura, gerado sob direção de Rafael.</p>
+      <p data-en="Fonts: Grenze Gotisch and Grenze (Omnibus-Type) and Alegreya Sans (Huerta Tipográfica), under the SIL Open Font License 1.1.">Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), sob a licença SIL Open Font License 1.1.</p>
+      <p data-en="Sounds synthesized right in the browser.">Sons sintetizados no próprio navegador.</p>
       <div class="dialog-actions">
-        <button type="button" class="btn btn-primary" data-dialog="close" autofocus>Fechar</button>
+        <button type="button" class="btn btn-primary" data-dialog="close" autofocus data-en="Close">Fechar</button>
       </div>
     </div>
   </dialog>
 
   <dialog id="book-dialog" class="dialog dialog-book paper" aria-labelledby="book-dialog-title">
     <div class="dialog-body">
-      <h2 id="book-dialog-title" class="dialog-title book-title">Livro de receitas</h2>
+      <h2 id="book-dialog-title" class="dialog-title book-title" data-en="Recipe book">Livro de receitas</h2>
       <div id="book-dialog-content" class="book"></div>
       <div class="dialog-actions">
-        <button type="button" class="btn btn-primary" data-dialog="close" autofocus>Fechar o livro</button>
+        <button type="button" class="btn btn-primary" data-dialog="close" autofocus data-en="Close the book">Fechar o livro</button>
       </div>
     </div>
   </dialog>
 
-  <noscript><p class="noscript">O caderno da boticária precisa de JavaScript ativado para abrir.</p></noscript>
+  <noscript data-en="The apothecary’s notebook needs JavaScript turned on to open."><p class="noscript">O caderno da boticária precisa de JavaScript ativado para abrir.</p></noscript>
 
   <script>window.__alquimiaMods = {};</script>
+<script>
+(() => {
+'use strict';
+const __mods = window.__alquimiaMods;
+// ---- src/idioma.js ----
+__mods.idioma = (() => {
+// v1.30 — idioma do jogo: português (pt) ou inglês (en).
+// A escolha fica guardada à parte das opções (chave própria). Sem escolha guardada, segue o idioma
+// do navegador: português para quem usa pt-*, inglês para o resto. No Node (testes) é sempre
+// português, a não ser que `globalThis.ALQUIMIA_IDIOMA` force outro.
+// Trocar de idioma recarrega a página: os textos são escolhidos uma vez, quando o jogo abre.
+
+const IDIOMA_KEY = 'alquimia-de-bolso-idioma-v1';
+const IDIOMAS = Object.freeze(['pt', 'en']);
+
+function detecta() {
+  const forcado = globalThis.ALQUIMIA_IDIOMA;
+  if (IDIOMAS.includes(forcado)) return forcado;
+  try {
+    const salvo = globalThis.localStorage && globalThis.localStorage.getItem(IDIOMA_KEY);
+    if (IDIOMAS.includes(salvo)) return salvo;
+  } catch { /* sem armazenamento */ }
+  if (typeof document === 'undefined') return 'pt';
+  const nav = globalThis.navigator || {};
+  const pref = (nav.languages && nav.languages[0]) || nav.language || 'pt';
+  return /^pt\b/i.test(pref) ? 'pt' : 'en';
+}
+
+const LANG = detecta();
+const EN = LANG === 'en';
+
+// L('texto em português', 'English text'): devolve o do idioma atual.
+function L(pt, en) { return EN ? en : pt; }
+
+// Guarda o idioma escolhido (quem chama recarrega a página).
+function guardaIdioma(lang) {
+  if (!IDIOMAS.includes(lang)) return false;
+  try { globalThis.localStorage.setItem(IDIOMA_KEY, lang); return true; } catch { return false; }
+}
+
+// Textos fixos do index.html: cada elemento traduzível traz o inglês em atributos data-en*.
+//   data-en="..."      troca o texto (se houver ícone/campo dentro, só o último trecho de texto)
+//   data-en-html="..." troca o HTML interno
+//   data-en-<atributo>="..." troca o atributo (aria-label, title, placeholder, content...)
+function aplicaIdiomaHTML(doc) {
+  if (!doc || !doc.documentElement) return;
+  doc.documentElement.lang = EN ? 'en' : 'pt-BR';
+  if (!EN) return;
+  for (const el of doc.querySelectorAll('*')) {
+    for (const { name, value } of [...el.attributes]) {
+      if (!name.startsWith('data-en')) continue;
+      if (name === 'data-en') trocaTexto(el, value);
+      else if (name === 'data-en-html') el.innerHTML = value;
+      else el.setAttribute(name.slice('data-en-'.length), value);
+    }
+  }
+}
+
+function trocaTexto(el, texto) {
+  if (!el.children.length) { el.textContent = texto; return; }
+  const nos = [...el.childNodes].filter((n) => n.nodeType === 3 && n.nodeValue.trim());
+  const no = nos[nos.length - 1];
+  if (!no) { el.appendChild(el.ownerDocument.createTextNode(texto)); return; }
+  const antes = /^\s*/.exec(no.nodeValue)[0];
+  const depois = /\s*$/.exec(no.nodeValue)[0];
+  no.nodeValue = antes + texto + depois;
+}
+
+return { IDIOMA_KEY, IDIOMAS, LANG, EN, L, guardaIdioma, aplicaIdiomaHTML };
+})();
+})();
+</script>
+<script>window.__carga && __carga.etapa(0.57);</script>
+<script>
+(() => {
+'use strict';
+const __mods = window.__alquimiaMods;
+// ---- src/en.js ----
+__mods.en = (() => {
+// v1.30 — textos em inglês dos dados do jogo (ingredientes, receitas, falas, história, tutorial).
+// O português continua nos arquivos de origem (data.js, dialogue.js, story.js); aqui fica só o
+// inglês, pela mesma `id`. Quem escolhe entre os dois é idioma.js (constante EN).
+// Ao criar uma receita, cliente ou fala nova em português, acrescente o inglês aqui também:
+// tests/idioma.test.mjs avisa quando falta alguma coisa.
+
+// ---------- ingredientes ----------
+const INGREDIENTS_EN = Object.freeze({
+  agua: { quality: 'moist', name: 'Moon Drop', element: 'water',
+    lore: 'Dew gathered on a full-moon night and kept in a blue glass flask.',
+    property: 'Moist and soothing. Dilutes, cools and carries the other ingredient’s effect into the body.',
+    helps: 'Wounds that won’t close, tired eyes, sleepless nights. Near something hot, it rises as mist. In a double dose, it turns to rain.' },
+  fogo: { quality: 'hot', name: 'Ruby Ember', element: 'fire',
+    lore: 'A coal that never goes out, taken from the bottom of an old dragon’s forge.',
+    property: 'Hot and restless. Gives energy, speeds things up and makes whatever it touches stronger.',
+    helps: 'Lack of strength and breath, forges and stubborn flames, winds that need a spark. In a double dose, it warms you to the bottom of your chest.' },
+  planta: { quality: 'alive', name: 'Living Leaf', element: 'nature',
+    lore: 'A leaf that keeps growing after it is picked; it must be watered even inside the flask.',
+    property: 'Alive and regenerating. Closes, grows and strengthens.',
+    helps: 'Scrapes, worn-out muscles, skin that needs a protective bark. In a double dose, it grows and never stops.' },
+  cristal: { quality: 'hard', name: 'Crystal Dust', element: 'mineral',
+    lore: 'Quartz ground on the whetstone; it shines like sand under the noon sun.',
+    property: 'Hard and concentrated. Hardens, protects and makes light and heat more intense.',
+    helps: 'Sensitive skin, a light that never goes out, a fire that isn’t hot enough. Too hard to go into the cauldron twice.' },
+  sombra: { quality: 'dark', name: 'Bottled Shadow', element: 'darkness',
+    lore: 'A piece of moonless night, trapped with a cork and black wax.',
+    property: 'Dark and elusive. Hides, dims and fools the eyes.',
+    helps: 'Slipping by unseen, vanishing from sight, putting out bothersome lights. In a double dose, the darkness swallows itself.' },
+  luz: { quality: 'bright', name: 'Sun Dew', element: 'light',
+    lore: 'Drops of the first morning light, gathered from the petals of a sunflower.',
+    property: 'Bright and wakeful. Lights up, wakes up and clears.',
+    helps: 'Dark places, blurry eyes, waking up full of energy. Next to darkness, the sky turns strange. Too strong to go into the cauldron twice.' },
+  cogumelo: { quality: 'earthy', name: 'Blue Mushroom', element: 'fungus',
+    lore: 'It grows deep in damp caves and glows faintly when nobody is looking.',
+    property: 'Earthy and drowsy. Calms, puts you to sleep and releases spores.',
+    helps: 'Insomnia, weak soil, pranks that make everyone sneeze. In a double dose, sleep lasts a whole season.' },
+  vento: { quality: 'airy', name: 'Wind Feather', element: 'air',
+    lore: 'A feather from a bird that never lands; it floats all the way into the flask.',
+    property: 'Airy and swift. Spreads, lifts and carries the effect far away.',
+    helps: 'Idle windmills, things that need to spread through the air, vanishing without a trace. In a double dose, nobody falls, they only float.' },
+});
+
+// ---------- receitas: nome e pistas (as pistas na mesma ordem do português) ----------
+const RECIPES_EN = Object.freeze({
+  vapor: { name: 'Smoking Mist', clues: [
+    'I need a smoke screen to sneak out of my mother-in-law’s party.',
+    'I want to fill the stage with fog for my magic act.',
+    'The ghosts in the play need a really spooky mist.',
+    'I want to vanish into a warm cloud when the debt collector knocks.',
+  ] },
+  cura: { name: 'Healing Elixir', clues: [
+    'I fell off the roof fixing the chimney and scraped both knees.',
+    'My arm won’t stop hurting after a fight with a wild boar.',
+    'I cut my hand peeling potatoes for a hundred guests.',
+    'The miller’s goose pecked me and the wound won’t close.',
+  ] },
+  vigor: { name: 'Vigor Tonic', clues: [
+    'I have to plow the whole field before sunset and I can’t go on.',
+    'The village race is tomorrow and my legs feel like jelly.',
+    'I’ll be carrying sacks of wheat all day and my back already complains.',
+    'I’m dancing three nights in a row at the harvest feast and I need stamina.',
+  ] },
+  brilho: { name: 'Sparkling Essence', clues: [
+    'The mine where I work is too dark; I need something that shines without fire.',
+    'I want my cloak to glitter like the stars at the queen’s ball.',
+    'I dropped a ring down the well and I need a light that won’t go out underwater.',
+    'My boat comes in before dawn; I want a pocket lighthouse that twinkles.',
+  ] },
+  invisibilidade: { name: 'Invisible Veil', clues: [
+    'I need to get past the castle guards without anyone seeing me.',
+    'I want to spy on the rival team’s practice without anyone noticing.',
+    'I’m sneaking into the palace kitchen for a slice of pie, leaving no trace.',
+    'I wish not even my own mirror could find me, just for one afternoon.',
+  ] },
+  sono: { name: 'Sleep Tea', clues: [
+    'I haven’t slept in three nights: the neighbor’s rooster won’t let me.',
+    'My baby dragon won’t go to sleep no matter what.',
+    'The twins in the house cry all night long; I need some quiet.',
+    'I toss and turn in bed counting sheep until the sun comes up.',
+  ] },
+  chamaazul: { name: 'Blue Flame', clues: [
+    'My forge won’t get hot enough to melt this stubborn metal.',
+    'I need a fire that stays lit even in the rain.',
+    'I want a sapphire-colored flame for the temple ceremony.',
+    'The castle fireplace keeps going out in the north wind.',
+  ] },
+  raiz: { name: 'Rootskin', clues: [
+    'I’m crossing a field of thorns and my skin is sensitive.',
+    'The swamp mosquitoes won’t leave me alone.',
+    'I need skin as thick as tree bark to pick nettles.',
+    'I’m pruning the enchanted rosebush that bites anyone who gets close.',
+  ] },
+  amanhecer: { name: 'Dawn Drops', clues: [
+    'My eyes are so tired; everything looks blurry.',
+    'I need to wake up early and full of energy for the market.',
+    'I read so much by candlelight that the letters dance on the page.',
+    'My sight is cloudy and I can’t find the needle in my embroidery anymore.',
+  ] },
+  eclipse: { name: 'Liquid Eclipse', clues: [
+    'I want to darken the sky for a moment to impress the audience.',
+    'I need to put out the light in the wizard’s tower next door; it keeps me awake.',
+    'I want day to turn into night in the middle of the wedding, just for one magical moment.',
+    'I need a shadow so big it covers the whole square at noon.',
+  ] },
+  esporos: { name: 'Spore Cloud', clues: [
+    'My vegetable garden is weak; I want to spread good fungi all over the soil.',
+    'I want to play a prank and make the whole tavern sneeze.',
+    'The mushrooms in my cellar disappeared and I need to sow them all again.',
+    'I want a little cloud that makes the old miller sneeze until he laughs.',
+  ] },
+  tempestade: { name: 'Storm Spark', clues: [
+    'My windmill hasn’t turned in weeks; I need a good gale.',
+    'I want to scare the crows off the crops with thunder.',
+    'The ship is stuck at sea with no wind; I need a gust with a spark.',
+    'I want pocket thunder to wake up my brother, who sleeps way too much.',
+  ] },
+  chuva: { name: 'Bottled Rain', clues: [
+    'Not a single drop has fallen on my crops in two months.',
+    'The village well dried up and the cows are thirsty.',
+    'I want a cloud of my own to water the garden without carrying buckets.',
+    'The neighbor’s barn caught fire and needs a downpour, and fast!',
+  ] },
+  coracao: { name: 'Dragon Heart', clues: [
+    'I’m climbing the frozen mountain after the yeti and I don’t want to turn into an icicle.',
+    'Snow has blocked my door and I’m out of firewood; I need a warmth that comes from within.',
+    'I’m diving into the frozen lake to get back the ring that fell in.',
+    'My feet are always cold, even with three pairs of socks.',
+  ] },
+  broto: { name: 'Runaway Sprout', clues: [
+    'My beanstalk needs to reach the clouds by tomorrow.',
+    'The goats ate the castle hedge; I need it whole again before the ball.',
+    'I planted pumpkins for the harvest contest, and it’s in two days.',
+    'I want a vine that climbs all the way to the highest tower window.',
+  ] },
+  pluma: { name: 'Feather Feet', clues: [
+    'I have to climb down the mine’s ravine and I’m terrified of heights.',
+    'I want to jump off the bell tower at the patron saint’s feast and land like a leaf.',
+    'I want to walk on fluffy snow without sinking to my waist.',
+    'My cat climbed the tallest roof in the village and I’m going to get it.',
+  ] },
+  urso: { name: 'Bear’s Slumber', clues: [
+    'I hate the cold. I want to sleep until the whole winter is over.',
+    'The mountain dragon wakes up grumpy; I need it to sleep all season.',
+    'My pet bear forgot to hibernate and is wrecking the kitchen.',
+    'I’ll spend months on a ship and I’d like to sleep through the whole voyage, all at once.',
+  ] },
+  brisa: { name: 'Sea Breeze', clues: [
+    'I get seasick even in a little lake boat… and tomorrow I have to cross the sea.',
+    'Every time I get on the cart, my stomach turns somersaults.',
+    'I’m going to my grandparents’ island and I turn green just thinking about the waves.',
+    'The swaying of the ship’s hammock makes me dizzy all night.',
+  ] },
+  gelo: { name: 'Everlasting Ice', clues: [
+    'The cheese for the king’s banquet can’t spoil this summer.',
+    'I want ice cream at the wedding, and we’re in the middle of a heat wave.',
+    'The fish I caught needs to reach the capital’s market nice and fresh.',
+    'I need to freeze the village lake for the skating festival.',
+  ] },
+  fogofatuo: { name: 'Will-o’-the-Wisp', clues: [
+    'I want to scare the boys who steal my apples.',
+    'I need little ghost lights to throw off whoever is chasing me through the forest.',
+    'The village haunting night needs some really convincing lost souls.',
+    'I want the graveyard to glow so that nobody dares to go in.',
+  ] },
+  eco: { name: 'Crystal Echo', clues: [
+    'My voice doesn’t reach the back of the square on the day of the show.',
+    'I need to call the sheep that ran off to the other side of the valley.',
+    'I’m giving the harvest speech and nobody ever hears me.',
+    'I want to sing a serenade that can be heard from the top of the tower.',
+  ] },
+  seiva: { name: 'Golden Sap', clues: [
+    'My fifty-year-old roses are dying.',
+    'The old oak in the square dried up after the lightning; I want it green again.',
+    'The flowers in my bridal bouquet wilted the day before the wedding.',
+    'The monastery garden spent the winter without sun and it’s all yellow.',
+  ] },
+  arcoiris: { name: 'Pocket Rainbow', clues: [
+    'I want a rainbow for my sister’s birthday.',
+    'I promised the children they would see a rainbow today, and the sky is perfectly clear.',
+    'I want to color the sky right when the bride walks into the chapel.',
+    'They say there’s a pot of gold at the end of the rainbow. I want to check.',
+  ] },
+  espelho: { name: 'Black Mirror', clues: [
+    'Someone is deceiving me and I want to see who it is.',
+    'I feel there’s something hidden in my house, and I can’t find it.',
+    'I want to see what the tower wizard hides behind the curtain.',
+    'I need to find out which of my partners ran off with the coins from the chest.',
+  ] },
+});
+
+// ---------- falas dos clientes ----------
+const LINES_EN = Object.freeze({
+  'bruxa-ofelia': {
+    greet: [
+      'My herbs ran out, so I came knocking on your door.',
+      'Good afternoon, fellow cauldron-stirrer. Today my spell needs a boost.',
+      'Don’t tell the witches’ council I bought a ready-made potion, will you?',
+      'My cat ran off with the broom, so I walked here. Listen:',
+      'I smelled good alchemy from around the corner. I have a problem:',
+    ],
+    thanks: [
+      'Oh, I’m copying this recipe into my grimoire. Thank you!',
+      'Perfect. Not even I could do better, and I’ve been trying for a hundred years.',
+      'I’ll be back tomorrow with more orders, you can bet on it.',
+    ],
+    sad: ['Hmm, that smell isn’t what I asked for, dear.', 'Close! But a witch knows the right potion by its steam.'],
+    leave: ['That’s fine, I’ll improvise with toad and nettle myself.', 'I’ll come back when your shelves are fuller.'],
+  },
+  'cavaleiro-tadeu': {
+    greet: [
+      'Greetings! I come on an urgent quest.',
+      'For the honor of the realm, I need your help.',
+      'My armor creaks, but the problem is something else:',
+      'The king sent me here with a list. Well, with a request:',
+      'Good afternoon! I promise not to track road mud on your floor.',
+    ],
+    thanks: [
+      'May the bards sing of your apothecary!',
+      'Quest complete, thanks to you.',
+      'I owe you one, apothecary. On my word as a knight.',
+    ],
+    sad: ['With all due respect, this won’t serve my quest.', 'Hmm, I think there’s been a mix-up with the flask.'],
+    leave: ['I understand. A knight knows how to wait.', 'I’ll ride on without the potion, then. May luck be with me.'],
+  },
+  'fada-lumi': {
+    greet: [
+      'Hi, hi! I flew all the way here!',
+      'Psst! I came in through the window, sorry about the fairy dust.',
+      'The queen of the flowers sent me. I have a teeny-tiny request:',
+      'What a lovely shop! It shines almost as much as I do. Look:',
+      'I brought you some dew as a gift. And a request:',
+    ],
+    thanks: ['Yay! I’m telling every flower in the woods!', 'How pretty! It shines just the way I wanted.', 'You’re truly magical!'],
+    sad: ['Oh… that’s not quite it. But I’ll explain again!', 'This flask doesn’t shine the right way.'],
+    leave: ['That’s okay, I’ll fly back another day!', 'Oh, too bad. But your shop is still lovely.'],
+  },
+  'anao-baltazar': {
+    greet: [
+      'Bah! Came straight from the mine, didn’t even wash my hands.',
+      'I came down the mountain just for this, so make it worth it.',
+      'I’ve got gold, I’ve got no time and I’ve got a problem.',
+      'My cousins said the service here is good. Let’s see:',
+      'No beating around the bush, my pickaxe is waiting:',
+    ],
+    thanks: ['Ha! That’s a master’s work.', 'Worth every nugget. Until next time!', 'I’ll recommend this place to the whole clan.'],
+    sad: ['Bah! This isn’t even good for greasing a mine cart.', 'You missed the vein, apothecary. Listen again:'],
+    leave: ['Humph. I’ll be back when you have what I need.', 'I’ll try the other mountain, then.'],
+  },
+  'bardo-cirilo': {
+    greet: [
+      'O apothecary, hear my song… I mean, my request!',
+      'I composed a ballad about your shop. But first:',
+      'La-la-la! What wonderful acoustics this shop has. Well:',
+      'Every good story starts with a problem. Mine is this:',
+      'I’m back from a tavern tour and I need rescuing.',
+    ],
+    thanks: ['I’ll write three verses about this potion!', 'Bravo! What a happy ending for my story.', 'My audience will love it. Thank you!'],
+    sad: ['Off-key! That wasn’t the right note.', 'Hmm, this potion doesn’t rhyme with my problem.'],
+    leave: ['A sad ballad, but I’ll keep singing.', 'We’ll leave it for the next verse, then.'],
+  },
+  'vovo-quiteria': {
+    greet: [
+      'Oh, my knees… let me tell you what I need.',
+      'I brought you some cornbread, dear. And a request:',
+      'In my day we did all this with tea. But here we go:',
+      'My grandson says you’re very clever. So help me out:',
+      'Sit here a minute and listen to Granny:',
+    ],
+    thanks: ['Bless you, my dear.', 'Such golden hands! I’ll bring more cake.', 'This reminds me of my mother’s apothecary. Thank you!'],
+    sad: ['Oh, dear, I think you got mixed up.', 'Not that one, no. Granny will explain slowly:'],
+    leave: ['That’s all right, Granny will come back tomorrow.', 'No harm done, I’ll make do with a cup of tea.'],
+  },
+  'elfo-anselmo': {
+    greet: [
+      'Greetings beneath the light of dusk.',
+      'The trees whispered the name of your apothecary.',
+      'I traveled three moons to get here. Listen:',
+      'Forgive me for visiting unannounced. It is urgent:',
+      'Such a pure scent of herbs. Perhaps you can help me.',
+    ],
+    thanks: ['The stars smile upon your work.', 'Perfect as the first leaf of spring.', 'My people will remember this favor.'],
+    sad: ['This essence does not speak to my problem.', 'A lovely potion, but not the one I seek.'],
+    leave: ['The time of elves is long. I shall return.', 'I go on my way. May your herbs flourish.'],
+  },
+  'pirata-dorotea': {
+    greet: [
+      'Arr! I dropped anchor here for a good reason.',
+      'I left the parrot on the ship so it wouldn’t steal anything. Listen:',
+      'I’ve got coins from three kingdoms and a problem from just one:',
+      'The tide is rising, so talk fast and help me out:',
+      'Ahoy, apothecary! The sea brought me to your door.',
+    ],
+    thanks: ['Arr! That’s worth a treasure chest!', 'I’ll tell the whole crew.', 'Fair winds to you, apothecary!'],
+    sad: ['Arr, this is bilge water!', 'Wrong heading, sailor. Listen again:'],
+    leave: ['I’ll look in another port, then.', 'The tide waits for no one. Until the next voyage!'],
+  },
+  'gato-falante': {
+    greet: [
+      'Meow. Yes, I talk. Now, down to business:',
+      'Don’t look at me like that, cats have problems too.',
+      'I knocked three flasks off your shelf just to get attention. Listen:',
+      'I pay in fish or in coins, your choice. I need this:',
+      'Meow. I’ll be brief, I have a nap scheduled.',
+    ],
+    thanks: ['Purr. Acceptable. Very acceptable.', 'You have earned my feline respect.', 'I shall sleep on your counter out of gratitude.'],
+    sad: ['Meow?! That’s not even close to what I asked for.', 'Wrong. I’ll knock over another flask in protest.'],
+    leave: ['Humph. Cats know how to wait. Or sleep.', 'I’ll be back tomorrow. Maybe. If I feel like it.'],
+  },
+});
+
+const NOVEL_HINTS_EN = Object.freeze([
+  'They say nobody in the village knows how to make this yet.',
+  'I know it’s something new, but I pay well for novelty.',
+  'I don’t think it’s even in the books. Are you up for inventing it?',
+]);
+
+const MERCHANT_LINES_EN = Object.freeze([
+  'End of the workday! I brought fresh ingredients from the road.',
+  'Good evening, apothecary. The cart came in full today.',
+  'I know it’s been a long day. How about restocking for tomorrow?',
+  'Herbs, crystals, bottled shadows… take your pick.',
+  'I made it before the rain! What will you take today?',
+]);
+
+const IMPATIENT_LINES_EN = Object.freeze([
+  'I waited as long as I could. Maybe I’ll come back another day.',
+  'The candle went out and so did my patience. Good day!',
+  'I have better things to do than wait at the counter.',
+  'I’ll try the market in the next town. Goodbye!',
+  'Not a single little flask in all this time? What a shame.',
+]);
+
+const HURRY_LINES_EN = Object.freeze([
+  'Is this going to take long?',
+  'Hmm… the sun is already going down.',
+  '(drums fingers on the counter)',
+  'I’m in a bit of a hurry, you know?',
+]);
+
+const MERCHANT_HURRY_LINES_EN = Object.freeze([
+  'The road to the next village is long… are you buying anything?',
+  'The donkeys are getting restless. Make up your mind, apothecary!',
+  'I’ll be closing the stall soon, you know?',
+]);
+
+const MERCHANT_BYE_LINES_EN = Object.freeze([
+  'Well, the road is calling. See you tomorrow night!',
+  'I’m closing the stall for today. I’ll come by again tomorrow!',
+  'I can’t wait any longer: I have a delivery up in the hills. See you tomorrow!',
+]);
+
+// Fim da demo: a Mestra Benvinda escreve do mar. `r` = demoSummary(state).
+function demoLetterEN(r) {
+  const all = r.found >= r.total;
+  return {
+    greeting: 'My dear,',
+    paragraphs: [
+      all
+        ? `Zuleica came by with her cart and told me: all ${r.total} pages of the notebook are already written. It took me a whole winter. It took you ${r.day} days.`
+        : `Zuleica came by with her cart and told me you’ve already written ${r.found} of the ${r.total} recipes in ${r.day} days. With no one to teach you, just the cauldron and the herbarium.`,
+      'Granny Quitéria keeps telling everyone in the square that her hand healed faster than with my potions. I felt jealous and proud, in that order.',
+      'The sea is bigger than I thought, and the sand smells of things that don’t have a name yet. I think the notebook will still need many more pages.',
+      'Take care of the cauldron. I’ll write again soon.',
+    ],
+    signature: 'Benvinda',
+  };
+}
+
+// ---------- história e tutorial ----------
+const MENTOR_EN = Object.freeze({ name: 'Mistress Benvinda', village: 'Crooked Hill' });
+
+const STORY_PAGES_EN = Object.freeze({
+  chegada: {
+    kicker: 'Crooked Hill, forty winters ago',
+    title: 'It all fit in a pocket',
+    text: [
+      'A wandering alchemist named Benvinda arrived in the village with everything she owned in her coat pocket: a cauldron the size of a teacup, eight little flasks and a bundle of herbs.',
+      'She cured the miller’s son of his fever right there in the square. After that, the village never let her leave.',
+    ],
+  },
+  botica: {
+    kicker: 'Between the bakery and the old wall',
+    title: 'The smallest apothecary in the village',
+    text: [
+      'The only empty spot was a narrow nook where brooms used to be kept. Benvinda hung a crooked sign on the door and wrote: Alquimia de Bolso, “Pocket Alchemy”.',
+      'For forty years, all sorts came to the counter: witches out of herbs, knights on quests, dwarves from the mine, fairies through the window and even a cat that talks.',
+    ],
+  },
+  caderno: {
+    kicker: 'A written recipe is a forgotten recipe',
+    title: 'The blank notebook',
+    text: [
+      'The Mistress knew the twelve potions by heart and never wrote a single one down. She used to say the hand only learns when it makes mistakes.',
+      'For her apprentices, she left a notebook with twelve empty pages. Only in the last leaves, the herbarium, did she write down everything about the eight ingredients: where they come from, what they do and what they are good for.',
+    ],
+  },
+  partida: {
+    kicker: 'Last autumn',
+    title: 'The key changes hands',
+    text: [
+      'Benvinda decided she was too old for the counter and left to see the sea, which she had never seen.',
+      'Before leaving, she gave the key to the apothecary to an apprentice. To you.',
+    ],
+  },
+});
+
+const LETTER_EN = Object.freeze({
+  greeting: 'My dear,',
+  paragraphs: [
+    'The apothecary is yours now. I left no recipes at all, on purpose. You’ll discover the twelve the way I did: by putting two things together and paying attention to what comes out of the cauldron.',
+    'There will be sludge. Lots of sludge. Sludge is every apprentice’s first work, and it’s still worth a coin.',
+    'Listen to the customers. Nobody knows the name of the potion they want, but everyone can tell you the problem they have. The problem is the clue. When you don’t know where to start, turn the notebook over and read the herbarium.',
+    'I left three flasks of each ingredient and forty coins. In the late afternoon, Zuleica comes by with her cart. Buy from her and tell her I sent you.',
+    'Take care of the cauldron. It’s older than both of us.',
+  ],
+  signature: 'Benvinda',
+});
+
+const TUTORIAL_NOTES_EN = Object.freeze({
+  balcao: {
+    title: 'The first customer',
+    text: 'This is Granny Quitéria, the apothecary’s oldest customer. Notice: she doesn’t say the name of the potion, she only tells you the problem. A cut hand calls for something that closes the wound.',
+    action: 'Got it',
+  },
+  livro: {
+    title: 'Read before you mix',
+    text: 'Tap the Book ribbon up top, or drag the screen down. That’s where the recipes and my herbarium are kept.',
+  },
+  herbario: {
+    title: 'The herbarium',
+    text: 'The recipe pages are empty, I know. Open the Ingredients tab: each one has a quality and says what it helps with.',
+  },
+  ler: {
+    title: 'Moist with alive',
+    text: 'For a wound, combine what is moist with what is alive: the Moon Drop carries the effect into the body and the Living Leaf closes and makes things grow. Now close the book.',
+    action: 'Close the book',
+  },
+  caldeirao: {
+    title: 'The cauldron',
+    text: 'Tap the cauldron, or Mix in the cauldron, to open the workbench.',
+  },
+  misturar: {
+    title: 'Two cards, one mixture',
+    text: 'Tap the Moon Drop and the Living Leaf to put both in the cauldron. Then tap Mix.',
+  },
+  lodo: {
+    title: 'Sludge!',
+    text: 'See? Sludge is every apprentice’s first work, and it’s still worth a coin on the shelf. Now try the Moon Drop with the Living Leaf.',
+  },
+  outra: {
+    title: 'A new page',
+    text: 'You discovered a recipe, and it’s in the notebook forever. But it’s not what Granny needs: try the Moon Drop with the Living Leaf.',
+  },
+  descoberta: {
+    title: 'The first page',
+    text: 'The Healing Elixir is in the notebook, and now it’s on the shelf. Go back to the counter and hand the flask to Granny.',
+    action: 'Back to the counter',
+  },
+  entregar: {
+    title: 'Hand over the flask',
+    text: 'Tap Give potion and choose the Healing Elixir.',
+  },
+  sozinha: {
+    title: 'Now it’s up to you',
+    text: 'The other customers of the day are in line, with no notes from me. Ingredients can’t be bought during the day: if you run out, you can send the customer away, but the apothecary’s fame drops a little.',
+    action: 'Leave it to me',
+  },
+  zuleica: {
+    title: 'Zuleica has arrived',
+    text: 'She’s been my supplier for thirty years. She only sells at the end of the day, so buy with tomorrow’s orders in mind.',
+    quote: 'So you’re Benvinda’s apprentice. She always paid on time. Let’s see about you.',
+  },
+  banca: {
+    title: 'Buy carefully',
+    text: 'Each flask costs 4 or 5 coins. Save some coins for tools too, like the lens, which help you discover recipes.',
+    action: 'Got it',
+  },
+  amanha: {
+    title: 'When you’re ready',
+    text: 'Tap Open the shop to start day 2. More people come tomorrow.',
+  },
+});
+
+const TUTORIAL_END_EN = Object.freeze({
+  title: 'The first day is over',
+  text: 'From now on, I won’t leave any more notes. The apothecary is truly yours.',
+  tips: [
+    'Read the customer’s problem and look in the herbarium for the ingredient that helps.',
+    'Sludge is worth a coin. Every mistake is written down, and the cauldron warns you before you repeat it.',
+    'The candle, among the tools, gives a free hint every now and then.',
+    'More customers come each day. Discover the twelve recipes to complete the notebook.',
+  ],
+  action: 'Open the shop',
+});
+
+return { INGREDIENTS_EN, RECIPES_EN, LINES_EN, NOVEL_HINTS_EN, MERCHANT_LINES_EN, IMPATIENT_LINES_EN, HURRY_LINES_EN, MERCHANT_HURRY_LINES_EN, MERCHANT_BYE_LINES_EN, demoLetterEN, MENTOR_EN, STORY_PAGES_EN, LETTER_EN, TUTORIAL_NOTES_EN, TUTORIAL_END_EN };
+})();
+})();
+</script>
+<script>window.__carga && __carga.etapa(0.57);</script>
 <script>
 (() => {
 'use strict';
@@ -2888,6 +3495,9 @@ const __mods = window.__alquimiaMods;
 // ---- src/data.js ----
 __mods.data = (() => {
 // Dados estáticos do jogo Alquimia de Bolso (sem DOM).
+// v1.30: textos em inglês em en.js (dados longos) ou em L('pt', 'en') aqui mesmo (textos curtos).
+const { EN, L } = __mods.idioma;
+const { INGREDIENTS_EN, RECIPES_EN } = __mods.en;
 
 // v1.28 — edição do jogo. A demo (index.html define globalThis.ALQUIMIA_EDICAO = 'demo') tem as
 // 12 receitas originais, 4 por categoria, e termina no fechamento do dia 5. Sem a marca, é a edição
@@ -2900,7 +3510,7 @@ const DEMO_RECIPES = Object.freeze([
   'vapor', 'invisibilidade', 'eclipse', 'esporos', // travessura
 ]);
 // Na demo não há doses duplas: tira das fichas a frase que fala delas.
-const demoText = (t) => (IS_DEMO ? t.replace(/ Em dose dupla[^.]*\./g, '') : t);
+const demoText = (t) => (IS_DEMO ? t.replace(/ Em dose dupla[^.]*\./g, '').replace(/ In a double dose[^.]*\./g, '') : t);
 
 const INGREDIENTS = Object.freeze([
   { id: 'agua', quality: 'úmido', name: 'Gota Lunar', cost: 4, element: 'água', icon: '💧',
@@ -2935,7 +3545,7 @@ const INGREDIENTS = Object.freeze([
     lore: 'Pena de um pássaro que nunca pousa; flutua até dentro do frasco.',
     property: 'Leve e veloz. Espalha, levanta e carrega o efeito para longe.',
     helps: 'Moinhos parados, coisas que precisam se espalhar pelo ar, sumir sem deixar rastro. Em dose dupla, ninguém cai, só flutua.' },
-].map((i) => Object.freeze({ ...i, helps: demoText(i.helps) })));
+].map((i) => (EN ? { ...i, ...INGREDIENTS_EN[i.id] } : i)).map((i) => Object.freeze({ ...i, helps: demoText(i.helps) })));
 
 // Ordem a/b exatamente como escrita no GDD (a dica revela `a`).
 const ALL_RECIPES = Object.freeze([
@@ -3110,7 +3720,7 @@ const ALL_RECIPES = Object.freeze([
       "Quero ver o que o mago da torre esconde atrás da cortina.",
       "Preciso descobrir qual dos meus sócios sumiu com as moedas do baú.",
     ] },
-].map(Object.freeze));
+].map((r) => Object.freeze(EN ? { ...r, ...RECIPES_EN[r.id] } : r)));
 
 const RECIPES = IS_DEMO
   ? Object.freeze(ALL_RECIPES.filter((r) => DEMO_RECIPES.includes(r.id)))
@@ -3118,53 +3728,58 @@ const RECIPES = IS_DEMO
 
 // Categorias do Livro de Receitas.
 const CATEGORIES = Object.freeze([
-  { id: 'cura', name: 'Cura', icon: '🩹' },
-  { id: 'protecao', name: 'Proteção', icon: '🛡️' },
-  { id: 'travessura', name: 'Travessura', icon: '🎭' },
+  { id: 'cura', name: L('Cura', 'Healing'), icon: '🩹' },
+  { id: 'protecao', name: L('Proteção', 'Protection'), icon: '🛡️' },
+  { id: 'travessura', name: L('Travessura', 'Mischief'), icon: '🎭' },
 ].map(Object.freeze));
 
-const SLUDGE = Object.freeze({ id: 'lodo', name: 'Lodo Instável', price: 1, rarity: 'falha', icon: '🟤' });
+const SLUDGE = Object.freeze({ id: 'lodo', name: L('Lodo Instável', 'Unstable Sludge'), price: 1, rarity: 'falha', icon: '🟤' });
 
 const UPGRADES = Object.freeze([
   {
-    id: 'caldeirao', name: 'Caldeirão Eficiente', cost: 40, icon: '⚗️',
-    description: 'Cobre bem batido: em 1 de cada 5 misturas, os dois ingredientes voltam inteiros para a prateleira.',
+    id: 'caldeirao', name: L('Caldeirão Eficiente', 'Efficient Cauldron'), cost: 40, icon: '⚗️',
+    description: L('Cobre bem batido: em 1 de cada 5 misturas, os dois ingredientes voltam inteiros para a prateleira.',
+      'Well-hammered copper: in 1 of every 5 mixtures, both ingredients go back to the shelf untouched.'),
   },
   {
-    id: 'mercador', name: 'Marca do Mercador', cost: 90, icon: '🪙',
-    description: 'Um selo de confiança no balcão: +25% no preço das poções e nos pagamentos dos bilhetes (arredondado para baixo). O Lodo continua valendo 1.',
+    id: 'mercador', name: L('Marca do Mercador', 'Merchant’s Mark'), cost: 90, icon: '🪙',
+    description: L('Um selo de confiança no balcão: +25% no preço das poções e nos pagamentos dos bilhetes (arredondado para baixo). O Lodo continua valendo 1.',
+      'A seal of trust on the counter: +25% on potion prices and order payments (rounded down). Sludge is still worth 1.'),
   },
   {
-    id: 'lupa', name: 'Lupa Arcana', cost: 30, icon: '🔍',
-    description: 'Lente de latão para ler entrelinhas: por 5 moedas, revela um ingrediente de uma poção ainda fora do caderno.',
+    id: 'lupa', name: L('Lupa Arcana', 'Arcane Lens'), cost: 30, icon: '🔍',
+    description: L('Lente de latão para ler entrelinhas: por 5 moedas, revela um ingrediente de uma poção ainda fora do caderno.',
+      'A brass lens for reading between the lines: for 5 coins, it reveals one ingredient of a potion not yet in the notebook.'),
   },
   {
-    id: 'estufa', name: 'Estufa de Ervas', cost: 150, icon: '🪴',
-    description: 'Um canteiro de vidro nos fundos: toda manhã aparecem 1 Gota Lunar, 1 Folha Viva e 1 Cogumelo Azul na prateleira, de graça.',
+    id: 'estufa', name: L('Estufa de Ervas', 'Herb Greenhouse'), cost: 150, icon: '🪴',
+    description: L('Um canteiro de vidro nos fundos: toda manhã aparecem 1 Gota Lunar, 1 Folha Viva e 1 Cogumelo Azul na prateleira, de graça.',
+      'A glass garden out back: every morning 1 Moon Drop, 1 Living Leaf and 1 Blue Mushroom appear on the shelf, for free.'),
   },
   {
-    id: 'alambique', name: 'Alambique Duplo', cost: 240, icon: '⚗️',
-    description: 'Dois bicos de cobre: em 1 de cada 3 misturas de uma receita que já está no caderno, saem dois frascos em vez de um.',
+    id: 'alambique', name: L('Alambique Duplo', 'Double Still'), cost: 240, icon: '⚗️',
+    description: L('Dois bicos de cobre: em 1 de cada 3 misturas de uma receita que já está no caderno, saem dois frascos em vez de um.',
+      'Two copper spouts: in 1 of every 3 mixtures of a recipe already in the notebook, you get two flasks instead of one.'),
   },
 ].map(Object.freeze));
 
 // v1.15 — cada freguês tem a sua paciência (multiplica a do dia) e um jeito de esperar.
 const CUSTOMERS = Object.freeze([
-  { id: 'bruxa-ofelia', name: 'Bruxa Ofélia', icon: '🧙‍♀️', patience: 1, temper: 'Espera o tempo de um feitiço' },
-  { id: 'cavaleiro-tadeu', name: 'Cavaleiro Tadeu', icon: '🛡️', patience: 0.8, temper: 'Está em missão urgente' },
-  { id: 'fada-lumi', name: 'Fada Lumi', icon: '🧚', patience: 0.85, temper: 'Não para quieta no balcão' },
-  { id: 'anao-baltazar', name: 'Anão Baltazar', icon: '⛏️', patience: 1, temper: 'Teimoso, mas espera' },
-  { id: 'bardo-cirilo', name: 'Bardo Cirilo', icon: '🎻', patience: 0.9, temper: 'Tem show daqui a pouco' },
-  { id: 'vovo-quiteria', name: 'Vovó Quitéria', icon: '👵', patience: 1.3, temper: 'Tem todo o tempo do mundo' },
-  { id: 'elfo-anselmo', name: 'Elfo Anselmo', icon: '🧝', patience: 1.2, temper: 'Vive séculos, sabe esperar' },
-  { id: 'pirata-dorotea', name: 'Pirata Dorotéia', icon: '🏴‍☠️', patience: 0.75, temper: 'A maré não espera' },
-  { id: 'gato-falante', name: 'Gato Falante Bartolomeu', icon: '🐈', patience: 1.2, temper: 'Gatos sabem esperar (ou dormir)' },
+  { id: 'bruxa-ofelia', name: L('Bruxa Ofélia', 'Ofélia the Witch'), icon: '🧙‍♀️', patience: 1, temper: L('Espera o tempo de um feitiço', 'Waits as long as a spell takes') },
+  { id: 'cavaleiro-tadeu', name: L('Cavaleiro Tadeu', 'Sir Tadeu the Knight'), icon: '🛡️', patience: 0.8, temper: L('Está em missão urgente', 'On an urgent quest') },
+  { id: 'fada-lumi', name: L('Fada Lumi', 'Lumi the Fairy'), icon: '🧚', patience: 0.85, temper: L('Não para quieta no balcão', 'Can’t sit still at the counter') },
+  { id: 'anao-baltazar', name: L('Anão Baltazar', 'Baltazar the Dwarf'), icon: '⛏️', patience: 1, temper: L('Teimoso, mas espera', 'Stubborn, but waits') },
+  { id: 'bardo-cirilo', name: L('Bardo Cirilo', 'Cirilo the Bard'), icon: '🎻', patience: 0.9, temper: L('Tem show daqui a pouco', 'Has a show soon') },
+  { id: 'vovo-quiteria', name: L('Vovó Quitéria', 'Granny Quitéria'), icon: '👵', patience: 1.3, temper: L('Tem todo o tempo do mundo', 'Has all the time in the world') },
+  { id: 'elfo-anselmo', name: L('Elfo Anselmo', 'Anselmo the Elf'), icon: '🧝', patience: 1.2, temper: L('Vive séculos, sabe esperar', 'Lives for centuries, knows how to wait') },
+  { id: 'pirata-dorotea', name: L('Pirata Dorotéia', 'Dorotéia the Pirate'), icon: '🏴‍☠️', patience: 0.75, temper: L('A maré não espera', 'The tide waits for no one') },
+  { id: 'gato-falante', name: L('Gato Falante Bartolomeu', 'Bartolomeu the Talking Cat'), icon: '🐈', patience: 1.2, temper: L('Gatos sabem esperar (ou dormir)', 'Cats know how to wait (or sleep)') },
 ].map(Object.freeze));
 
 // A mercadora não é freguesa: ela abre a banca de ingredientes no fim de cada dia.
-const MERCHANT = Object.freeze({ id: 'mercadora-zuleica', name: 'Mercadora Zuleica' });
+const MERCHANT = Object.freeze({ id: 'mercadora-zuleica', name: L('Mercadora Zuleica', 'Zuleica the Merchant') });
 // v1.27 — o dono do prédio da botica, que vem cobrar o aluguel atrasado
-const LANDLORD = Object.freeze({ id: 'senhorio-leopoldo', name: 'Seu Leopoldo, o senhorio' });
+const LANDLORD = Object.freeze({ id: 'senhorio-leopoldo', name: L('Seu Leopoldo, o senhorio', 'Mr. Leopoldo, the landlord') });
 
 const CONFIG = Object.freeze({
   START_COINS: 40,
@@ -3231,10 +3846,10 @@ const CONFIG = Object.freeze({
 
 // v1.14 — fama em faixas: cada faixa paga um extra por pedido e deixa a freguesia mais paciente.
 const FAME_TIERS = Object.freeze([
-  { min: 0, name: 'Botica nova', coins: 0, patience: 0 },
-  { min: 10, name: 'Conhecida na ladeira', coins: 1, patience: 0 },
-  { min: 25, name: 'Falada na vila', coins: 2, patience: 0.1 },
-  { min: 50, name: 'Famosa no reino', coins: 3, patience: 0.2 },
+  { min: 0, name: L('Botica nova', 'New apothecary'), coins: 0, patience: 0 },
+  { min: 10, name: L('Conhecida na ladeira', 'Known on the hill'), coins: 1, patience: 0 },
+  { min: 25, name: L('Falada na vila', 'Talk of the village'), coins: 2, patience: 0.1 },
+  { min: 50, name: L('Famosa no reino', 'Famous in the realm'), coins: 3, patience: 0.2 },
 ].map(Object.freeze));
 
 function fameTier(reputation) {
@@ -3255,7 +3870,7 @@ function patienceForDay(day) {
 }
 
 // Dicas: aparecem uma vez na tela e ficam guardadas na aba "Anotações" do livro.
-const TIPS = Object.freeze([
+const TIPS_PT = Object.freeze([
   { id: 'livro', title: 'O livro', text: 'Puxe a fita azul para baixo, ou toque nela, para abrir o livro: receitas, ingredientes e estas anotações.' },
   { id: 'pistas', title: 'Pistas do cliente', text: 'O cliente conta o problema, não o nome da poção. Procure no livro o ingrediente que ajuda naquilo.' },
   { id: 'mandar-embora', title: 'Mandar embora', text: 'Sem ingrediente ou sem ideia? Mandar o cliente embora custa 1 de fama e libera o balcão para o próximo.' },
@@ -3272,6 +3887,26 @@ const TIPS = Object.freeze([
   { id: 'fama', title: 'Fama', text: 'Fama alta paga um extra em cada pedido e deixa a freguesia mais paciente. Um dia sem ninguém indo embora sem poção vale bônus e +1 de fama.' },
   { id: 'dica-gratis', title: 'Dica grátis', text: 'Nos utensílios, a vela dá uma dica grátis de tempos em tempos. A Lupa Arcana vende dicas a qualquer hora.' },
 ].map(Object.freeze));
+
+const TIPS_EN = Object.freeze([
+  { id: 'livro', title: 'The book', text: 'Pull the blue ribbon down, or tap it, to open the book: recipes, ingredients and these notes.' },
+  { id: 'pistas', title: 'Customer clues', text: 'Customers describe their problem, not the name of the potion. Look in the book for the ingredient that helps with it.' },
+  { id: 'mandar-embora', title: 'Sending away', text: 'Out of ingredients or ideas? Sending a customer away costs 1 fame and frees the counter for the next one.' },
+  { id: 'prateleira-vazia', title: 'Empty shelf', text: 'To hand something over, brew the potion in the cauldron first. If you are missing an ingredient, the merchant only comes at night.' },
+  { id: 'erro-revela', title: 'Wrong flask', text: 'A wrong guess doesn’t use up the potion, but it costs 1 fame. After 2 misses, the customer tells you the name of the potion.' },
+  { id: 'receita-nova', title: 'New recipe', text: 'Orders with the "New recipe" stamp pay a bonus and give more XP. Read the clues and experiment in the cauldron.' },
+  { id: 'cartas', title: 'Ingredient cards', text: 'Tap a card to put it in the cauldron.' + (IS_DEMO ? '' : ' You can use the same card twice.') },
+  { id: 'misturar', title: 'Mixing', text: 'With two cards in the cauldron, tap Mix. A wrong pair turns into Sludge: it’s worth 1 coin (the merchant pays 3 at night) and stays in the grimoire so you don’t repeat it.' + (IS_DEMO ? '' : ' Some ingredients can go into the cauldron twice.') },
+  { id: 'propriedades', title: 'Properties', text: 'Combine two properties that match the customer’s problem.' },
+  { id: 'mercadora', title: 'The merchant', text: 'Ingredients can only be bought at night, from the merchant. Buy with the next day’s customers in mind. She waits about 4 minutes (the clock stops while her stall is open) and then travels on until the next night. She also takes up to 3 Sludges a night, at 3 coins each.' },
+  { id: 'despesas', title: 'Rent', text: 'From day 2 on, the apothecary pays 15 coins of rent when the day closes. If your purse falls short, the rest goes on the landlord’s tab. Three closings in a row in debt and he comes to collect: if you can’t pay, the apothecary closes.' },
+  { id: 'paciencia', title: 'Customers in a hurry', text: 'From day 3 on, the lit candle on the counter shows the customer’s patience. Serving them with more than half the candle left earns a tip; if it goes out, the customer leaves (−2 fame). Those waiting in line tire more slowly.' },
+  { id: 'preparar-antes', title: 'Spare flasks', text: 'There’s no rush at night: brew the potions you already know and leave them on the shelf. That way you’ll have time for the new recipes.' },
+  { id: 'fama', title: 'Fame', text: 'High fame pays extra on every order and makes customers more patient. A day with nobody leaving without a potion earns a bonus and +1 fame.' },
+  { id: 'dica-gratis', title: 'Free hint', text: 'Among the tools, the candle gives a free hint every so often. The Arcane Lens sells hints at any time.' },
+].map(Object.freeze));
+
+const TIPS = EN ? TIPS_EN : TIPS_PT;
 
 // Aluguel cobrado ao fechar o dia `day` (v1.27: valor fixo, o dia do tutorial é grátis).
 function upkeepForDay(day) {
@@ -3326,7 +3961,14 @@ __mods.dialogue = (() => {
 // saudações, agradecimentos, reações ao frasco errado e despedidas quando vai embora
 // sem poção. A escolha é estável por pedido (mesmo pedido, mesma fala), e varia entre pedidos.
 
-const LINES = Object.freeze({
+// v1.30: o inglês das falas fica em en.js; aqui embaixo cada lista escolhe o idioma.
+const { EN } = __mods.idioma;
+const {
+  LINES_EN, NOVEL_HINTS_EN, MERCHANT_LINES_EN, IMPATIENT_LINES_EN, HURRY_LINES_EN,
+  MERCHANT_HURRY_LINES_EN, MERCHANT_BYE_LINES_EN, demoLetterEN,
+} = __mods.en;
+
+const LINES_PT = Object.freeze({
   'bruxa-ofelia': {
     greet: [
       'Minhas ervas acabaram, então vim bater na sua porta.',
@@ -3446,14 +4088,14 @@ const LINES = Object.freeze({
 });
 
 // Abertura extra quando o pedido é de uma receita fora do caderno.
-const NOVEL_HINTS = Object.freeze([
+const NOVEL_HINTS_PT = Object.freeze([
   'Disseram que ninguém na vila sabe fazer isto ainda.',
   'Sei que é coisa nova, mas pago bem pela novidade.',
   'Acho que nem está nos livros. Você topa inventar?',
 ]);
 
 // A mercadora no fim do dia.
-const MERCHANT_LINES = Object.freeze([
+const MERCHANT_LINES_PT = Object.freeze([
   'Fim de expediente! Trouxe ingredientes frescos da estrada.',
   'Boa noite, boticária. A carroça chegou cheia hoje.',
   'Sei que o dia foi longo. Que tal reabastecer para amanhã?',
@@ -3480,7 +4122,7 @@ function pickLine(list, seed) {
 }
 
 // v1.14 — quando a vela da paciência apaga e o cliente vai embora sozinho.
-const IMPATIENT_LINES = Object.freeze([
+const IMPATIENT_LINES_PT = Object.freeze([
   'Esperei o quanto pude. Volto outro dia, quem sabe.',
   'A vela apagou e a minha paciência junto. Passar bem!',
   'Tenho mais o que fazer do que esperar no balcão.',
@@ -3489,7 +4131,7 @@ const IMPATIENT_LINES = Object.freeze([
 ]);
 
 // v1.14 — o cliente começa a se impacientar (menos de 1/4 da vela).
-const HURRY_LINES = Object.freeze([
+const HURRY_LINES_PT = Object.freeze([
   'Vai demorar muito?',
   'Hum… o sol já está baixando.',
   '(batuca os dedos no balcão)',
@@ -3497,19 +4139,19 @@ const HURRY_LINES = Object.freeze([
 ]);
 
 // v1.23 — a mercadora com pressa (último quarto da vela) e indo embora.
-const MERCHANT_HURRY_LINES = Object.freeze([
+const MERCHANT_HURRY_LINES_PT = Object.freeze([
   'A estrada até a próxima vila é longa… vai levar alguma coisa?',
   'Os burros já estão inquietos. Decide logo, boticária!',
   'Daqui a pouco eu fecho a banca, viu?',
 ]);
-const MERCHANT_BYE_LINES = Object.freeze([
+const MERCHANT_BYE_LINES_PT = Object.freeze([
   'Bom, a estrada me chama. Até amanhã à noite!',
   'Fecho a banca por hoje. Amanhã eu passo de novo!',
   'Não dá para esperar mais: tenho entrega na serra. Até amanhã!',
 ]);
 
 // v1.28 — fim da demo: a Mestra Benvinda escreve do mar. `r` = demoSummary(state).
-function demoLetter(r) {
+function demoLetterPT(r) {
   const all = r.found >= r.total;
   return {
     greeting: 'Minha querida,',
@@ -3525,7 +4167,17 @@ function demoLetter(r) {
   };
 }
 
-return { LINES, NOVEL_HINTS, MERCHANT_LINES, hashText, lineFor, pickLine, IMPATIENT_LINES, HURRY_LINES, MERCHANT_HURRY_LINES, MERCHANT_BYE_LINES, demoLetter };
+// v1.30 — listas no idioma do jogo
+const LINES = EN ? LINES_EN : LINES_PT;
+const NOVEL_HINTS = EN ? NOVEL_HINTS_EN : NOVEL_HINTS_PT;
+const MERCHANT_LINES = EN ? MERCHANT_LINES_EN : MERCHANT_LINES_PT;
+const IMPATIENT_LINES = EN ? IMPATIENT_LINES_EN : IMPATIENT_LINES_PT;
+const HURRY_LINES = EN ? HURRY_LINES_EN : HURRY_LINES_PT;
+const MERCHANT_HURRY_LINES = EN ? MERCHANT_HURRY_LINES_EN : MERCHANT_HURRY_LINES_PT;
+const MERCHANT_BYE_LINES = EN ? MERCHANT_BYE_LINES_EN : MERCHANT_BYE_LINES_PT;
+function demoLetter(r) { return EN ? demoLetterEN(r) : demoLetterPT(r); }
+
+return { hashText, lineFor, pickLine, LINES, NOVEL_HINTS, MERCHANT_LINES, IMPATIENT_LINES, HURRY_LINES, MERCHANT_HURRY_LINES, MERCHANT_BYE_LINES, demoLetter };
 })();
 })();
 </script>
@@ -3541,6 +4193,7 @@ const {
   INGREDIENTS, CONFIG, SLUDGE, customersForDay, fameTier,
   getIngredient, getRecipe, getItem, findRecipe, recipeKey,
 } = __mods.data;
+const { L } = __mods.idioma;
 
 function fail(state, code, message) {
   return { ok: false, state, error: { code, message } };
@@ -3651,18 +4304,18 @@ function canMix(state, a, b) {
   const ia = getIngredient(a);
   const ib = getIngredient(b);
   if (!ia || !ib) {
-    return { ok: false, error: { code: 'INVALID_ID', message: 'Esses ingredientes não constam no caderno.' } };
+    return { ok: false, error: { code: 'INVALID_ID', message: L('Esses ingredientes não constam no caderno.', 'Those ingredients are not in the notebook.') } };
   }
   const stock = (state && state.stock) || {};
   if (a === b) {
     if ((stock[a] || 0) < 2) {
-      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: `Falta ${ia.name} na prateleira: a receita pede 2 porções.` } };
+      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: L(`Falta ${ia.name} na prateleira: a receita pede 2 porções.`, `Not enough ${ia.name} on the shelf: the recipe needs 2 portions.`) } };
     }
     return { ok: true };
   }
   for (const ing of [ia, ib]) {
     if ((stock[ing.id] || 0) < 1) {
-      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: `Falta ${ing.name} na prateleira.` } };
+      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: L(`Falta ${ing.name} na prateleira.`, `No ${ing.name} left on the shelf.`) } };
     }
   }
   return { ok: true };
@@ -3707,10 +4360,10 @@ function mix(state, a, b, rng = Math.random) {
 
 function buyIngredient(state, ingredientId, qty = 1) {
   const ing = getIngredient(ingredientId);
-  if (!ing) return fail(state, 'INVALID_ID', 'O mercador não conhece esse ingrediente.');
-  if (!Number.isInteger(qty) || qty < 1) return fail(state, 'INVALID_ID', 'Quantidade inválida.');
+  if (!ing) return fail(state, 'INVALID_ID', L('O mercador não conhece esse ingrediente.', 'The merchant doesn’t know that ingredient.'));
+  if (!Number.isInteger(qty) || qty < 1) return fail(state, 'INVALID_ID', L('Quantidade inválida.', 'Invalid quantity.'));
   const cost = ing.cost * qty;
-  if (state.coins < cost) return fail(state, 'INSUFFICIENT_FUNDS', 'A bolsa não tem moedas para isso.');
+  if (state.coins < cost) return fail(state, 'INSUFFICIENT_FUNDS', L('A bolsa não tem moedas para isso.', 'Your purse doesn’t have enough coins for that.'));
   const next = structuredClone(state);
   next.coins -= cost;
   next.stock[ingredientId] = (next.stock[ingredientId] || 0) + qty;
@@ -3719,9 +4372,9 @@ function buyIngredient(state, ingredientId, qty = 1) {
 
 function sellItem(state, itemId) {
   const item = getItem(itemId);
-  if (!item) return fail(state, 'INVALID_ID', 'Esse frasco não está na prateleira.');
+  if (!item) return fail(state, 'INVALID_ID', L('Esse frasco não está na prateleira.', 'That flask is not on the shelf.'));
   if (!state.inventory || (state.inventory[itemId] || 0) < 1) {
-    return fail(state, 'NOT_IN_INVENTORY', `Não há ${item.name} na prateleira.`);
+    return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${item.name} na prateleira.`, `There is no ${item.name} on the shelf.`));
   }
   const price = sellPrice(state, itemId);
   const next = addCoins(state, price);
@@ -3766,6 +4419,7 @@ __mods.progression = (() => {
 // Funções puras: nunca modificam o estado recebido; sem DOM.
 const { IS_DEMO, CONFIG, RECIPES, INGREDIENTS, UPGRADES, CUSTOMERS, CATEGORIES, getRecipe, getIngredient, upkeepForDay, patienceForDay, fameTier } = __mods.data;
 const { orderReward, addCoins, buyIngredient, newDayPlan, sellPrice } = __mods.engine;
+const { L } = __mods.idioma;
 
 // ---------- utilitários internos ----------
 
@@ -3969,7 +4623,7 @@ function tickPatience(state, dtMs, counterId = null) {
 // O cliente cansou de esperar e foi embora: −2 de fama (mais do que mandar embora, que custa 1).
 function walkOutOrder(state, orderId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const next = structuredClone(state);
   ensurePlan(next);
   const order = finishOrder(next, index);
@@ -4051,15 +4705,15 @@ function finishOrder(next, index) {
 // Acertou: o cliente paga (com bônus se o pedido era inédito) e vai embora.
 function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const order = state.orders[index];
   const recipe = getRecipe(order.potionId);
-  if (!recipe) return fail(state, 'INVALID_ORDER', 'Esse pedido está confuso.');
+  if (!recipe) return fail(state, 'INVALID_ORDER', L('Esse pedido está confuso.', 'That order is confusing.'));
   if (givenPotionId !== undefined && givenPotionId !== order.potionId) {
     const given = getRecipe(givenPotionId);
-    if (!given) return fail(state, 'INVALID_ID', 'Essa poção não consta no caderno.');
+    if (!given) return fail(state, 'INVALID_ID', L('Essa poção não consta no caderno.', 'That potion is not in the notebook.'));
     if (!((state.inventory?.[givenPotionId] ?? 0) >= 1)) {
-      return fail(state, 'NOT_IN_INVENTORY', `Não há ${given.name} na prateleira.`);
+      return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${given.name} na prateleira.`, `There is no ${given.name} on the shelf.`));
     }
     const next = structuredClone(state);
     const o = next.orders[index];
@@ -4073,7 +4727,7 @@ function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
   }
   const have = state.inventory?.[order.potionId] ?? 0;
   if (!(have >= 1)) {
-    return fail(state, 'NOT_IN_INVENTORY', `Não há ${recipe.name} na prateleira. Prepare uma no caldeirão primeiro.`);
+    return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${recipe.name} na prateleira. Prepare uma no caldeirão primeiro.`, `There is no ${recipe.name} on the shelf. Brew one in the cauldron first.`));
   }
 
   const bonus = order.novel ? (CONFIG.NOVEL_BONUS ?? 0) : 0;
@@ -4102,7 +4756,7 @@ function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
 // Sem ingredientes (ou sem paciência): o cliente vai embora sem poção. Custa 1 de fama.
 function dismissOrder(state, orderId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const next = structuredClone(state);
   ensurePlan(next);
   const order = finishOrder(next, index);
@@ -4137,7 +4791,7 @@ function isDayOver(state) {
 // Fecha a loja: resumo do dia e a mercadora chega. Se a botica ficou sem como trabalhar
 // (quase sem ingredientes e sem moedas), a mercadora deixa um punhado fiado.
 function closeDay(state) {
-  if (!isDayOver(state)) return fail(state, 'DAY_NOT_OVER', 'Ainda há clientes para atender hoje.');
+  if (!isDayOver(state)) return fail(state, 'DAY_NOT_OVER', L('Ainda há clientes para atender hoje.', 'There are still customers to serve today.'));
   const next = structuredClone(state);
   next.phase = 'closed';
   next.merchantWait = 0;
@@ -4203,9 +4857,9 @@ function shelfValue(state) {
 
 // Paga a dívida inteira ao senhorio; ele vai embora e a mercadora chega.
 function payLandlord(state) {
-  if (!(state.debt > 0)) return fail(state, 'NO_DEBT', 'Não há aluguel atrasado.');
+  if (!(state.debt > 0)) return fail(state, 'NO_DEBT', L('Não há aluguel atrasado.', 'There is no overdue rent.'));
   if ((state.coins || 0) < state.debt) {
-    return fail(state, 'NOT_ENOUGH_COINS', `Faltam ${state.debt - (state.coins || 0)} moedas para quitar o aluguel.`);
+    return fail(state, 'NOT_ENOUGH_COINS', L(`Faltam ${state.debt - (state.coins || 0)} moedas para quitar o aluguel.`, `You need ${state.debt - (state.coins || 0)} more coins to pay off the rent.`));
   }
   const next = structuredClone(state);
   const paid = next.debt;
@@ -4221,7 +4875,7 @@ function payLandlord(state) {
 
 // Sem como pagar: o senhorio leva a chave e a botica fecha (fim de jogo).
 function evict(state) {
-  if (!state.landlord) return fail(state, 'NO_LANDLORD', 'O senhorio não está cobrando agora.');
+  if (!state.landlord) return fail(state, 'NO_LANDLORD', L('O senhorio não está cobrando agora.', 'The landlord isn’t collecting right now.'));
   const next = structuredClone(state);
   next.evicted = true;
   const stats = next.stats || {};
@@ -4308,10 +4962,10 @@ function tickMerchant(state, dtMs) {
 // A mercadora só vende no fim do dia (e enquanto não for embora).
 function buyFromMerchant(state, ingredientId, qty = 1) {
   if (state.phase === 'closed' && state.merchantGone) {
-    return fail(state, 'MERCHANT_GONE', 'A mercadora já seguiu viagem. Ela volta amanhã à noite.');
+    return fail(state, 'MERCHANT_GONE', L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.'));
   }
   if (!isMerchantHere(state)) {
-    return fail(state, 'MERCHANT_AWAY', 'A mercadora só abre a banca no fim do dia.');
+    return fail(state, 'MERCHANT_AWAY', L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.'));
   }
   return buyIngredient(state, ingredientId, qty);
 }
@@ -4326,11 +4980,11 @@ function merchantSludgeLeft(state) {
 
 function sellSludgeToMerchant(state) {
   if (state.phase === 'closed' && state.merchantGone) {
-    return fail(state, 'MERCHANT_GONE', 'A mercadora já seguiu viagem. Ela volta amanhã à noite.');
+    return fail(state, 'MERCHANT_GONE', L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.'));
   }
-  if (!isMerchantHere(state)) return fail(state, 'MERCHANT_AWAY', 'A mercadora só abre a banca no fim do dia.');
-  if (!((state.inventory || {}).lodo > 0)) return fail(state, 'NOT_IN_INVENTORY', 'Não há Lodo na prateleira.');
-  if (merchantSludgeLeft(state) < 1) return fail(state, 'MERCHANT_FULL', 'A carroça já está cheia de Lodo por hoje.');
+  if (!isMerchantHere(state)) return fail(state, 'MERCHANT_AWAY', L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.'));
+  if (!((state.inventory || {}).lodo > 0)) return fail(state, 'NOT_IN_INVENTORY', L('Não há Lodo na prateleira.', 'There is no Sludge on the shelf.'));
+  if (merchantSludgeLeft(state) < 1) return fail(state, 'MERCHANT_FULL', L('A carroça já está cheia de Lodo por hoje.', 'The cart is already full of Sludge for today.'));
   const price = CONFIG.MERCHANT_SLUDGE_PRICE ?? 3;
   const next = addCoins(state, price);
   next.inventory.lodo -= 1;
@@ -4342,10 +4996,10 @@ function sellSludgeToMerchant(state) {
 
 // Abre a loja no dia seguinte, com mais clientes.
 function startNextDay(state, rng = Math.random) {
-  if (state.phase !== 'closed') return fail(state, 'DAY_OPEN', 'A loja já está aberta.');
-  if (state.landlord) return fail(state, 'LANDLORD_HERE', 'O senhorio está no balcão esperando o aluguel.');
-  if (state.evicted) return fail(state, 'EVICTED', 'A botica fechou as portas.');
-  if (isDemoOver(state)) return fail(state, 'DEMO_OVER', 'A demo termina aqui: o caderno fecha no fim do dia ' + CONFIG.DEMO_LAST_DAY + '.');
+  if (state.phase !== 'closed') return fail(state, 'DAY_OPEN', L('A loja já está aberta.', 'The shop is already open.'));
+  if (state.landlord) return fail(state, 'LANDLORD_HERE', L('O senhorio está no balcão esperando o aluguel.', 'The landlord is at the counter waiting for the rent.'));
+  if (state.evicted) return fail(state, 'EVICTED', L('A botica fechou as portas.', 'The apothecary has closed its doors.'));
+  if (isDemoOver(state)) return fail(state, 'DEMO_OVER', L('A demo termina aqui: o caderno fecha no fim do dia ' + CONFIG.DEMO_LAST_DAY + '.', 'The demo ends here: the notebook closes at the end of day ' + CONFIG.DEMO_LAST_DAY + '.'));
   const next = structuredClone(state);
   next.day = (Number.isInteger(next.day) && next.day > 0 ? next.day : 1) + 1;
   next.phase = 'open';
@@ -4365,12 +5019,12 @@ function startNextDay(state, rng = Math.random) {
 
 function buyUpgrade(state, upgradeId) {
   const upgrade = UPGRADES.find((u) => u.id === upgradeId);
-  if (!upgrade) return fail(state, 'INVALID_ID', 'Esse utensílio não existe.');
+  if (!upgrade) return fail(state, 'INVALID_ID', L('Esse utensílio não existe.', 'That tool doesn’t exist.'));
   if (state.upgrades?.[upgradeId] === true) {
-    return fail(state, 'ALREADY_OWNED', `${upgrade.name} já está na sua botica.`);
+    return fail(state, 'ALREADY_OWNED', L(`${upgrade.name} já está na sua botica.`, `${upgrade.name} is already in your apothecary.`));
   }
   if (!(state.coins >= upgrade.cost)) {
-    return fail(state, 'INSUFFICIENT_FUNDS', `A bolsa não alcança: ${upgrade.name} custa ${upgrade.cost} moedas.`);
+    return fail(state, 'INSUFFICIENT_FUNDS', L(`A bolsa não alcança: ${upgrade.name} custa ${upgrade.cost} moedas.`, `Not enough coins: ${upgrade.name} costs ${upgrade.cost} coins.`));
   }
   const next = structuredClone(state);
   next.coins -= upgrade.cost;
@@ -4387,14 +5041,14 @@ function undiscoveredRecipes(state) {
 
 function canRequestHint(state) {
   if (state.upgrades?.lupa !== true) {
-    return { ok: false, error: { code: 'LOCKED', message: 'Compre a Lupa Arcana para estudar dicas pagas.' } };
+    return { ok: false, error: { code: 'LOCKED', message: L('Compre a Lupa Arcana para estudar dicas pagas.', 'Buy the Arcane Lens to study paid hints.') } };
   }
   if (!undiscoveredRecipes(state).length) {
-    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: 'O caderno está completo: não há segredos a revelar.' } };
+    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: L('O caderno está completo: não há segredos a revelar.', 'The notebook is complete: there are no secrets left to reveal.') } };
   }
   const cost = CONFIG.HINT_COST ?? 5;
   if (!(state.coins >= cost)) {
-    return { ok: false, error: { code: 'INSUFFICIENT_FUNDS', message: `Uma dica da Lupa custa ${cost} moedas.` } };
+    return { ok: false, error: { code: 'INSUFFICIENT_FUNDS', message: L(`Uma dica da Lupa custa ${cost} moedas.`, `A Lens hint costs ${cost} coins.`) } };
   }
   return { ok: true };
 }
@@ -4425,18 +5079,18 @@ function freeHintWaitMs(state, now) {
 
 function canRequestFreeHint(state, now) {
   if (!undiscoveredRecipes(state).length) {
-    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: 'O caderno está completo: não há segredos a revelar.' } };
+    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: L('O caderno está completo: não há segredos a revelar.', 'The notebook is complete: there are no secrets left to reveal.') } };
   }
   const wait = freeHintWaitMs(state, now);
   if (wait > 0) {
     const min = Math.ceil(wait / 60000);
-    return { ok: false, error: { code: 'COOLDOWN', message: `A próxima dica grátis chega em ${min} min.` } };
+    return { ok: false, error: { code: 'COOLDOWN', message: L(`A próxima dica grátis chega em ${min} min.`, `The next free hint arrives in ${min} min.`) } };
   }
   return { ok: true };
 }
 
 function requestFreeHint(state, now, rng = Math.random) {
-  if (!Number.isFinite(now)) return fail(state, 'INVALID_ID', 'Horário inválido.');
+  if (!Number.isFinite(now)) return fail(state, 'INVALID_ID', L('Horário inválido.', 'Invalid time.'));
   const check = canRequestFreeHint(state, now);
   if (!check.ok) return { ok: false, state, error: check.error };
   return giveHint(state, rng, (next) => { next.freeHintReadyAt = now + (CONFIG.FREE_HINT_COOLDOWN_MS ?? 240000); });
@@ -4788,9 +5442,10 @@ const {
 } = __mods.progression;
 const { itemArt, customerArt } = __mods.art;
 const { lineFor, pickLine, NOVEL_HINTS, MERCHANT_LINES, MERCHANT_HURRY_LINES, MERCHANT_BYE_LINES, IMPATIENT_LINES, HURRY_LINES, demoLetter } = __mods.dialogue;
+const { L } = __mods.idioma;
 
 // Raridade pelas cores da Grande Obra (guia de arte): nigredo, albedo, citrinitas, rubedo.
-const RARITY_LABEL = { comum: 'Comum', incomum: 'Incomum', rara: 'Rara', falha: 'Falha' };
+const RARITY_LABEL = L({ comum: 'Comum', incomum: 'Incomum', rara: 'Rara', falha: 'Falha' }, { comum: 'Common', incomum: 'Uncommon', rara: 'Rare', falha: 'Failed' });
 
 // Cores puramente cosméticas do líquido do caldeirão.
 const BREW_COLOR = {
@@ -4812,7 +5467,7 @@ function esc(value) {
 
 function rarityLabel(r) { return RARITY_LABEL[r] || ''; }
 function plural(n, one, many) { return `${n} ${n === 1 ? one : many}`; }
-function coins(n) { return `${n} ${n === 1 ? 'moeda' : 'moedas'}`; }
+function coins(n) { return `${n} ${n === 1 ? L('moeda', 'coin') : L('moedas', 'coins')}`; }
 function disabledAttr(disabled, reason) {
   return disabled ? ` disabled title="${esc(reason)}"` : '';
 }
@@ -4826,9 +5481,9 @@ const coinIcon = () => img('moeda', 'coin-ico');
 // ---------- Livro de receitas (também usado pelo menu, sem botões) ----------
 function remakeButton(state, recipe, label) {
   const check = canMix(state, recipe.a, recipe.b);
-  const why = check && check.ok ? '' : ((check && check.error && check.error.message) || 'Faltam ingredientes na prateleira.');
+  const why = check && check.ok ? '' : ((check && check.error && check.error.message) || L('Faltam ingredientes na prateleira.', 'Missing ingredients on the shelf.'));
   return `<button type="button" class="btn btn-small btn-remake" data-action="remake" data-id="${esc(recipe.id)}"
-    aria-label="Preparar ${esc(recipe.name)} de novo"${disabledAttr(!(check && check.ok), why)}>${label}</button>`;
+    aria-label="${L('Preparar', 'Brew')} ${esc(recipe.name)} ${L('de novo', 'again')}"${disabledAttr(!(check && check.ok), why)}>${label}</button>`;
 }
 
 function buildBookHTML(state, { interactive = true } = {}) {
@@ -4840,14 +5495,14 @@ function buildBookHTML(state, { interactive = true } = {}) {
       const recipe = getRecipe(e.id);
       return `
       <li class="book-entry is-known rarity-${esc(e.rarity)}">
-        <span class="book-seal" title="Ordem em que você descobriu esta receita">nº ${esc(e.order)}</span>
+        <span class="book-seal" title="${L('Ordem em que você descobriu esta receita', 'Order in which you discovered this recipe')}">${L('nº', 'no.')} ${esc(e.order)}</span>
         ${img(e.id, 'book-img')}
         <span class="book-text">
           <span class="book-name">${esc(e.name)}</span>
-          <span class="book-meta"><span class="rarity rarity-${esc(e.rarity)}">${esc(rarityLabel(e.rarity))}</span> · <span class="book-price" title="Pedido: quanto o cliente paga. Balcão: venda avulsa na prateleira.">Pedido ${coinIcon()} ${esc(orderReward(state, e.id))} · balcão ${esc(sellPrice(state, e.id))}</span></span>
+          <span class="book-meta"><span class="rarity rarity-${esc(e.rarity)}">${esc(rarityLabel(e.rarity))}</span> · <span class="book-price" title="${L('Pedido: quanto o cliente paga. Balcão: venda avulsa na prateleira.', 'Order: what the customer pays. Counter: selling it off the shelf.')}">${L('Pedido', 'Order')} ${coinIcon()} ${esc(orderReward(state, e.id))} · ${L('balcão', 'counter')} ${esc(sellPrice(state, e.id))}</span></span>
           ${a && b ? `<span class="book-recipe">${img(a.id, 'mini-img')} ${esc(a.name)} + ${img(b.id, 'mini-img')} ${esc(b.name)}</span>` : ''}
         </span>
-        ${recipe && interactive ? remakeButton(state, recipe, 'Preparar') : ''}
+        ${recipe && interactive ? remakeButton(state, recipe, L('Preparar', 'Brew')) : ''}
       </li>`;
     }
     const hint = e.hint ? getIngredient(e.hint) : null;
@@ -4855,10 +5510,10 @@ function buildBookHTML(state, { interactive = true } = {}) {
     <li class="book-entry is-unknown">
       ${img(e.id, 'book-img book-silhouette')}
       <span class="book-text">
-        <span class="book-name">${esc(e.name || '???')}${e.name && e.name !== '???' ? '' : '<span class="sr-only"> (receita desconhecida)</span>'}</span>
+        <span class="book-name">${esc(e.name || '???')}${e.name && e.name !== '???' ? '' : `<span class="sr-only"> (${L('receita desconhecida', 'unknown recipe')})</span>`}</span>
         ${hint
-          ? `<span class="book-hint">Dica: leva ${img(hint.id, 'mini-img')} ${esc(hint.name)} + ???</span>`
-          : '<span class="book-hint is-muted">Página em branco</span>'}
+          ? `<span class="book-hint">${L('Dica: leva', 'Hint: takes')} ${img(hint.id, 'mini-img')} ${esc(hint.name)} + ???</span>`
+          : `<span class="book-hint is-muted">${L('Página em branco', 'Blank page')}</span>`}
       </span>
     </li>`;
   };
@@ -4870,14 +5525,14 @@ function buildBookHTML(state, { interactive = true } = {}) {
   const fails = (state.failedPairs || []).map((k) => k.split('+').map(getIngredient)).filter(([a, b]) => a && b);
   const grimoire = `
     <section class="book-group grimoire" aria-labelledby="book-grimoire">
-      <h3 id="book-grimoire" class="book-cat">Grimório de tentativas <small>${esc(fails.length)} ${fails.length === 1 ? 'combinação' : 'combinações'} que viram Lodo</small></h3>
+      <h3 id="book-grimoire" class="book-cat">${L('Grimório de tentativas', 'Grimoire of attempts')} <small>${esc(fails.length)} ${fails.length === 1 ? L('combinação que vira Lodo', 'combination that turns into Sludge') : L('combinações que viram Lodo', 'combinations that turn into Sludge')}</small></h3>
       ${fails.length
         ? `<ul class="grimoire-list">${fails.map(([a, b]) => `<li>${img(a.id, 'mini-img')} ${esc(a.name)} + ${img(b.id, 'mini-img')} ${esc(b.name)}</li>`).join('')}</ul>`
-        : '<p class="empty">Nenhum borrão por enquanto. Quando uma mistura desandar em Lodo, ela fica anotada aqui.</p>'}
+        : `<p class="empty">${L('Nenhum borrão por enquanto. Quando uma mistura desandar em Lodo, ela fica anotada aqui.', 'No smudges yet. When a mixture turns into Sludge, it gets written down here.')}</p>`}
     </section>`;
   return `
     <div class="book-top">
-      <p class="book-progress">Receitas descobertas: <strong>${found}/${TOTAL()}</strong></p>
+      <p class="book-progress">${L('Receitas descobertas', 'Recipes discovered')}: <strong>${found}/${TOTAL()}</strong></p>
       <div class="xp-bar book-bar" aria-hidden="true"><span class="xp-fill" style="width:${Math.round((found / TOTAL()) * 100)}%"></span></div>
     </div>
     <div class="book-cats">${sections}</div>
@@ -4894,10 +5549,10 @@ function buildIngredientsHTML(state, { intro = '' } = {}) {
         <h3 class="ing-page-name">${esc(ing.name)} <span class="ing-page-quality">${esc(ing.quality)}</span></h3>
         <p class="ing-page-lore">${esc(ing.lore)}</p>
         <dl class="ing-page-facts">
-          <dt>Propriedade</dt><dd>${esc(ing.property)}</dd>
-          <dt>Ajuda em</dt><dd>${esc(ing.helps)}</dd>
+          <dt>${L('Propriedade', 'Property')}</dt><dd>${esc(ing.property)}</dd>
+          <dt>${L('Ajuda em', 'Helps with')}</dt><dd>${esc(ing.helps)}</dd>
         </dl>
-        <p class="ing-page-meta">Elemento: ${esc(ing.element)} · ${coinIcon()} ${esc(ing.cost)} com a mercadora · na prateleira: <strong>${esc(stock[ing.id] ?? 0)}</strong></p>
+        <p class="ing-page-meta">${L('Elemento', 'Element')}: ${esc(ing.element)} · ${coinIcon()} ${esc(ing.cost)} ${L('com a mercadora', 'from the merchant')} · ${L('na prateleira', 'on the shelf')}: <strong>${esc(stock[ing.id] ?? 0)}</strong></p>
       </div>
     </li>`).join('');
   return `
@@ -4918,11 +5573,11 @@ function buildNotesHTML(state) {
   return `
     <div class="notes-page">
       <div class="notes-top">
-        <p class="notes-count"><strong>${known.length}/${TIPS.length}</strong> anotadas</p>
+        <p class="notes-count"><strong>${known.length}/${TIPS.length}</strong> ${L('anotadas', 'noted')}</p>
       </div>
       <div class="notes-body">
-        ${known.length ? `<ol class="notes">${items}</ol>` : '<p class="notes-empty">Nada anotado ainda. As dicas aparecem enquanto você atende.</p>'}
-        ${missing && known.length ? `<p class="notes-more">Faltam ${missing} ${missing === 1 ? 'anotação' : 'anotações'}: aparecem quando a situação acontecer.</p>` : ''}
+        ${known.length ? `<ol class="notes">${items}</ol>` : `<p class="notes-empty">${L('Nada anotado ainda. As dicas aparecem enquanto você atende.', 'Nothing noted yet. Tips show up while you serve customers.')}</p>`}
+        ${missing && known.length ? `<p class="notes-more">${L(`Faltam ${missing} ${missing === 1 ? 'anotação' : 'anotações'}: aparecem quando a situação acontecer.`, `${missing} more ${missing === 1 ? 'note' : 'notes'} to go: they show up when the situation comes up.`)}</p>` : ''}
       </div>
       <div class="notes-foot" aria-hidden="true"></div>
     </div>`;
@@ -5040,7 +5695,7 @@ function createUI(root, handlers = {}) {
   // ---------- pedidos / cliente no balcão ----------
   function customerOf(id) {
     if (id === MERCHANT.id) return MERCHANT;
-    return CUSTOMERS.find((c) => c.id === id) || { id, name: 'Cliente', icon: '' };
+    return CUSTOMERS.find((c) => c.id === id) || { id, name: L('Cliente', 'Customer'), icon: '' };
   }
 
   function currentOrder(state) {
@@ -5062,28 +5717,28 @@ function createUI(root, handlers = {}) {
     const best = state.stats && Number.isFinite(state.stats.bestCoins) ? state.stats.bestCoins : state.coins;
     const plan = state.plan || { total: 0, served: 0 };
     setHTML(els.hud, `
-      <div class="hud-item hud-day" title="${isNight(state) ? 'Loja fechada: a mercadora está na porta' : `Clientes atendidos hoje: ${plan.served} de ${plan.total}`}">
-        <span>Dia <strong class="hud-value">${esc(state.day || 1)}</strong></span>
-        <small class="hud-sub">${isNight(state) ? 'loja fechada' : `${esc(plan.served)}/${esc(plan.total)} clientes`}</small>
-        <small class="hud-sub-lv">nível ${esc(lp.level)}</small>
+      <div class="hud-item hud-day" title="${isNight(state) ? L('Loja fechada: a mercadora está na porta', 'Shop closed: the merchant is at the door') : L(`Clientes atendidos hoje: ${plan.served} de ${plan.total}`, `Customers served today: ${plan.served} of ${plan.total}`)}">
+        <span>${L('Dia', 'Day')} <strong class="hud-value">${esc(state.day || 1)}</strong></span>
+        <small class="hud-sub">${isNight(state) ? L('loja fechada', 'shop closed') : `${esc(plan.served)}/${esc(plan.total)} ${L('clientes', 'customers')}`}</small>
+        <small class="hud-sub-lv">${L('nível', 'level')} ${esc(lp.level)}</small>
       </div>
-      <div class="hud-item hud-coins" title="Recorde: ${esc(best)} moedas">
-        ${coinIcon()}<strong class="hud-value">${esc(state.coins)}</strong><span class="sr-only"> moedas</span>
+      <div class="hud-item hud-coins" title="${L('Recorde', 'Record')}: ${esc(best)} ${L('moedas', 'coins')}">
+        ${coinIcon()}<strong class="hud-value">${esc(state.coins)}</strong><span class="sr-only"> ${L('moedas', 'coins')}</span>
       </div>
       <div class="hud-item hud-level">
-        <span>Nível <strong class="hud-value">${esc(lp.level)}</strong></span>
-        <div class="xp-bar" role="progressbar" aria-label="Experiência rumo ao nível ${esc(lp.level + 1)}"
+        <span>${L('Nível', 'Level')} <strong class="hud-value">${esc(lp.level)}</strong></span>
+        <div class="xp-bar" role="progressbar" aria-label="${L('Experiência rumo ao nível', 'Experience toward level')} ${esc(lp.level + 1)}"
              aria-valuemin="0" aria-valuemax="${esc(lp.needed)}" aria-valuenow="${esc(lp.current)}"
-             aria-valuetext="${esc(lp.current)} de ${esc(lp.needed)} XP">
+             aria-valuetext="${esc(lp.current)} ${L('de', 'of')} ${esc(lp.needed)} XP">
           <span class="xp-fill" style="width:${pct}%"></span>
         </div>
       </div>
       <div class="hud-item hud-rep" title="${esc(fameTitle(state.reputation || 0))}">
-        <span>Fama <strong class="hud-value">${esc(state.reputation || 0)}</strong></span>
+        <span>${L('Fama', 'Fame')} <strong class="hud-value">${esc(state.reputation || 0)}</strong></span>
         <small class="hud-sub hud-tier">${esc(fameTier(state.reputation || 0).name)}</small>
       </div>
-      <div class="hud-item hud-recipes" title="Receitas no caderno">
-        <span>Receitas <strong class="hud-value">${found}/${TOTAL()}</strong></span>
+      <div class="hud-item hud-recipes" title="${L('Receitas no caderno', 'Recipes in the notebook')}">
+        <span>${L('Receitas', 'Recipes')} <strong class="hud-value">${found}/${TOTAL()}</strong></span>
       </div>`);
   }
 
@@ -5091,11 +5746,11 @@ function createUI(root, handlers = {}) {
   function fameTitle(rep) {
     const t = fameTier(rep);
     const perks = [];
-    if (t.coins) perks.push(`+${coins(t.coins)} por pedido`);
-    if (t.patience) perks.push(`clientes ${Math.round(t.patience * 100)}% mais pacientes`);
+    if (t.coins) perks.push(L(`+${coins(t.coins)} por pedido`, `+${coins(t.coins)} per order`));
+    if (t.patience) perks.push(L(`clientes ${Math.round(t.patience * 100)}% mais pacientes`, `customers ${Math.round(t.patience * 100)}% more patient`));
     const now = `${t.name}${perks.length ? `: ${perks.join(', ')}` : ''}.`;
-    const next = t.next ? ` Faltam ${t.next.min - rep} de fama para "${t.next.name}".` : '';
-    return `${now}${next} Sobe 1 a cada pedido certo; cai 1 por frasco errado ou cliente mandado embora, e 2 quando o cliente cansa de esperar.`;
+    const next = t.next ? L(` Faltam ${t.next.min - rep} de fama para "${t.next.name}".`, ` ${t.next.min - rep} more fame to reach "${t.next.name}".`) : '';
+    return `${now}${next} ${L('Sobe 1 a cada pedido certo; cai 1 por frasco errado ou cliente mandado embora, e 2 quando o cliente cansa de esperar.', 'Goes up 1 for every correct order; drops 1 for a wrong flask or a customer sent away, and 2 when a customer gets tired of waiting.')}`;
   }
 
   // Vela da paciência: só aparece quando o cliente tem pressa (do dia 3 em diante).
@@ -5106,7 +5761,7 @@ function createUI(root, handlers = {}) {
     if (!order || !(order.patience > 0)) return '';
     const left = patienceLeft(order);
     return `<span class="${cls}${patienceClass(left)}" data-patience="${esc(order.id)}" data-vela="${velaFrame(left)}" style="--left:${left.toFixed(3)}"
-      role="meter" aria-label="Paciência" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(left * 100)}"><span class="patience-fill"></span></span>`;
+      role="meter" aria-label="${L('Paciência', 'Patience')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(left * 100)}"><span class="patience-fill"></span></span>`;
   }
   function moodBucket(order) {
     if (!order || !(order.patience > 0)) return 0;
@@ -5166,7 +5821,7 @@ function createUI(root, handlers = {}) {
   function tipHTML(id) {
     const t = id && TIPS.find((x) => x.id === id);
     if (!t) return '';
-    return `<p class="tip-once"><span class="tip-tag">Anotado no caderno</span> ${esc(t.text)}</p>`;
+    return `<p class="tip-once"><span class="tip-tag">${L('Anotado no caderno', 'Noted in the notebook')}</span> ${esc(t.text)}</p>`;
   }
   const sheetCtx = (name) => (ui.sheet === name ? `${name}-${ui.sheetSeq}` : null);
 
@@ -5183,8 +5838,8 @@ function createUI(root, handlers = {}) {
       ui.clockAngle = angle;
       els.clock.style.setProperty('--clock-turn', `${angle}deg`);
     }
-    const label = night ? `Noite do dia ${state.day || 1}: loja fechada`
-      : `Dia ${state.day || 1}: ${plan.served || 0} de ${plan.total || 0} clientes atendidos`;
+    const label = night ? L(`Noite do dia ${state.day || 1}: loja fechada`, `Night of day ${state.day || 1}: shop closed`)
+      : L(`Dia ${state.day || 1}: ${plan.served || 0} de ${plan.total || 0} clientes atendidos`, `Day ${state.day || 1}: ${plan.served || 0} of ${plan.total || 0} customers served`);
     if (els.clock.getAttribute('aria-label') !== label) { els.clock.setAttribute('aria-label', label); els.clock.title = label; }
     els.clock.classList.toggle('is-night', night);
   }
@@ -5213,26 +5868,26 @@ function createUI(root, handlers = {}) {
     const sign = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : '0');
     const rows = [];
     const row = (qty, label, coins = '', cls = '') => rows.push({ qty, label, coins, cls });
-    row(served, `${served === 1 ? 'Cliente atendido' : 'Clientes atendidos'} <span class="lstamp lstamp-ok" aria-hidden="true"></span>`);
-    row(p.sentAway || 0, `${p.sentAway === 1 ? 'Mandado embora' : 'Mandados embora'} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
-    if (p.gaveUp) row(p.gaveUp, `${p.gaveUp === 1 ? 'Cansou de esperar' : 'Cansaram de esperar'} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
-    if (found) row(found, `${found === 1 ? 'Receita nova no caderno' : 'Receitas novas no caderno'} <span class="lstamp lstamp-new" aria-hidden="true"></span>`);
+    row(served, `${served === 1 ? L('Cliente atendido', 'Customer served') : L('Clientes atendidos', 'Customers served')} <span class="lstamp lstamp-ok" aria-hidden="true"></span>`);
+    row(p.sentAway || 0, `${p.sentAway === 1 ? L('Mandado embora', 'Sent away') : L('Mandados embora', 'Sent away')} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
+    if (p.gaveUp) row(p.gaveUp, `${p.gaveUp === 1 ? L('Cansou de esperar', 'Got tired of waiting') : L('Cansaram de esperar', 'Got tired of waiting')} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
+    if (found) row(found, `${found === 1 ? L('Receita nova no caderno', 'New recipe in the notebook') : L('Receitas novas no caderno', 'New recipes in the notebook')} <span class="lstamp lstamp-new" aria-hidden="true"></span>`);
     let listed = 0;
     for (const [id, e] of byPotion) {
       if (listed++ >= 6) break;
       const r = getRecipe(id);
       row(`${e.n}×`, `${img(id, 'ledger-img')} ${esc(r ? r.name : id)}`, `+${e.coins}`, 'is-item');
     }
-    if (!byPotion.size) row('', '<em>Nenhuma poção entregue hoje</em>', '', 'is-item');
-    row('', 'Bolsa ao abrir a loja', String(start), 'is-sum');
-    row('', 'Ganho com pedidos', sign(earned), 'is-sum');
-    if (tips) row('', 'Gorjetas por atender rápido', sign(tips), 'is-sum');
-    if (perfect) row('', 'Dia perfeito: ninguém saiu sem poção', sign(perfect), 'is-sum');
-    if (other) row('', other > 0 ? 'Vendas na prateleira' : 'Gastos do dia', sign(other), 'is-sum');
-    if (paid) row('', paid > upkeep ? `Aluguel do dia (${upkeep}) e atrasado` : 'Aluguel do dia', sign(-paid), 'is-sum is-cost');
-    else if (upkeep) row('', 'Aluguel do dia: ficou na conta', '0', 'is-sum is-cost');
-    if (state.debt) row('', 'Ficou na conta do senhorio', String(state.debt), 'is-sum is-cost');
-    row('', 'Fama do dia', sign(rep), 'is-sum is-rep');
+    if (!byPotion.size) row('', `<em>${L('Nenhuma poção entregue hoje', 'No potions delivered today')}</em>`, '', 'is-item');
+    row('', L('Bolsa ao abrir a loja', 'Purse when the shop opened'), String(start), 'is-sum');
+    row('', L('Ganho com pedidos', 'Earned from orders'), sign(earned), 'is-sum');
+    if (tips) row('', L('Gorjetas por atender rápido', 'Tips for quick service'), sign(tips), 'is-sum');
+    if (perfect) row('', L('Dia perfeito: ninguém saiu sem poção', 'Perfect day: nobody left without a potion'), sign(perfect), 'is-sum');
+    if (other) row('', other > 0 ? L('Vendas na prateleira', 'Shelf sales') : L('Gastos do dia', 'Spent today'), sign(other), 'is-sum');
+    if (paid) row('', paid > upkeep ? L(`Aluguel do dia (${upkeep}) e atrasado`, `Today’s rent (${upkeep}) and overdue rent`) : L('Aluguel do dia', 'Today’s rent'), sign(-paid), 'is-sum is-cost');
+    else if (upkeep) row('', L('Aluguel do dia: ficou na conta', 'Today’s rent: put on the tab'), '0', 'is-sum is-cost');
+    if (state.debt) row('', L('Ficou na conta do senhorio', 'Owed to the landlord'), String(state.debt), 'is-sum is-cost');
+    row('', L('Fama do dia', 'Fame today'), sign(rep), 'is-sum is-rep');
     const lines = rows.map((r, i) => `
       <li class="ledger-row ${r.cls}" style="--i:${i}">
         <span class="ledger-qty">${esc(r.qty)}</span>
@@ -5240,18 +5895,18 @@ function createUI(root, handlers = {}) {
         <span class="ledger-coins">${esc(r.coins)}</span>
       </li>`).join('');
     setHTML(els.ledger, `
-      <p class="ledger-day">Fechamento do dia ${esc(state.day || 1)}</p>
+      <p class="ledger-day">${L('Fechamento do dia', 'Closing of day')} ${esc(state.day || 1)}</p>
       <div class="ledger-page" style="--n:${rows.length}">
         <ol class="ledger-rows">${lines}</ol>
         <p class="ledger-total" style="--i:${rows.length}">
-          <span>Saldo</span>
+          <span>${L('Saldo', 'Balance')}</span>
           <span class="ledger-total-value">${coinIcon()} ${esc(end)}</span>
         </p>
 
-        <span class="ledger-seal" style="--i:${rows.length + 1}" title="Dia fechado" aria-hidden="true"></span>
+        <span class="ledger-seal" style="--i:${rows.length + 1}" title="${L('Dia fechado', 'Day closed')}" aria-hidden="true"></span>
       </div>
       <div class="ledger-actions">
-        <button type="button" class="btn btn-primary" data-action="${isDemoOver(state) ? 'demo-end' : 'close-sheet'}">${state.landlord ? 'Atender o senhorio' : isDemoOver(state) ? 'Ler a carta que chegou' : 'Chamar a mercadora'}</button>
+        <button type="button" class="btn btn-primary" data-action="${isDemoOver(state) ? 'demo-end' : 'close-sheet'}">${state.landlord ? L('Atender o senhorio', 'See the landlord') : isDemoOver(state) ? L('Ler a carta que chegou', 'Read the letter that arrived') : L('Chamar a mercadora', 'Call the merchant')}</button>
       </div>`);
   }
 
@@ -5262,9 +5917,9 @@ function createUI(root, handlers = {}) {
     const on = !!state.sound;
     els.sound.setAttribute('aria-pressed', on ? 'true' : 'false');
     els.sound.classList.toggle('is-on', on);
-    els.sound.title = on ? 'Desligar efeitos sonoros' : 'Ligar efeitos sonoros';
+    els.sound.title = on ? L('Desligar efeitos sonoros', 'Turn sound effects off') : L('Ligar efeitos sonoros', 'Turn sound effects on');
     const label = els.sound.querySelector('.sound-label');
-    const text = on ? 'Som ligado' : 'Som desligado';
+    const text = on ? L('Som ligado', 'Sound on') : L('Som desligado', 'Sound off');
     if (label && label.textContent !== text) label.textContent = text;
   }
 
@@ -5349,19 +6004,19 @@ function createUI(root, handlers = {}) {
     const canRaise = !canPay && coinsNow + shelf >= debt;
     return `
       <div class="talk-box is-night is-sad talk-landlord">
-        <p class="talk-day">Noite do dia ${esc(state.day)}</p>
+        <p class="talk-day">${L('Noite do dia', 'Night of day')} ${esc(state.day)}</p>
         <div class="talk-head"><p id="talk-name" class="talk-name">${esc(LANDLORD.name)}</p></div>
         <p class="talk-line">“${esc(canPay
-          ? `Três noites sem aluguel, boticária. São ${debt} moedas, e eu vejo que a bolsa alcança.`
-          : `Três noites sem aluguel, boticária. São ${debt} moedas. Se não tiver, vou precisar da chave da loja.`)}”</p>
-        <p class="talk-note talk-debt">Aluguel atrasado: <strong>${coinIcon()} ${esc(debt)}</strong> · na bolsa: <strong>${esc(coinsNow)}</strong>${missing ? ` · faltam <strong>${esc(missing)}</strong>` : ''}</p>
-        ${canRaise ? `<p class="talk-note">Os frascos da prateleira valem ${coinIcon()} ${esc(shelf)} vendidos no balcão: dá para juntar o que falta.</p>` : ''}
-        ${!canPay && !canRaise ? `<p class="talk-note">Nem vendendo a prateleira inteira (${coinIcon()} ${esc(shelf)}) a bolsa alcança.</p>` : ''}
+          ? L(`Três noites sem aluguel, boticária. São ${debt} moedas, e eu vejo que a bolsa alcança.`, `Three nights without rent, apothecary. That’s ${debt} coins, and I can see your purse can cover it.`)
+          : L(`Três noites sem aluguel, boticária. São ${debt} moedas. Se não tiver, vou precisar da chave da loja.`, `Three nights without rent, apothecary. That’s ${debt} coins. If you don’t have it, I’ll need the key to the shop.`))}”</p>
+        <p class="talk-note talk-debt">${L('Aluguel atrasado', 'Overdue rent')}: <strong>${coinIcon()} ${esc(debt)}</strong> · ${L('na bolsa', 'in your purse')}: <strong>${esc(coinsNow)}</strong>${missing ? ` · ${L('faltam', 'short by')} <strong>${esc(missing)}</strong>` : ''}</p>
+        ${canRaise ? `<p class="talk-note">${L('Os frascos da prateleira valem', 'The flasks on the shelf are worth')} ${coinIcon()} ${esc(shelf)} ${L('vendidos no balcão: dá para juntar o que falta.', 'sold at the counter: enough to make up the difference.')}</p>` : ''}
+        ${!canPay && !canRaise ? `<p class="talk-note">${L('Nem vendendo a prateleira inteira', 'Not even selling the whole shelf')} (${coinIcon()} ${esc(shelf)}) ${L('a bolsa alcança.', 'would cover it.')}</p>` : ''}
         <div class="talk-actions">
-          ${canPay ? `<button type="button" class="btn btn-primary" data-action="pay-landlord">Pagar ${esc(debt)} moedas</button>` : ''}
-          ${canRaise ? '<button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira">Vender frascos da prateleira</button>' : ''}
-          ${!canPay ? '<button type="button" class="btn btn-danger" data-action="evict">Entregar a chave</button>' : ''}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button>
+          ${canPay ? `<button type="button" class="btn btn-primary" data-action="pay-landlord">${L(`Pagar ${esc(debt)} moedas`, `Pay ${esc(debt)} coins`)}</button>` : ''}
+          ${canRaise ? `<button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira">${L('Vender frascos da prateleira', 'Sell flasks from the shelf')}</button>` : ''}
+          ${!canPay ? `<button type="button" class="btn btn-danger" data-action="evict">${L('Entregar a chave', 'Hand over the key')}</button>` : ''}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button>
         </div>
       </div>`;
   }
@@ -5370,7 +6025,7 @@ function createUI(root, handlers = {}) {
     const debt = state.debt || 0;
     if (!debt) return '';
     const n = closesUntilLandlord(state);
-    return `<p class="talk-note talk-debt">Aluguel atrasado: <strong>${coinIcon()} ${esc(debt)}</strong>. A bolsa paga o atrasado junto com o aluguel no próximo fechamento. ${n === 1 ? 'Se ainda dever amanhã à noite, o senhorio vem cobrar.' : `Se continuar devendo por mais ${esc(n)} fechamentos, o senhorio vem cobrar.`}</p>`;
+    return `<p class="talk-note talk-debt">${L('Aluguel atrasado', 'Overdue rent')}: <strong>${coinIcon()} ${esc(debt)}</strong>. ${L('A bolsa paga o atrasado junto com o aluguel no próximo fechamento.', 'Your purse pays the overdue amount along with the rent at the next closing.')} ${n === 1 ? L('Se ainda dever amanhã à noite, o senhorio vem cobrar.', 'If you still owe tomorrow night, the landlord comes to collect.') : L(`Se continuar devendo por mais ${esc(n)} fechamentos, o senhorio vem cobrar.`, `If you keep owing for ${esc(n)} more closings, the landlord comes to collect.`)}</p>`;
   }
 
   // v1.28 — última noite da demo: no lugar da mercadora, uma carta da Mestra Benvinda.
@@ -5380,13 +6035,13 @@ function createUI(root, handlers = {}) {
     const diff = (state.coins || 0) - (p.startCoins || 0);
     return `
       <div class="talk-box is-night talk-demo-fim">
-        <p class="talk-day">Fim do dia ${esc(state.day)}</p>
-        <p class="day-sum-line"><strong>${esc(served)}</strong> de ${esc(p.total || 0)} atendidos · bolsa ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button></p>
-        ${p.perfect ? `<p class="talk-note talk-perfect">Dia perfeito! Ninguém saiu sem poção: +${esc(p.perfect)} ${coinIcon()} e +${esc(CONFIG.PERFECT_FAME)} de fama.</p>` : ''}
-        <p class="talk-line">A carroça da Zuleica não veio hoje. No lugar dela, um menino entregou uma carta amarrada com barbante, com cheiro de maresia e um grãozinho de areia no lacre.</p>
+        <p class="talk-day">${L('Fim do dia', 'End of day')} ${esc(state.day)}</p>
+        <p class="day-sum-line"><strong>${esc(served)}</strong> ${L('de', 'of')} ${esc(p.total || 0)} ${L('atendidos', 'served')} · ${L('bolsa', 'purse')} ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button></p>
+        ${p.perfect ? `<p class="talk-note talk-perfect">${L('Dia perfeito! Ninguém saiu sem poção', 'Perfect day! Nobody left without a potion')}: +${esc(p.perfect)} ${coinIcon()} ${L('e', 'and')} +${esc(CONFIG.PERFECT_FAME)} ${L('de fama', 'fame')}.</p>` : ''}
+        <p class="talk-line">${L('A carroça da Zuleica não veio hoje. No lugar dela, um menino entregou uma carta amarrada com barbante, com cheiro de maresia e um grãozinho de areia no lacre.', 'Zuleica’s cart didn’t come today. Instead, a boy delivered a letter tied with string, smelling of the sea, with a tiny grain of sand in the seal.')}</p>
         <div class="talk-actions">
-          <button type="button" class="btn btn-primary" data-action="demo-end">Ler a carta da Mestra</button>
+          <button type="button" class="btn btn-primary" data-action="demo-end">${L('Ler a carta da Mestra', 'Read the Mistress’s letter')}</button>
         </div>
       </div>`;
   }
@@ -5402,30 +6057,30 @@ function createUI(root, handlers = {}) {
     const wait = state.relaxed ? 0 : patienceForDay((state.day || 1) + 1);
     const tier = fameTier(state.reputation || 0);
     const waitS = wait ? Math.round((wait * (1 + (tier.patience || 0))) / 1000) : 0;
-    const waitText = waitS >= 60 ? `${Math.floor(waitS / 60)} min${waitS % 60 ? ` e ${waitS % 60} s` : ''}` : `${waitS} s`;
+    const waitText = waitS >= 60 ? `${Math.floor(waitS / 60)} min${waitS % 60 ? ` ${L('e', 'and')} ${waitS % 60} s` : ''}` : `${waitS} s`;
     const merchant = merchantCandle(state);
     const hurry = moodBucket(merchant) === 2;
     if (merchant) ui.moodKey = `${merchant.id}:${moodBucket(merchant)}`;
     return `
       <div class="talk-box is-night${hurry ? ' is-sad' : ''}">
-        <p class="talk-day">Fim do dia ${esc(state.day)}</p>
-        <p class="day-sum-line"><strong>${esc(served)}</strong> de ${esc(p.total || 0)} atendidos · bolsa ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button></p>
+        <p class="talk-day">${L('Fim do dia', 'End of day')} ${esc(state.day)}</p>
+        <p class="day-sum-line"><strong>${esc(served)}</strong> ${L('de', 'of')} ${esc(p.total || 0)} ${L('atendidos', 'served')} · ${L('bolsa', 'purse')} ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button></p>
         ${state.merchantGone
-          ? '<p class="talk-note talk-gone">A carroça da mercadora já virou a esquina. Ela volta amanhã à noite; hoje não há onde comprar ingredientes.</p>'
+          ? `<p class="talk-note talk-gone">${L('A carroça da mercadora já virou a esquina. Ela volta amanhã à noite; hoje não há onde comprar ingredientes.', 'The merchant’s cart has already turned the corner. She’ll be back tomorrow night; there’s nowhere to buy ingredients tonight.')}</p>`
           : `<div class="talk-head"><p id="talk-name" class="talk-name">${esc(MERCHANT.name)}</p></div>
-        ${merchant ? `<p class="talk-temper">Espera um bom tempo, mas segue viagem antes de a vela apagar${hurry ? '' : ' · o relógio dela para com a banca aberta'}</p>` : ''}
+        ${merchant ? `<p class="talk-temper">${L('Espera um bom tempo, mas segue viagem antes de a vela apagar', 'Waits a good while, but moves on before the candle goes out')}${hurry ? '' : L(' · o relógio dela para com a banca aberta', ' · her clock stops while the stall is open')}</p>` : ''}
         <p class="talk-line${hurry ? ' talk-hurry' : ''}">“${esc(hurry ? pickLine(MERCHANT_HURRY_LINES, `pressa-${state.day}`) : pickLine(MERCHANT_LINES, `noite-${state.day}`))}”</p>`}
-        ${p.perfect ? `<p class="talk-note talk-perfect">Dia perfeito! Ninguém saiu sem poção: +${esc(p.perfect)} ${coinIcon()} e +${esc(CONFIG.PERFECT_FAME)} de fama.</p>` : ''}
+        ${p.perfect ? `<p class="talk-note talk-perfect">${L('Dia perfeito! Ninguém saiu sem poção', 'Perfect day! Nobody left without a potion')}: +${esc(p.perfect)} ${coinIcon()} ${L('e', 'and')} +${esc(CONFIG.PERFECT_FAME)} ${L('de fama', 'fame')}.</p>` : ''}
         ${debtNote(state)}
-        ${aid ? '<p class="talk-note">A mercadora deixou um punhado de ingredientes fiado para você não fechar as portas.</p>' : ''}
+        ${aid ? `<p class="talk-note">${L('A mercadora deixou um punhado de ingredientes fiado para você não fechar as portas.', 'The merchant left you a handful of ingredients on credit so you don’t have to close your doors.')}</p>` : ''}
         <div class="talk-divider" aria-hidden="true"></div>
-        <p class="talk-note">Amanhã vêm <strong>${esc(tomorrow)}</strong> clientes${wait ? `, e cada um espera cerca de <strong>${esc(waitText)}</strong> no balcão` : ', sem pressa nenhuma'}.</p>
+        <p class="talk-note">${L('Amanhã vêm', 'Tomorrow')} <strong>${esc(tomorrow)}</strong> ${L('clientes', 'customers are coming')}${wait ? L(`, e cada um espera cerca de <strong>${esc(waitText)}</strong> no balcão`, `, and each one waits about <strong>${esc(waitText)}</strong> at the counter`) : L(', sem pressa nenhuma', ', in no hurry at all')}.</p>
         ${tipHTML(pickTip(['mercadora', (p.upkeep || upkeepForDay(state.day + 1)) ? 'despesas' : null, wait && (state.discovered || []).length ? 'preparar-antes' : null, (state.reputation || 0) >= 5 ? 'fama' : null], `noite-${state.day}`))}
         <div class="talk-actions">
-          <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="mercador"${disabledAttr(!!state.merchantGone, 'A mercadora já foi embora: volta amanhã à noite')}>Comprar ingredientes</button>
-          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">Preparar poções</button>
-          <button type="button" class="btn" data-action="next-day">Abrir a loja: dia ${esc((state.day || 1) + 1)}</button>
+          <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="mercador"${disabledAttr(!!state.merchantGone, L('A mercadora já foi embora: volta amanhã à noite', 'The merchant has left: she’ll be back tomorrow night'))}>${L('Comprar ingredientes', 'Buy ingredients')}</button>
+          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">${L('Preparar poções', 'Brew potions')}</button>
+          <button type="button" class="btn" data-action="next-day">${L('Abrir a loja: dia', 'Open the shop: day')} ${esc((state.day || 1) + 1)}</button>
         </div>
       </div>`;
   }
@@ -5440,8 +6095,8 @@ function createUI(root, handlers = {}) {
           <p id="talk-name" class="talk-name">${esc(c.name)}</p>
           <p class="talk-line">“${esc(f.line)}”</p>
           ${f.reward != null
-            ? `<p class="talk-pay">${coinIcon()} +${esc(f.reward + (f.tip || 0))}${f.bonus ? ` (com ${esc(f.bonus)} de bônus pela novidade)` : ''}${f.tip ? ` (com ${esc(f.tip)} de gorjeta pela rapidez)` : ''} · +${esc(f.xp)} XP · +1 de fama</p>`
-            : `<p class="talk-pay is-loss">${f.merchant ? 'Fechou a banca e seguiu viagem até amanhã à noite' : f.walkout ? `Cansou de esperar · −${esc(f.fame)} de fama` : 'Foi embora sem poção · −1 de fama'}</p>`}
+            ? `<p class="talk-pay">${coinIcon()} +${esc(f.reward + (f.tip || 0))}${f.bonus ? L(` (com ${esc(f.bonus)} de bônus pela novidade)`, ` (including a ${esc(f.bonus)} novelty bonus)`) : ''}${f.tip ? L(` (com ${esc(f.tip)} de gorjeta pela rapidez)`, ` (including a ${esc(f.tip)} tip for speed)`) : ''} · +${esc(f.xp)} XP · ${L('+1 de fama', '+1 fame')}</p>`
+            : `<p class="talk-pay is-loss">${f.merchant ? L('Fechou a banca e seguiu viagem até amanhã à noite', 'Closed the stall and moved on until tomorrow night') : f.walkout ? L(`Cansou de esperar · −${esc(f.fame)} de fama`, `Got tired of waiting · −${esc(f.fame)} fame`) : L('Foi embora sem poção · −1 de fama', 'Left without a potion · −1 fame')}</p>`}
         </div>`);
       return;
     }
@@ -5450,10 +6105,10 @@ function createUI(root, handlers = {}) {
       const c = customerOf(GREETER);
       setHTML(els.talk, `
         <div class="talk-box">
-          <p id="talk-name" class="talk-name">${esc(c.name)}, o gato da loja</p>
-          <p class="talk-line">“Miau. Ninguém no balcão por enquanto. Aproveite para mexer no caldeirão.”</p>
+          <p id="talk-name" class="talk-name">${esc(c.name)}${L(', o gato da loja', ', the shop cat')}</p>
+          <p class="talk-line">“${L('Miau. Ninguém no balcão por enquanto. Aproveite para mexer no caldeirão.', 'Meow. Nobody at the counter for now. A good time to stir the cauldron.')}”</p>
           <div class="talk-actions">
-            <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">Abrir o caldeirão</button>
+            <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">${L('Abrir o caldeirão', 'Open the cauldron')}</button>
           </div>
         </div>`);
       return;
@@ -5467,31 +6122,31 @@ function createUI(root, handlers = {}) {
     const reward = orderReward(state, order.potionId) + bonus;
     const potions = potionsOnShelf(state);
     const sad = ui.reaction && ui.reaction.orderId === order.id;
-    const lines = clues.map((txt, i) => `<p class="talk-line">${i ? '<span class="talk-more">E tem mais:</span> ' : ''}“${esc(txt)}”</p>`).join('');
+    const lines = clues.map((txt, i) => `<p class="talk-line">${i ? `<span class="talk-more">${L('E tem mais:', 'And there’s more:')}</span> ` : ''}“${esc(txt)}”</p>`).join('');
     const known = (state.discovered || []).includes(order.potionId);
     const hurry = moodBucket(order) === 2;
     ui.moodKey = `${order.id}:${moodBucket(order)}`;
     const timed = order.patience > 0;
     setHTML(els.talk, `
       <div class="talk-box${sad || hurry ? ' is-sad' : ''}${timed ? ' is-timed' : ''}">
-        ${order.novel ? `<p class="stamp-novel" title="Pedido de uma receita que não estava no caderno">Receita nova! +${esc(bonus)}</p>` : ''}
+        ${order.novel ? `<p class="stamp-novel" title="${L('Pedido de uma receita que não estava no caderno', 'An order for a recipe that wasn’t in the notebook')}">${L('Receita nova!', 'New recipe!')} +${esc(bonus)}</p>` : ''}
         <div class="talk-head"><p id="talk-name" class="talk-name">${esc(c.name)}</p></div>
-        ${timed && c.temper ? `<p class="talk-temper" title="Cada freguês espera de um jeito">${esc(c.temper)}${c.patience > 1 ? ' · espera mais' : c.patience < 1 ? ' · espera menos' : ''}</p>` : ''}
+        ${timed && c.temper ? `<p class="talk-temper" title="${L('Cada freguês espera de um jeito', 'Every customer waits in their own way')}">${esc(c.temper)}${c.patience > 1 ? L(' · espera mais', ' · waits longer') : c.patience < 1 ? L(' · espera menos', ' · waits less') : ''}</p>` : ''}
         ${sad ? `<p class="talk-line talk-react">“${esc(lineFor(c.id, 'sad', `${order.id}-${misses}`))}”</p>`
           : hurry ? `<p class="talk-greet talk-hurry">${esc(pickLine(HURRY_LINES, order.id))}</p>`
-          : `<p class="talk-greet">${esc(lineFor(c.id, 'greet', order.id) || 'Boa tarde!')}</p>`}
+          : `<p class="talk-greet">${esc(lineFor(c.id, 'greet', order.id) || L('Boa tarde!', 'Good afternoon!'))}</p>`}
         ${lines}
         ${order.novel && !known ? `<p class="talk-greet talk-novel">${esc(pickLine(NOVEL_HINTS, order.id))}</p>` : ''}
-        ${revealed && potion ? `<p class="talk-want">Quero: ${img(potion.id, 'mini-img')} <strong>${esc(potion.name)}</strong></p>` : ''}
+        ${revealed && potion ? `<p class="talk-want">${L('Quero', 'I want')}: ${img(potion.id, 'mini-img')} <strong>${esc(potion.name)}</strong></p>` : ''}
 
         <div class="talk-divider" aria-hidden="true"></div>
-        <p class="talk-pay">Paga ${coinIcon()} <strong>${esc(reward)}</strong> e +${esc(CONFIG.XP_DELIVERY + (order.novel ? CONFIG.NOVEL_XP : 0))} XP${timed ? `<span class="talk-tip${moodBucket(order) ? ' is-gone' : ''}"> · +${esc(CONFIG.TIP_FAST)} de gorjeta se for rápido</span>` : ''}</p>
+        <p class="talk-pay">${L('Paga', 'Pays')} ${coinIcon()} <strong>${esc(reward)}</strong> ${L('e', 'and')} +${esc(CONFIG.XP_DELIVERY + (order.novel ? CONFIG.NOVEL_XP : 0))} XP${timed ? `<span class="talk-tip${moodBucket(order) ? ' is-gone' : ''}"> · ${L(`+${esc(CONFIG.TIP_FAST)} de gorjeta se for rápido`, `+${esc(CONFIG.TIP_FAST)} tip if you’re quick`)}</span>` : ''}</p>
         <div class="talk-actions">
           <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira"
-            ${disabledAttr(!potions.length, 'A prateleira está vazia: prepare uma poção no caldeirão')}>Entregar poção</button>
-          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">Misturar no caldeirão</button>
+            ${disabledAttr(!potions.length, L('A prateleira está vazia: prepare uma poção no caldeirão', 'The shelf is empty: brew a potion in the cauldron'))}>${L('Entregar poção', 'Give potion')}</button>
+          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">${L('Misturar no caldeirão', 'Mix in the cauldron')}</button>
           <button type="button" class="btn btn-small btn-quiet" data-action="dismiss" data-id="${esc(order.id)}"
-            aria-label="Mandar ${esc(c.name)} embora sem poção (−1 de fama)" title="Sem ingredientes ou sem ideia? O cliente vai embora e você perde 1 de fama.">Mandar embora</button>
+            aria-label="${L(`Mandar ${esc(c.name)} embora sem poção (−1 de fama)`, `Send ${esc(c.name)} away without a potion (−1 fame)`)}" title="${L('Sem ingredientes ou sem ideia? O cliente vai embora e você perde 1 de fama.', 'Out of ingredients or ideas? The customer leaves and you lose 1 fame.')}">${L('Mandar embora', 'Send away')}</button>
         </div>
         ${tipHTML(pickTip([misses ? 'erro-revela' : null, timed ? 'paciencia' : null, 'pistas', order.novel ? 'receita-nova' : null, !potions.length ? 'prateleira-vazia' : null, 'mandar-embora'], `pedido-${order.id}`))}
       </div>`);
@@ -5505,9 +6160,9 @@ function createUI(root, handlers = {}) {
     setHTML(els.queue, others.map((o) => {
       const c = customerOf(o.customerId);
       return `<li><button type="button" class="queue-btn" data-action="call" data-id="${esc(o.id)}"
-        aria-label="Chamar ${esc(c.name)} ao balcão" title="${esc(c.name)}${o.patience > 0 && c.temper ? ` · ${esc(c.temper)}` : ''}">
+        aria-label="${L(`Chamar ${esc(c.name)} ao balcão`, `Call ${esc(c.name)} to the counter`)}" title="${esc(c.name)}${o.patience > 0 && c.temper ? ` · ${esc(c.temper)}` : ''}">
         <img src="${customerArt(o.customerId, 'neutro')}" alt="" draggable="false">${patienceHTML(o, 'patience patience-mini')}</button></li>`;
-    }).join('') + (coming ? `<li class="queue-more" title="Clientes que ainda vão chegar hoje">+${esc(coming)} <span class="sr-only">ainda vão chegar</span></li>` : ''));
+    }).join('') + (coming ? `<li class="queue-more" title="${L('Clientes que ainda vão chegar hoje', 'Customers still coming today')}">+${esc(coming)} <span class="sr-only">${L('ainda vão chegar', 'still coming')}</span></li>` : ''));
   }
 
   function renderScene(state) {
@@ -5535,7 +6190,7 @@ function createUI(root, handlers = {}) {
     const due = rent + (state.debt || 0);
     if (!due) return '';
     const short = (state.coins || 0) < due;
-    return `<p class="shelf-ask rent-note${short ? ' is-short' : ''}">Guarde para o aluguel: amanhã, ao fechar, saem ${coinIcon()} <strong>${esc(due)}</strong>${state.debt ? ` (${esc(rent)} do dia + ${esc(state.debt)} atrasado)` : ''}. ${short ? 'A bolsa já está abaixo disso; o que vender amanhã ajuda a cobrir.' : ''}</p>`;
+    return `<p class="shelf-ask rent-note${short ? ' is-short' : ''}">${L('Guarde para o aluguel: amanhã, ao fechar, saem', 'Save for the rent: tomorrow, at closing, you pay')} ${coinIcon()} <strong>${esc(due)}</strong>${state.debt ? L(` (${esc(rent)} do dia + ${esc(state.debt)} atrasado)`, ` (${esc(rent)} for the day + ${esc(state.debt)} overdue)`) : ''}. ${short ? L('A bolsa já está abaixo disso; o que vender amanhã ajuda a cobrir.', 'Your purse is already below that; what you sell tomorrow will help cover it.') : ''}</p>`;
   }
 
   // ---------- banca da mercadora (fim do dia) ----------
@@ -5552,13 +6207,13 @@ function createUI(root, handlers = {}) {
           <span class="card-count" aria-hidden="true">${esc(qty)}</span>
           ${img(ing.id, 'card-img')}
           <span class="card-name">${esc(ing.name)}</span>
-          <span class="card-quality">${esc(ing.quality)} · ${coinIcon()} ${esc(ing.cost)} cada</span>
+          <span class="card-quality">${esc(ing.quality)} · ${coinIcon()} ${esc(ing.cost)} ${L('cada', 'each')}</span>
         </div>
         <div class="card-btns">
           <button type="button" class="btn btn-small btn-coin" data-action="buy" data-id="${esc(ing.id)}" data-qty="1"
-            aria-label="Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas (tem ${esc(qty)})"${disabledAttr(!can1, here ? `A bolsa não alcança: custa ${ing.cost}` : 'A mercadora só vem no fim do dia')}>+1</button>
+            aria-label="${L(`Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas (tem ${esc(qty)})`, `Buy 1 ${esc(ing.name)} for ${esc(ing.cost)} coins (you have ${esc(qty)})`)}"${disabledAttr(!can1, here ? L(`A bolsa não alcança: custa ${ing.cost}`, `Not enough coins: it costs ${ing.cost}`) : L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day'))}>+1</button>
           <button type="button" class="btn btn-small btn-coin" data-action="buy" data-id="${esc(ing.id)}" data-qty="5"
-            aria-label="Comprar 5 ${esc(ing.name)} por ${esc(ing.cost * 5)} moedas"${disabledAttr(!can5, here ? `A bolsa não alcança: custa ${ing.cost * 5}` : 'A mercadora só vem no fim do dia')}>+5</button>
+            aria-label="${L(`Comprar 5 ${esc(ing.name)} por ${esc(ing.cost * 5)} moedas`, `Buy 5 ${esc(ing.name)} for ${esc(ing.cost * 5)} coins`)}"${disabledAttr(!can5, here ? L(`A bolsa não alcança: custa ${ing.cost * 5}`, `Not enough coins: it costs ${ing.cost * 5}`) : L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day'))}>+5</button>
         </div>
       </li>`;
     }).join('');
@@ -5568,27 +6223,27 @@ function createUI(root, handlers = {}) {
     const lodoPrice = CONFIG.MERCHANT_SLUDGE_PRICE ?? 3;
     const lodoLeft = merchantSludgeLeft(state);
     const lodoTaken = Math.min(lodoMax, Number(state.merchantSludge) || 0);
-    const lodoWhy = !here ? 'A mercadora só vem no fim do dia'
-      : !lodo ? 'Não há Lodo na prateleira'
-      : 'A carroça já está cheia de Lodo por hoje';
+    const lodoWhy = !here ? L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day')
+      : !lodo ? L('Não há Lodo na prateleira', 'There is no Sludge on the shelf')
+      : L('A carroça já está cheia de Lodo por hoje', 'The cart is already full of Sludge for today');
     const lodoCard = here ? `
       <li class="card ing-card merchant-lodo${lodo === 0 ? ' is-empty' : ''}" style="--i:${INGREDIENTS.length};--ing:#5b4a2e">
         <div class="card-face">
           <span class="card-count" aria-hidden="true">${esc(lodo)}</span>
           ${img('lodo', 'card-img')}
-          <span class="card-name">Lodo Instável</span>
-          <span class="card-quality" title="A mercadora leva até ${esc(lodoMax)} Lodos por noite">${coinIcon()} ${esc(lodoPrice)} cada · ${esc(lodoTaken)}/${esc(lodoMax)}</span>
+          <span class="card-name">${L('Lodo Instável', 'Unstable Sludge')}</span>
+          <span class="card-quality" title="${L(`A mercadora leva até ${esc(lodoMax)} Lodos por noite`, `The merchant takes up to ${esc(lodoMax)} Sludges a night`)}">${coinIcon()} ${esc(lodoPrice)} ${L('cada', 'each')} · ${esc(lodoTaken)}/${esc(lodoMax)}</span>
         </div>
         <div class="card-btns">
           <button type="button" class="btn btn-small btn-coin" data-action="sell-sludge"
-            aria-label="Vender 1 Lodo Instável à mercadora por ${esc(lodoPrice)} moedas (tem ${esc(lodo)})"${disabledAttr(lodoLeft < 1, lodoWhy)}>Vender</button>
+            aria-label="${L(`Vender 1 Lodo Instável à mercadora por ${esc(lodoPrice)} moedas (tem ${esc(lodo)})`, `Sell 1 Unstable Sludge to the merchant for ${esc(lodoPrice)} coins (you have ${esc(lodo)})`)}"${disabledAttr(lodoLeft < 1, lodoWhy)}>${L('Vender', 'Sell')}</button>
         </div>
       </li>` : '';
     const plan = state.plan || {};
     setHTML(els.merchant, `
       <p class="shelf-ask">${here
-        ? `Compre o que vai precisar amanhã: vêm <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> clientes, e durante o dia não há onde comprar.`
-        : isNight(state) ? 'A mercadora já seguiu viagem. Ela volta amanhã à noite.' : 'A mercadora só abre a banca no fim do dia.'} Bolsa: ${coinIcon()} <strong>${esc(state.coins)}</strong></p>
+        ? L(`Compre o que vai precisar amanhã: vêm <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> clientes, e durante o dia não há onde comprar.`, `Buy what you’ll need tomorrow: <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> customers are coming, and there’s nowhere to buy during the day.`)
+        : isNight(state) ? L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.') : L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.')} ${L('Bolsa', 'Purse')}: ${coinIcon()} <strong>${esc(state.coins)}</strong></p>
       ${here ? rentNote(state) : ''}
       <ul class="hand merchant-cards">${cards}${lodoCard}</ul>`);
   }
@@ -5599,10 +6254,10 @@ function createUI(root, handlers = {}) {
     const n = index + 1;
     if (!ing) {
       return `<button type="button" class="slot is-empty" data-action="slot" data-slot="${index}"
-        aria-label="Espaço ${n} vazio: escolha uma carta de ingrediente"><span class="slot-plus" aria-hidden="true">+</span></button>`;
+        aria-label="${L(`Espaço ${n} vazio: escolha uma carta de ingrediente`, `Slot ${n} empty: choose an ingredient card`)}"><span class="slot-plus" aria-hidden="true">+</span></button>`;
     }
     return `<button type="button" class="slot card-mini" data-action="slot" data-slot="${index}" style="--ing:${BREW_COLOR[ing.id] || '#c87533'}"
-      aria-label="Espaço ${n}: ${esc(ing.name)}. Clique para tirar" title="Clique para tirar">
+      aria-label="${L(`Espaço ${n}: ${esc(ing.name)}. Clique para tirar`, `Slot ${n}: ${esc(ing.name)}. Click to remove`)}" title="${L('Clique para tirar', 'Click to remove')}">
       ${img(ing.id, 'slot-img')}<span class="slot-name">${esc(ing.name)}</span></button>`;
   }
 
@@ -5612,17 +6267,17 @@ function createUI(root, handlers = {}) {
     let reason;
     if (!a || !b) {
       reason = !a && !b
-        ? 'Escolha 2 cartas de ingrediente.'
-        : 'Falta 1 ingrediente: escolha mais uma carta.';
+        ? L('Escolha 2 cartas de ingrediente.', 'Choose 2 ingredient cards.')
+        : L('Falta 1 ingrediente: escolha mais uma carta.', '1 ingredient missing: choose one more card.');
     } else {
       const check = canMix(state, a, b);
       ready = !!(check && check.ok);
       if (ready) {
         const ia = getIngredient(a); const ib = getIngredient(b);
-        reason = a === b ? `Tudo pronto: vão 2 porções de ${ia.name}.` : `Tudo pronto: vão 1 ${ia.name} e 1 ${ib.name}.`;
-        if (isKnownFailure(state, a, b)) reason += ' O grimório lembra: essa dupla já desandou em Lodo.';
+        reason = a === b ? L(`Tudo pronto: vão 2 porções de ${ia.name}.`, `All set: 2 portions of ${ia.name}.`) : L(`Tudo pronto: vão 1 ${ia.name} e 1 ${ib.name}.`, `All set: 1 ${ia.name} and 1 ${ib.name}.`);
+        if (isKnownFailure(state, a, b)) reason += L(' O grimório lembra: essa dupla já desandou em Lodo.', ' The grimoire remembers: this pair already turned into Sludge.');
       } else {
-        reason = (check && check.error && check.error.message) || 'O caldeirão não aceita essa mistura agora.';
+        reason = (check && check.error && check.error.message) || L('O caldeirão não aceita essa mistura agora.', 'The cauldron won’t take that mixture right now.');
       }
     }
     const ca = a ? BREW_COLOR[a] : '#3b2a1c';
@@ -5640,8 +6295,8 @@ function createUI(root, handlers = {}) {
         ${slotHTML(1, b)}
       </div>
       <div class="cauldron-actions">
-        <button type="button" class="btn" data-action="clear"${disabledAttr(!hasAny, 'O caldeirão já está vazio')}>Esvaziar</button>
-        <button type="button" class="btn btn-primary btn-mix" data-action="mix" aria-describedby="mix-reason"${disabledAttr(!ready, reason)}>Misturar</button>
+        <button type="button" class="btn" data-action="clear"${disabledAttr(!hasAny, L('O caldeirão já está vazio', 'The cauldron is already empty'))}>${L('Esvaziar', 'Empty')}</button>
+        <button type="button" class="btn btn-primary btn-mix" data-action="mix" aria-describedby="mix-reason"${disabledAttr(!ready, reason)}>${L('Misturar', 'Mix')}</button>
       </div>
       <p id="mix-reason" class="reason${ready ? ' is-ready' : ''}${ready && isKnownFailure(state, a, b) ? ' is-warning' : ''}">${esc(reason)}</p>`);
   }
@@ -5660,22 +6315,22 @@ function createUI(root, handlers = {}) {
       const poor = (state.coins || 0) < ing.cost;
       const here = isMerchantHere(state);
       const why = qty < 1
-        ? (here ? `Sem ${ing.name}: compre com a mercadora` : `Sem ${ing.name}: a mercadora só vem no fim do dia`)
-        : 'O caldeirão já tem dois ingredientes: toque em um para tirá-lo';
+        ? (here ? L(`Sem ${ing.name}: compre com a mercadora`, `No ${ing.name}: buy some from the merchant`) : L(`Sem ${ing.name}: a mercadora só vem no fim do dia`, `No ${ing.name}: the merchant only comes at the end of the day`))
+        : L('O caldeirão já tem dois ingredientes: toque em um para tirá-lo', 'The cauldron already has two ingredients: tap one to remove it');
       return `
       <li class="card ing-card${qty === 0 ? ' is-empty' : ''}${inPot ? ' is-in-pot' : ''}" style="--i:${i};--ing:${BREW_COLOR[ing.id] || '#c87533'}">
         <button type="button" class="card-face" data-action="select" data-id="${esc(ing.id)}"
-          aria-label="Pôr ${esc(ing.name)} no caldeirão (${esc(qty)} em estoque)"${disabledAttr(full || qty < 1, why)}>
+          aria-label="${L(`Pôr ${esc(ing.name)} no caldeirão (${esc(qty)} em estoque)`, `Put ${esc(ing.name)} in the cauldron (${esc(qty)} in stock)`)}"${disabledAttr(full || qty < 1, why)}>
           <span class="card-count" aria-hidden="true">${esc(qty)}</span>
           ${img(ing.id, 'card-img')}
           <span class="card-name">${esc(ing.name)}</span>
           <span class="card-quality">${esc(ing.quality)}</span>
-          ${inPot ? `<span class="card-flag">no caldeirão${inPot > 1 ? ` ×${inPot}` : ''}</span>` : ''}
+          ${inPot ? `<span class="card-flag">${L('no caldeirão', 'in the cauldron')}${inPot > 1 ? ` ×${inPot}` : ''}</span>` : ''}
         </button>
         ${here
           ? `<button type="button" class="card-buy" data-action="buy" data-id="${esc(ing.id)}" data-qty="1"
-          aria-label="Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas"${disabledAttr(poor, `A bolsa não alcança: custa ${ing.cost}`)}>+1 · ${coinIcon()} ${esc(ing.cost)}</button>`
-          : `<span class="card-buy is-off" title="Durante o dia não há onde comprar: a mercadora vem no fim do dia">${qty ? 'em estoque' : 'acabou'}</span>`}
+          aria-label="${L(`Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas`, `Buy 1 ${esc(ing.name)} for ${esc(ing.cost)} coins`)}"${disabledAttr(poor, L(`A bolsa não alcança: custa ${ing.cost}`, `Not enough coins: it costs ${ing.cost}`))}>+1 · ${coinIcon()} ${esc(ing.cost)}</button>`
+          : `<span class="card-buy is-off" title="${L('Durante o dia não há onde comprar: a mercadora vem no fim do dia', 'There’s nowhere to buy during the day: the merchant comes at the end of the day')}">${qty ? L('em estoque', 'in stock') : L('acabou', 'sold out')}</span>`}
       </li>`;
     }).join(''));
   }
@@ -5683,7 +6338,7 @@ function createUI(root, handlers = {}) {
   function renderQuick(state) {
     const known = (state.discovered || []).map(getRecipe).filter(Boolean);
     setHTML(els.quick, known.length
-      ? `<p class="quick-title">Receitas do caderno (um toque para repetir)</p>
+      ? `<p class="quick-title">${L('Receitas do caderno (um toque para repetir)', 'Notebook recipes (one tap to brew again)')}</p>
          <ul class="quick-list">${known.map((r) => `<li>${remakeButton(state, r, `${img(r.id, 'mini-img')} ${esc(r.name)}`)}</li>`).join('')}</ul>`
       : '');
   }
@@ -5691,7 +6346,7 @@ function createUI(root, handlers = {}) {
   function renderResultPlaceholder() {
     const ctx = sheetCtx('caldeirao');
     const t = ctx && pickTip(['misturar'], ctx);
-    setHTML(els.result, t ? `<p class="result-empty">${esc(TIPS.find((x) => x.id === t).text)}</p>` : '<p class="result-empty">O resultado da mistura aparece aqui.</p>');
+    setHTML(els.result, t ? `<p class="result-empty">${esc(TIPS.find((x) => x.id === t).text)}</p>` : `<p class="result-empty">${L('O resultado da mistura aparece aqui.', 'The result of the mixture shows up here.')}</p>`);
   }
 
   // ---------- prateleira ----------
@@ -5701,12 +6356,12 @@ function createUI(root, handlers = {}) {
     const order = ui.farewell ? null : currentOrder(state);
     const c = order ? customerOf(order.customerId) : null;
     const head = c
-      ? `<p class="shelf-ask">Qual frasco resolve o pedido de <strong>${esc(c.name)}</strong>? Errar não gasta a poção, só custa 1 de fama.</p>
+      ? `<p class="shelf-ask">${L(`Qual frasco resolve o pedido de <strong>${esc(c.name)}</strong>? Errar não gasta a poção, só custa 1 de fama.`, `Which flask solves <strong>${esc(c.name)}</strong>’s request? A wrong guess doesn’t use up the potion, it only costs 1 fame.`)}</p>
          <blockquote class="shelf-clue">“${esc(getOrderClues(order).join(' '))}”</blockquote>`
-      : '<p class="shelf-ask">Sem ninguém no balcão agora. Dá para vender frascos para o mercador.</p>';
+      : `<p class="shelf-ask">${L('Sem ninguém no balcão agora. Dá para vender frascos para o mercador.', 'Nobody at the counter right now. You can sell flasks to the trader.')}</p>`;
     if (!ids.length) {
-      setHTML(els.shelf, `${head}<p class="empty">A prateleira está vazia. Misture ingredientes no caldeirão para encher os frascos.</p>
-        <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">Ir ao caldeirão</button>`);
+      setHTML(els.shelf, `${head}<p class="empty">${L('A prateleira está vazia. Misture ingredientes no caldeirão para encher os frascos.', 'The shelf is empty. Mix ingredients in the cauldron to fill the flasks.')}</p>
+        <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">${L('Ir ao caldeirão', 'Go to the cauldron')}</button>`);
       return;
     }
     const cards = ids.map((id, i) => {
@@ -5725,9 +6380,9 @@ function createUI(root, handlers = {}) {
         </div>
         <div class="card-btns">
           ${c && potion ? `<button type="button" class="btn btn-small btn-primary" data-action="give" data-id="${esc(id)}"
-              aria-label="Entregar ${esc(item.name)} a ${esc(c.name)}">Entregar</button>` : ''}
+              aria-label="${L(`Entregar ${esc(item.name)} a ${esc(c.name)}`, `Give ${esc(item.name)} to ${esc(c.name)}`)}">${L('Entregar', 'Give')}</button>` : ''}
           <button type="button" class="btn btn-small btn-coin" data-action="sell" data-id="${esc(id)}"
-            aria-label="Vender 1 ${esc(item.name)} por ${esc(coins(price))}"><span class="btn-word">Vender · </span>${coinIcon()} ${esc(price)}</button>
+            aria-label="${L(`Vender 1 ${esc(item.name)} por ${esc(coins(price))}`, `Sell 1 ${esc(item.name)} for ${esc(coins(price))}`)}"><span class="btn-word">${L('Vender', 'Sell')} · </span>${coinIcon()} ${esc(price)}</button>
         </div>
       </li>`;
     }).join('');
@@ -5739,7 +6394,7 @@ function createUI(root, handlers = {}) {
     const total = Math.ceil(ms / 1000);
     const m = Math.floor(total / 60);
     const sec = total % 60;
-    return m ? `${m} min${sec >= 30 ? ' e meio' : ''}` : 'menos de 1 min';
+    return m ? (sec >= 30 ? L(`${m} min e meio`, `${m} and a half min`) : `${m} min`) : L('menos de 1 min', 'less than 1 min');
   }
 
   function renderTools(state) {
@@ -5756,9 +6411,9 @@ function createUI(root, handlers = {}) {
         </div>
         <div class="card-btns">
         ${has
-          ? '<span class="stamp-owned">Na botica</span>'
+          ? `<span class="stamp-owned">${L('Na botica', 'In the shop')}</span>`
           : `<button type="button" class="btn btn-small btn-coin" data-action="upgrade" data-id="${esc(u.id)}"
-              aria-label="Comprar ${esc(u.name)} por ${esc(u.cost)} moedas"${disabledAttr(poor, `A bolsa não alcança: custa ${u.cost}`)}>Comprar · ${coinIcon()} ${esc(u.cost)}</button>`}
+              aria-label="${L(`Comprar ${esc(u.name)} por ${esc(u.cost)} moedas`, `Buy ${esc(u.name)} for ${esc(u.cost)} coins`)}"${disabledAttr(poor, L(`A bolsa não alcança: custa ${u.cost}`, `Not enough coins: it costs ${u.cost}`))}>${L('Comprar', 'Buy')} · ${coinIcon()} ${esc(u.cost)}</button>`}
         </div>
       </li>`;
     }).join('');
@@ -5768,13 +6423,13 @@ function createUI(root, handlers = {}) {
     if (!check.ok) {
       const code = check.error && check.error.code;
       reason = (check.error && check.error.message)
-        || (code === 'LOCKED' ? 'Compre a Lupa Arcana para estudar dicas pagas.' : 'Nenhuma dica disponível agora.');
+        || (code === 'LOCKED' ? L('Compre a Lupa Arcana para estudar dicas pagas.', 'Buy the Arcane Lens to study paid hints.') : L('Nenhuma dica disponível agora.', 'No hints available right now.'));
     }
     let last = '';
     if (ui.lastHint) {
       const ing = getIngredient(ui.lastHint.ingredientId);
       const rec = getItem(ui.lastHint.recipeId);
-      if (ing && rec) last = `<p class="hint-last"><strong>${esc(rec.name)}</strong> leva ${img(ing.id, 'mini-img')} ${esc(ing.name)} + ???</p>`;
+      if (ing && rec) last = `<p class="hint-last"><strong>${esc(rec.name)}</strong> ${L('leva', 'takes')} ${img(ing.id, 'mini-img')} ${esc(ing.name)} + ???</p>`;
     }
     const now = Date.now();
     const free = canRequestFreeHint(state, now) || { ok: false };
@@ -5782,31 +6437,31 @@ function createUI(root, handlers = {}) {
     if (!free.ok) {
       const code = free.error && free.error.code;
       freeReason = code === 'COOLDOWN'
-        ? `A próxima dica grátis chega em ${formatWait(freeHintWaitMs(state, now))}.`
-        : ((free.error && free.error.message) || 'Nenhuma dica grátis agora.');
+        ? L(`A próxima dica grátis chega em ${formatWait(freeHintWaitMs(state, now))}.`, `The next free hint arrives in ${formatWait(freeHintWaitMs(state, now))}.`)
+        : ((free.error && free.error.message) || L('Nenhuma dica grátis agora.', 'No free hint right now.'));
     }
     const toolsCtx = sheetCtx('utensilios');
     setHTML(els.tools, `
       ${toolsCtx ? tipHTML(pickTip(['dica-gratis'], toolsCtx)) : ''}
-      <h3 class="tools-title">Dicas</h3>
+      <h3 class="tools-title">${L('Dicas', 'Hints')}</h3>
       <ul class="hint-row">
         <li class="hint-card">
           ${img('vela', 'hint-img')}
           <div>
-            <button type="button" class="btn btn-primary" data-action="free-hint" aria-describedby="free-hint-reason"${disabledAttr(!free.ok, freeReason)}>Dica grátis</button>
-            <p id="free-hint-reason" class="reason">${free.ok ? 'Pronta! A cada 4 minutos a vela acende uma dica grátis.' : esc(freeReason)}</p>
+            <button type="button" class="btn btn-primary" data-action="free-hint" aria-describedby="free-hint-reason"${disabledAttr(!free.ok, freeReason)}>${L('Dica grátis', 'Free hint')}</button>
+            <p id="free-hint-reason" class="reason">${free.ok ? L('Pronta! A cada 4 minutos a vela acende uma dica grátis.', 'Ready! Every 4 minutes the candle lights up a free hint.') : esc(freeReason)}</p>
           </div>
         </li>
         <li class="hint-card">
           ${img('up-lupa', 'hint-img')}
           <div>
-            <button type="button" class="btn" data-action="hint" aria-describedby="hint-reason"${disabledAttr(!check.ok, reason)}>Dica da Lupa · ${coinIcon()} ${esc(CONFIG.HINT_COST)}</button>
-            <p id="hint-reason" class="reason">${check.ok ? 'Revela 1 ingrediente de uma poção ainda fora do caderno.' : esc(reason)}</p>
+            <button type="button" class="btn" data-action="hint" aria-describedby="hint-reason"${disabledAttr(!check.ok, reason)}>${L('Dica da Lupa', 'Lens hint')} · ${coinIcon()} ${esc(CONFIG.HINT_COST)}</button>
+            <p id="hint-reason" class="reason">${check.ok ? L('Revela 1 ingrediente de uma poção ainda fora do caderno.', 'Reveals 1 ingredient of a potion not yet in the notebook.') : esc(reason)}</p>
           </div>
         </li>
       </ul>
       ${last}
-      <h3 class="tools-title">Utensílios da botica</h3>
+      <h3 class="tools-title">${L('Utensílios da botica', 'Apothecary tools')}</h3>
       <ul class="hand tool-cards">${ups}</ul>`);
   }
 
@@ -5822,7 +6477,7 @@ function createUI(root, handlers = {}) {
       t.tabIndex = on ? 0 : -1;
     }
     const title = byId('h-book');
-    const text = notes ? 'Anotações da boticária' : ings ? 'Caderno de ingredientes' : 'Livro de receitas';
+    const text = notes ? L('Anotações da boticária', 'The apothecary’s notes') : ings ? L('Caderno de ingredientes', 'Ingredient notebook') : L('Livro de receitas', 'Recipe book');
     if (title && title.textContent !== text) title.textContent = text;
   }
 
@@ -5868,8 +6523,8 @@ function createUI(root, handlers = {}) {
       const clue = sludgeClue(st, ui.lastPair[0], ui.lastPair[1]);
       const ing = clue ? getIngredient(clue.ingredientId) : null;
       clueText = ing
-        ? `${ing.name} borbulhou de leve: pede algo ${clue.quality}.`
-        : 'Esses ingredientes já contaram todos os seus segredos.';
+        ? L(`${ing.name} borbulhou de leve: pede algo ${clue.quality}.`, `${ing.name} bubbled faintly: it wants something ${clue.quality}.`)
+        : L('Esses ingredientes já contaram todos os seus segredos.', 'These ingredients have already told all their secrets.');
     }
     const particles = isNew
       ? `<span class="particles" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<span class="particle" style="--i:${i}"></span>`).join('')}</span>`
@@ -5881,16 +6536,16 @@ function createUI(root, handlers = {}) {
     const html = `
       <div class="result-card card reveal${isNew ? ' is-new' : ''}${sludge ? ' is-sludge' : ''} rarity-${esc(item.rarity)}">
         ${particles}
-        ${isNew ? '<p class="stamp-new">Nova página!</p>' : ''}
+        ${isNew ? `<p class="stamp-new">${L('Nova página!', 'New page!')}</p>` : ''}
         <span class="seal seal-${esc(item.rarity)}" title="${esc(rarityLabel(item.rarity))}"></span>
         ${img(item.id, 'result-img')}
         <p class="result-name">${esc(item.name)}</p>
-        <p class="result-meta">${esc(rarityLabel(item.rarity))} · vende por ${coinIcon()} ${esc(price)}</p>
-        ${sludge ? `<p class="result-note">A mistura desandou… mas o Lodo ainda vale uma moedinha.</p>${clueText ? `<p class="result-clue">${esc(clueText)}</p>` : ''}` : ''}
-        ${result.free ? '<p class="result-free">O Caldeirão Eficiente devolveu os ingredientes!</p>' : ''}
-        ${result.double ? '<p class="result-free">O Alambique Duplo encheu dois frascos!</p>' : ''}
+        <p class="result-meta">${esc(rarityLabel(item.rarity))} · ${L('vende por', 'sells for')} ${coinIcon()} ${esc(price)}</p>
+        ${sludge ? `<p class="result-note">${L('A mistura desandou… mas o Lodo ainda vale uma moedinha.', 'The mixture went wrong… but Sludge is still worth a little coin.')}</p>${clueText ? `<p class="result-clue">${esc(clueText)}</p>` : ''}` : ''}
+        ${result.free ? `<p class="result-free">${L('O Caldeirão Eficiente devolveu os ingredientes!', 'The Efficient Cauldron gave the ingredients back!')}</p>` : ''}
+        ${result.double ? `<p class="result-free">${L('O Alambique Duplo encheu dois frascos!', 'The Double Still filled two flasks!')}</p>` : ''}
         ${result.xpGained ? `<p class="result-xp">+${esc(result.xpGained)} XP</p>` : ''}
-        ${!sludge && order ? '<button type="button" class="btn btn-small btn-primary" data-action="close-sheet">Levar ao balcão</button>' : ''}
+        ${!sludge && order ? `<button type="button" class="btn btn-small btn-primary" data-action="close-sheet">${L('Levar ao balcão', 'Take it to the counter')}</button>` : ''}
       </div>`;
     cache.set(els.result, html);
     els.result.innerHTML = html; // sempre recria para reiniciar a animação
@@ -5898,11 +6553,11 @@ function createUI(root, handlers = {}) {
     if (pot) { pot.classList.remove('is-stirring'); void pot.offsetWidth; pot.classList.add('is-stirring'); }
 
     let msg;
-    if (sludge) msg = `A mistura desandou em ${item.name} (vende por ${coins(price)}). ${clueText}`;
-    else msg = `${isNew ? 'Nova página no caderno! ' : ''}Do caldeirão saiu ${item.name}, poção ${rarityLabel(item.rarity).toLowerCase()} que vale ${coins(price)}.`;
+    if (sludge) msg = L(`A mistura desandou em ${item.name} (vende por ${coins(price)}). ${clueText}`, `The mixture turned into ${item.name} (sells for ${coins(price)}). ${clueText}`);
+    else msg = L(`${isNew ? 'Nova página no caderno! ' : ''}Do caldeirão saiu ${item.name}, poção ${rarityLabel(item.rarity).toLowerCase()} que vale ${coins(price)}.`, `${isNew ? 'New page in the notebook! ' : ''}Out of the cauldron came ${item.name}, a ${rarityLabel(item.rarity).toLowerCase()} potion worth ${coins(price)}.`);
     if (result.xpGained) msg += ` +${result.xpGained} XP.`;
-    if (result.free) msg += ' O Caldeirão Eficiente devolveu os ingredientes!';
-    if (result.double) msg += ' O Alambique Duplo encheu dois frascos!';
+    if (result.free) msg += L(' O Caldeirão Eficiente devolveu os ingredientes!', ' The Efficient Cauldron gave the ingredients back!');
+    if (result.double) msg += L(' O Alambique Duplo encheu dois frascos!', ' The Double Still filled two flasks!');
     notify(msg, sludge ? 'info' : 'success');
   }
 
@@ -5981,7 +6636,7 @@ function createUI(root, handlers = {}) {
     rerender();
     const ing = getIngredient(result.ingredientId);
     const rec = getItem(result.recipeId);
-    if (ing && rec) notify(`Anotado${result.repeated ? ' de novo' : ''}: ${rec.name} leva ${ing.name} e um ingrediente secreto.`, 'success');
+    if (ing && rec) notify(L(`Anotado${result.repeated ? ' de novo' : ''}: ${rec.name} leva ${ing.name} e um ingrediente secreto.`, `Noted${result.repeated ? ' again' : ''}: ${rec.name} takes ${ing.name} and a secret ingredient.`), 'success');
   }
 
   // ---------- folhas (livro, caldeirão, prateleira, utensílios) ----------
@@ -6032,8 +6687,8 @@ function createUI(root, handlers = {}) {
     if (ui.sheet) closeSheet({ restore: false });
     const desc = doc.getElementById('victory-desc');
     if (desc) desc.textContent = IS_DEMO
-      ? `As ${TOTAL()} receitas da demo estão no caderno. A botica segue aberta até o fim do dia ${CONFIG.DEMO_LAST_DAY}: atenda a freguesia e encha a bolsa.`
-      : `As ${TOTAL()} receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.`;
+      ? L(`As ${TOTAL()} receitas da demo estão no caderno. A botica segue aberta até o fim do dia ${CONFIG.DEMO_LAST_DAY}: atenda a freguesia e encha a bolsa.`, `All ${TOTAL()} demo recipes are in the notebook. The apothecary stays open until the end of day ${CONFIG.DEMO_LAST_DAY}: serve your customers and fill your purse.`)
+      : L(`As ${TOTAL()} receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.`, `All ${TOTAL()} recipes are in the notebook. The shop stays open: serve your customers, sell potions and try to beat your coin record.`);
     ui.dialogOpener = doc.activeElement;
     try { if (!d.open) d.showModal(); } catch { d.setAttribute('open', ''); }
   }
@@ -6070,7 +6725,7 @@ function createUI(root, handlers = {}) {
   function selectIngredient(id) {
     const i = ui.selection.indexOf(null);
     if (i === -1) {
-      notify('O caldeirão já tem dois ingredientes. Toque em um deles para tirá-lo.', 'info');
+      notify(L('O caldeirão já tem dois ingredientes. Toque em um deles para tirá-lo.', 'The cauldron already has two ingredients. Tap one of them to remove it.'), 'info');
       return;
     }
     ui.selection[i] = id;
@@ -6113,7 +6768,7 @@ function createUI(root, handlers = {}) {
         else {
           const first = els.hand && els.hand.querySelector('.card-face:not(:disabled)');
           if (first) first.focus();
-          notify('Espaço vazio: escolha uma carta de ingrediente.', 'info');
+          notify(L('Espaço vazio: escolha uma carta de ingrediente.', 'Empty slot: choose an ingredient card.'), 'info');
         }
         break;
       }
@@ -6216,11 +6871,11 @@ function createUI(root, handlers = {}) {
     ui.timers = [];
     if (ui.sheet) closeSheet({ restore: false });
     const set = (id, html) => { const el = doc.getElementById(id); if (el) el.innerHTML = html; };
-    set('gameover-sub', `O senhorio levou a chave. Ficaram ${esc(r.debt)} ${r.debt === 1 ? 'moeda' : 'moedas'} de aluguel atrasado.`);
+    set('gameover-sub', L(`O senhorio levou a chave. Ficaram ${esc(r.debt)} ${r.debt === 1 ? 'moeda' : 'moedas'} de aluguel atrasado.`, `The landlord took the key. ${esc(r.debt)} ${r.debt === 1 ? 'coin' : 'coins'} of rent were left unpaid.`));
     const portrait = (globalThis.matchMedia && matchMedia('(orientation: portrait), (max-aspect-ratio: 4/5)').matches);
     const rows = portrait
-      ? [['Dias', r.day], ['Clientes', r.served], ['Poções', r.brewed], ['Receitas', `${r.found} de ${r.total}`]]
-      : [['Dias de loja aberta', r.day], ['Clientes atendidos', r.served], ['Poções preparadas', r.brewed], ['Receitas descobertas', `${r.found} de ${r.total}`]];
+      ? [[L('Dias', 'Days'), r.day], [L('Clientes', 'Customers'), r.served], [L('Poções', 'Potions'), r.brewed], [L('Receitas', 'Recipes'), `${r.found} ${L('de', 'of')} ${r.total}`]]
+      : [[L('Dias de loja aberta', 'Days the shop was open'), r.day], [L('Clientes atendidos', 'Customers served'), r.served], [L('Poções preparadas', 'Potions brewed'), r.brewed], [L('Receitas descobertas', 'Recipes discovered'), `${r.found} ${L('de', 'of')} ${r.total}`]];
     set('gameover-dl', rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join(''));
     if (els.app) els.app.hidden = true;
     gameover.hidden = false;
@@ -6257,7 +6912,7 @@ function createUI(root, handlers = {}) {
     const set = (id, html) => { const el = doc.getElementById(id); if (el) el.innerHTML = html; };
     const letter = demoLetter(r);
     set('fimdemo-carta', `<p class="fimdemo-saudacao">${esc(letter.greeting)}</p>${letter.paragraphs.map((t) => `<p>${esc(t)}</p>`).join('')}<p class="fimdemo-assinatura">${esc(letter.signature)}</p>`);
-    const rows = [['Dias', r.day], ['Clientes', r.served], ['Receitas', `${r.found} de ${r.total}`], ['Moedas', r.coins], ['Fama', r.fame], ['Dias perfeitos', r.perfectDays]];
+    const rows = [[L('Dias', 'Days'), r.day], [L('Clientes', 'Customers'), r.served], [L('Receitas', 'Recipes'), `${r.found} ${L('de', 'of')} ${r.total}`], [L('Moedas', 'Coins'), r.coins], [L('Fama', 'Fame'), r.fame], [L('Dias perfeitos', 'Perfect days'), r.perfectDays]];
     set('fimdemo-dl', rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join(''));
     if (els.app) els.app.hidden = true;
     fimdemo.hidden = false;
@@ -6299,6 +6954,7 @@ __mods.menu = (() => {
 // Menu principal (tela inicial): botões "fita marcadora" sobre o fundo em xilogravura,
 // mais as páginas de papel de confirmação, opções, créditos e livro de receitas.
 const { buildBookHTML } = __mods.ui;
+const { LANG } = __mods.idioma;
 
 function createMenu(doc, handlers) {
   const byId = (id) => doc.getElementById(id);
@@ -6375,12 +7031,15 @@ function createMenu(doc, handlers) {
     if (opt.relaxed) opt.relaxed.checked = !!o.relaxed;
     for (const r of doc.querySelectorAll('input[name="opt-size"]')) r.checked = r.value === (o.textSize || 'normal');
     for (const r of doc.querySelectorAll('input[name="opt-quality"]')) r.checked = r.value === (o.quality || 'alta');
+    for (const r of doc.querySelectorAll('input[name="opt-lang"]')) r.checked = r.value === LANG;
   }
 
   function readOptions() {
     const size = doc.querySelector('input[name="opt-size"]:checked');
     const quality = doc.querySelector('input[name="opt-quality"]:checked');
+    const lang = doc.querySelector('input[name="opt-lang"]:checked');
     return {
+      lang: lang ? lang.value : LANG,
       sound: opt.sound.checked,
       volume: Number(opt.volume.value),
       reduceMotion: opt.motion.checked,
@@ -6441,6 +7100,10 @@ function createMenu(doc, handlers) {
       next.focus();
     }
   });
+
+  // v1.30 — botão de idioma no canto do menu: recarrega o jogo no outro idioma
+  const langBtn = byId('menu-lang');
+  if (langBtn) langBtn.addEventListener('click', () => call('onLanguage', langBtn.dataset.lang));
 
   // ---------- páginas de papel ----------
   for (const d of Object.values(dialogs)) {
@@ -6596,11 +7259,14 @@ __mods.story = (() => {
 // História de origem da botica e roteiro do tutorial do primeiro dia (só texto e regras puras, sem DOM).
 // Texto aprovado pelo Rafael em 21/11/2026 (documento "Alquimia de Bolso: a história da loja").
 const { fillOrders } = __mods.progression;
+// v1.30: o inglês da história e do tutorial fica em en.js.
+const { EN } = __mods.idioma;
+const { MENTOR_EN, STORY_PAGES_EN, LETTER_EN, TUTORIAL_NOTES_EN, TUTORIAL_END_EN } = __mods.en;
 
-const MENTOR = Object.freeze({ name: 'Mestra Benvinda', village: 'Ladeira Torta' });
+const MENTOR_PT = Object.freeze({ name: 'Mestra Benvinda', village: 'Ladeira Torta' });
 
 // Páginas da abertura (Novo jogo). `art` é uma vinheta já existente no jogo.
-const STORY_PAGES = Object.freeze([
+const STORY_PAGES_PT = Object.freeze([
   {
     id: 'chegada',
     kicker: 'Ladeira Torta, há quarenta invernos',
@@ -6643,7 +7309,7 @@ const STORY_PAGES = Object.freeze([
   },
 ]);
 
-const LETTER = Object.freeze({
+const LETTER_PT = Object.freeze({
   greeting: 'Minha querida,',
   paragraphs: [
     'A botica agora é sua. Não deixei receita nenhuma, de propósito. Você vai descobrir as doze do jeito que eu descobri: juntando duas coisas e prestando atenção no que sai do caldeirão.',
@@ -6677,7 +7343,7 @@ function seedTutorialDay(state, rng = Math.random) {
 }
 
 // Bilhetes da Mestra na margem do caderno, um por passo do tutorial.
-const TUTORIAL_NOTES = Object.freeze({
+const TUTORIAL_NOTES_PT = Object.freeze({
   balcao: {
     title: 'A primeira freguesa',
     text: 'Esta é a Vovó Quitéria, a freguesa mais antiga da botica. Repare: ela não diz o nome da poção, só conta o problema. Mão cortada pede algo que feche a ferida.',
@@ -6742,7 +7408,7 @@ const TUTORIAL_NOTES = Object.freeze({
   },
 });
 
-const TUTORIAL_END = Object.freeze({
+const TUTORIAL_END_PT = Object.freeze({
   title: 'O primeiro dia acabou',
   text: 'Daqui em diante, não deixo mais bilhetes. A botica é sua de verdade.',
   tips: [
@@ -6754,7 +7420,16 @@ const TUTORIAL_END = Object.freeze({
   action: 'Abrir a loja',
 });
 
-return { MENTOR, STORY_PAGES, LETTER, TUTORIAL_ORDER, TUTORIAL_PAIR, seedTutorialDay, TUTORIAL_NOTES, TUTORIAL_END };
+// v1.30 — textos no idioma do jogo (as páginas da história mantêm id e arte; só o texto muda)
+const MENTOR = EN ? MENTOR_EN : MENTOR_PT;
+const STORY_PAGES = EN
+  ? Object.freeze(STORY_PAGES_PT.map((p) => Object.freeze({ ...p, ...STORY_PAGES_EN[p.id] })))
+  : STORY_PAGES_PT;
+const LETTER = EN ? LETTER_EN : LETTER_PT;
+const TUTORIAL_NOTES = EN ? TUTORIAL_NOTES_EN : TUTORIAL_NOTES_PT;
+const TUTORIAL_END = EN ? TUTORIAL_END_EN : TUTORIAL_END_PT;
+
+return { TUTORIAL_ORDER, TUTORIAL_PAIR, seedTutorialDay, MENTOR, STORY_PAGES, LETTER, TUTORIAL_NOTES, TUTORIAL_END };
 })();
 })();
 </script>
@@ -6770,6 +7445,7 @@ __mods.abertura = (() => {
 const { INGREDIENTS } = __mods.data;
 const { itemArt } = __mods.art;
 const { STORY_PAGES, LETTER, TUTORIAL_NOTES, TUTORIAL_END, TUTORIAL_ORDER } = __mods.story;
+const { L } = __mods.idioma;
 
 const TUTORIAL_KEY = 'alquimia-de-bolso-tutorial-v1';
 
@@ -6798,7 +7474,7 @@ function cleanName(raw) {
 // O nome assinado na contracapa aparece no subtítulo do menu ("o caderno de Rafa").
 function applyBookName(doc, name) {
   const sub = doc.querySelector('.menu-logo small');
-  if (sub) sub.textContent = name ? `o caderno de ${name}` : 'o caderno da boticária';
+  if (sub) sub.textContent = name ? L(`o caderno de ${name}`, `${name}’s notebook`) : L('o caderno da boticária', 'the apothecary’s notebook');
 }
 
 function artHTML(kind) {
@@ -6847,8 +7523,8 @@ function createIntro(doc) {
   function letterHTML() {
     return `
       <article class="intro-page intro-letter" data-page="carta">
-        <p class="intro-kicker">Em cima do caderno, uma carta</p>
-        <h2 id="intro-title" class="sr-only">A carta da Mestra Benvinda</h2>
+        <p class="intro-kicker">${L('Em cima do caderno, uma carta', 'On top of the notebook, a letter')}</p>
+        <h2 id="intro-title" class="sr-only">${L('A carta da Mestra Benvinda', 'The letter from Mistress Benvinda')}</h2>
         <div class="letter">
           <p class="letter-greet">${esc(LETTER.greeting)}</p>
           ${LETTER.paragraphs.map((t, i) => `<p class="letter-p" style="--d:${i}">${esc(t)}</p>`).join('')}
@@ -6862,14 +7538,14 @@ function createIntro(doc) {
     return `
       <article class="intro-page intro-sign" data-page="assinatura">
         ${artHTML('sino')}
-        <p class="intro-kicker">A contracapa do caderno</p>
-        <h2 id="intro-title" class="intro-title">Assine o seu nome</h2>
-        <p class="intro-text">O caderno agora é seu. Escreva o seu nome na contracapa, logo abaixo do nome da Mestra.</p>
+        <p class="intro-kicker">${L('A contracapa do caderno', 'The inside cover of the notebook')}</p>
+        <h2 id="intro-title" class="intro-title">${L('Assine o seu nome', 'Sign your name')}</h2>
+        <p class="intro-text">${L('O caderno agora é seu. Escreva o seu nome na contracapa, logo abaixo do nome da Mestra.', 'The notebook is yours now. Write your name on the inside cover, just below the Mistress’s name.')}</p>
         <form class="sign-form" data-intro="sign">
-          <label class="sign-label" for="intro-name">Este caderno pertence a</label>
+          <label class="sign-label" for="intro-name">${L('Este caderno pertence a', 'This notebook belongs to')}</label>
           <input id="intro-name" class="sign-input" type="text" maxlength="24" autocomplete="off" spellcheck="false"
-            placeholder="seu nome" value="${esc(name)}">
-          <p class="sign-hint">Pode deixar em branco. A freguesia vai chamar você de boticária de qualquer jeito.</p>
+            placeholder="${L('seu nome', 'your name')}" value="${esc(name)}">
+          <p class="sign-hint">${L('Pode deixar em branco. A freguesia vai chamar você de boticária de qualquer jeito.', 'You can leave it blank. The customers will call you apothecary either way.')}</p>
         </form>
       </article>`;
   }
@@ -6884,9 +7560,9 @@ function createIntro(doc) {
         <footer class="intro-foot">
           ${dots()}
           <div class="intro-btns">
-            ${page > 0 ? '<button type="button" class="btn btn-small btn-quiet" data-intro="back">Voltar</button>' : ''}
-            ${!last ? '<button type="button" class="btn btn-small btn-quiet" data-intro="skip">Pular história</button>' : ''}
-            <button type="button" class="btn btn-primary" data-intro="next">${last ? 'Abrir a botica' : page === STORY_PAGES.length ? 'Guardar a carta' : 'Continuar'}</button>
+            ${page > 0 ? `<button type="button" class="btn btn-small btn-quiet" data-intro="back">${L('Voltar', 'Back')}</button>` : ''}
+            ${!last ? `<button type="button" class="btn btn-small btn-quiet" data-intro="skip">${L('Pular história', 'Skip story')}</button>` : ''}
+            <button type="button" class="btn btn-primary" data-intro="next">${last ? L('Abrir a botica', 'Open the apothecary') : page === STORY_PAGES.length ? L('Guardar a carta', 'Put the letter away') : L('Continuar', 'Continue')}</button>
           </div>
         </footer>
       </div>`;
@@ -7035,13 +7711,13 @@ function createTutorial(doc, { getState } = {}) {
     if (key !== shownKey) {
       shownKey = key;
       note.innerHTML = `
-        <p class="tut-from"><img src="${itemArt('vela')}" alt="" aria-hidden="true"> Bilhete da Mestra</p>
+        <p class="tut-from"><img src="${itemArt('vela')}" alt="" aria-hidden="true"> ${L('Bilhete da Mestra', 'Note from the Mistress')}</p>
         <p class="tut-title">${esc(n.title)}</p>
         ${n.quote ? `<p class="tut-quote">“${esc(n.quote)}”</p>` : ''}
         <p class="tut-text">${esc(n.text)}</p>
         <div class="tut-btns">
           ${n.action ? `<button type="button" class="btn btn-small btn-primary" data-tut="ok">${esc(n.action)}</button>` : ''}
-          <button type="button" class="tut-skip" data-tut="skip">Pular tutorial</button>
+          <button type="button" class="tut-skip" data-tut="skip">${L('Pular tutorial', 'Skip tutorial')}</button>
         </div>`;
       note.classList.remove('is-new');
       void note.offsetWidth;
@@ -7136,7 +7812,7 @@ function createTutorial(doc, { getState } = {}) {
       <div class="intro-sheet">
         <article class="intro-page">
           ${artHTML('caldeirao')}
-          <p class="intro-kicker">${esc(name ? `Caderno de ${name}` : 'Caderno da boticária')}</p>
+          <p class="intro-kicker">${esc(name ? L(`Caderno de ${name}`, `${name}’s notebook`) : L('Caderno da boticária', 'The apothecary’s notebook'))}</p>
           <h2 id="tut-end-title" class="intro-title">${esc(TUTORIAL_END.title)}</h2>
           <p class="intro-text">${esc(TUTORIAL_END.text)}</p>
           <ul class="tut-tips">${TUTORIAL_END.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
@@ -7673,10 +8349,11 @@ const { createIntro, createTutorial } = __mods.abertura;
 const { createScrollbars } = __mods.rolagem;
 const { createNightShader } = __mods.noite;
 const { createBackButton } = __mods.voltar;
+const { L, aplicaIdiomaHTML, guardaIdioma, LANG } = __mods.idioma;
 
 const audio = createAudio();
 const getUpgradeName = (id) => UPGRADES.find((u) => u.id === id)?.name ?? id;
-const getCustomerName = (id) => CUSTOMERS.find((c) => c.id === id)?.name ?? 'O cliente';
+const getCustomerName = (id) => CUSTOMERS.find((c) => c.id === id)?.name ?? L('O cliente', 'The customer');
 const root = document.documentElement;
 let state;
 let options;
@@ -7695,7 +8372,17 @@ function applyOptions() {
   root.dataset.quality = options.quality;
 }
 
+// v1.30 — troca de idioma: guarda a escolha, salva o caderno e recarrega o jogo no idioma novo.
+function setLanguage(lang) {
+  if (!lang || lang === LANG) return false;
+  if (!guardaIdioma(lang)) return false;
+  if (hasSave()) persist();
+  location.reload();
+  return true;
+}
+
 function setOptions(next) {
+  if (next && setLanguage(next.lang)) return;
   const wasOn = options.sound;
   options = sanitizeOptions(next);
   saveOptions(options);
@@ -7735,7 +8422,7 @@ function checkVictory() {
 // Executa uma ação pura da engine/progressão: em falha nada muda.
 function run(outcome, onSuccess) {
   if (!outcome || !outcome.ok) {
-    const message = outcome?.error?.message || 'Isso não dá para fazer agora.';
+    const message = outcome?.error?.message || L('Isso não dá para fazer agora.', 'You can’t do that right now.');
     ui.notify(message, 'error');
     audio.play('error');
     return false;
@@ -7768,7 +8455,7 @@ const handlers = {
     run(buyFromMerchant(state, ingredientId, qty), (r) => {
       audio.play('coin');
       const ing = getIngredient(r.ingredientId);
-      ui.notify(`A mercadora embrulhou ${r.qty} ${ing ? ing.name : r.ingredientId} por ${r.cost} moedas.`, 'info');
+      ui.notify(L(`A mercadora embrulhou ${r.qty} ${ing ? ing.name : r.ingredientId} por ${r.cost} moedas.`, `The merchant wrapped up ${r.qty} ${ing ? ing.name : r.ingredientId} for ${r.cost} coins.`), 'info');
     });
   },
   // v1.26 — a mercadora leva o Lodo Instável por um preço melhor que a prateleira
@@ -7776,8 +8463,8 @@ const handlers = {
     run(sellSludgeToMerchant(state), (r) => {
       audio.play('coin');
       ui.notify(r.left > 0
-        ? `A mercadora levou um Lodo Instável por ${r.price} moedas. "Serve para calafetar barco", diz ela.`
-        : `A mercadora levou um Lodo Instável por ${r.price} moedas. Por hoje, a carroça não leva mais.`, 'info');
+        ? L(`A mercadora levou um Lodo Instável por ${r.price} moedas. "Serve para calafetar barco", diz ela.`, `The merchant took an Unstable Sludge for ${r.price} coins. "Good for caulking boats", she says.`)
+        : L(`A mercadora levou um Lodo Instável por ${r.price} moedas. Por hoje, a carroça não leva mais.`, `The merchant took an Unstable Sludge for ${r.price} coins. The cart can’t take any more today.`), 'info');
     });
   },
   onDismiss(orderId) {
@@ -7785,14 +8472,14 @@ const handlers = {
     if (outcome.ok) ui.showDismiss(outcome.result);
     run(outcome, () => {
       audio.play('error');
-      ui.notify('O cliente foi embora sem poção (−1 de fama).', 'error');
+      ui.notify(L('O cliente foi embora sem poção (−1 de fama).', 'The customer left without a potion (−1 fame).'), 'error');
     });
   },
   // v1.27 — o senhorio cobra o aluguel atrasado
   onPayLandlord() {
     run(payLandlord(state), (r) => {
       audio.play('coin');
-      ui.notify(`Você pagou ${r.paid} moedas de aluguel atrasado. O senhorio conferiu as moedas, tirou o chapéu e foi embora. A mercadora já vem chegando.`, 'success');
+      ui.notify(L(`Você pagou ${r.paid} moedas de aluguel atrasado. O senhorio conferiu as moedas, tirou o chapéu e foi embora. A mercadora já vem chegando.`, `You paid ${r.paid} coins of overdue rent. The landlord counted the coins, tipped his hat and left. The merchant is on her way.`), 'success');
     });
   },
   onEvict() {
@@ -7811,7 +8498,7 @@ const handlers = {
     persist();
     ui.hideGameOver();
     ui.resetView();
-    showGame('A botica reabriu num cômodo novo. As receitas do caderno vieram junto.', 'success');
+    showGame(L('A botica reabriu num cômodo novo. As receitas do caderno vieram junto.', 'The apothecary reopened in a new room. The notebook’s recipes came along.'), 'success');
   },
   onGameOverMenu() {
     state = fillOrders(setRelaxed(restartAfterEviction(state, createInitialState()), options.relaxed));
@@ -7841,7 +8528,7 @@ const handlers = {
   onNextDay() {
     run(startNextDay(state), (r) => {
       audio.play('discover');
-      ui.notify(`Dia ${r.day}: a loja abriu e ${r.customers} clientes devem passar hoje.`, 'success');
+      ui.notify(L(`Dia ${r.day}: a loja abriu e ${r.customers} clientes devem passar hoje.`, `Day ${r.day}: the shop is open and ${r.customers} customers should come by today.`), 'success');
       tutorial.event('nextDay', r);
     });
   },
@@ -7857,7 +8544,7 @@ const handlers = {
     run(sellItem(state, itemId), (r) => {
       audio.play('coin');
       const item = getItem(r.itemId);
-      ui.notify(`${item ? item.name : r.itemId} vendido no balcão por ${r.price} ${r.price === 1 ? 'moeda' : 'moedas'}.`, 'success');
+      ui.notify(L(`${item ? item.name : r.itemId} vendido no balcão por ${r.price} ${r.price === 1 ? 'moeda' : 'moedas'}.`, `${item ? item.name : r.itemId} sold at the counter for ${r.price} ${r.price === 1 ? 'coin' : 'coins'}.`), 'success');
     });
   },
   onDeliver(orderId, potionId) {
@@ -7871,19 +8558,19 @@ const handlers = {
       tutorial.event('deliver', r);
       if (r.correct) {
         audio.play('coin');
-        ui.notify(`Acertou! ${name} era o remédio certo. +${r.reward + (r.tip || 0)} moedas${r.bonus ? ` (${r.bonus} de bônus pela receita nova)` : ''}${r.tip ? ` (${r.tip} de gorjeta pela rapidez)` : ''}.`, 'success');
+        ui.notify(L(`Acertou! ${name} era o remédio certo. +${r.reward + (r.tip || 0)} moedas${r.bonus ? ` (${r.bonus} de bônus pela receita nova)` : ''}${r.tip ? ` (${r.tip} de gorjeta pela rapidez)` : ''}.`, `Right on! ${name} was the right remedy. +${r.reward + (r.tip || 0)} coins${r.bonus ? ` (${r.bonus} bonus for the new recipe)` : ''}${r.tip ? ` (${r.tip} tip for speed)` : ''}.`), 'success');
       } else {
         audio.play('error');
         ui.notify(r.revealed
-          ? `${name} não resolve. Agora o pedido ficou claro (−1 de fama; o frasco voltou à prateleira).`
-          : `${name} não resolve. O cliente explicou melhor (−1 de fama; o frasco voltou à prateleira).`, 'error');
+          ? L(`${name} não resolve. Agora o pedido ficou claro (−1 de fama; o frasco voltou à prateleira).`, `${name} doesn’t solve it. Now the request is clear (−1 fame; the flask went back to the shelf).`)
+          : L(`${name} não resolve. O cliente explicou melhor (−1 de fama; o frasco voltou à prateleira).`, `${name} doesn’t solve it. The customer explained better (−1 fame; the flask went back to the shelf).`), 'error');
       }
     });
   },
   onBuyUpgrade(upgradeId) {
     run(buyUpgrade(state, upgradeId), (r) => {
       audio.play('discover');
-      ui.notify(`${getUpgradeName(r.upgradeId)} agora faz parte da botica.`, 'success');
+      ui.notify(L(`${getUpgradeName(r.upgradeId)} agora faz parte da botica.`, `${getUpgradeName(r.upgradeId)} is now part of the apothecary.`), 'success');
     });
   },
   onHint() {
@@ -7901,7 +8588,7 @@ const handlers = {
   onToggleSound() {
     setOptions({ ...options, sound: !options.sound });
     ui.render(state);
-    ui.notify(options.sound ? 'Som ligado.' : 'Som desligado.', 'info');
+    ui.notify(options.sound ? L('Som ligado.', 'Sound on.') : L('Som desligado.', 'Sound off.'), 'info');
   },
   onMenu() {
     playing = false;
@@ -7916,8 +8603,9 @@ const menuHandlers = {
   getState: () => state,
   getOptions: () => options,
   onOptions: (next) => setOptions(next),
+  onLanguage: (lang) => setLanguage(lang),
   onContinue() {
-    showGame('A loja está aberta de novo.');
+    showGame(L('A loja está aberta de novo.', 'The shop is open again.'));
     tutorial.resume();
   },
   onNewGame() {
@@ -7961,7 +8649,7 @@ function tick() {
       if (id === counter) ui.showWalkOut(out.result);
       state = out.state;
       audio.play('error');
-      ui.notify(`${getCustomerName(out.result.customerId)} cansou de esperar e foi embora (−${out.result.fame} de fama).`, 'error');
+      ui.notify(L(`${getCustomerName(out.result.customerId)} cansou de esperar e foi embora (−${out.result.fame} de fama).`, `${getCustomerName(out.result.customerId)} got tired of waiting and left (−${out.result.fame} fame).`), 'error');
     }
     commit(state);
     sinceSave = 0;
@@ -7981,7 +8669,7 @@ function tickNight(dt) {
   if (t.gone) {
     ui.showMerchantLeft();
     audio.play('error');
-    ui.notify('A mercadora cansou de esperar e seguiu viagem. Ela volta amanhã à noite.', 'error');
+    ui.notify(L('A mercadora cansou de esperar e seguiu viagem. Ela volta amanhã à noite.', 'The merchant got tired of waiting and moved on. She’ll be back tomorrow night.'), 'error');
     persist();
     ui.render(state);
     sinceSave = 0;
@@ -8004,6 +8692,7 @@ options = savedOptions.found ? savedOptions.options : sanitizeOptions({ sound: !
 state = setRelaxed({ ...state, sound: options.sound }, options.relaxed);
 applyOptions();
 
+aplicaIdiomaHTML(document); // v1.30: textos fixos do index.html no idioma escolhido
 const ui = createUI(document, handlers);
 const menu = createMenu(document, menuHandlers);
 const intro = createIntro(document);
@@ -8021,7 +8710,7 @@ if (hasSave()) tutorial.resume();
 tutorial.pause();
 if (loaded.status === 'corrupt') {
   clearSave();
-  menu.show('O caderno salvo estava danificado. Comece um novo pelo menu.');
+  menu.show(L('O caderno salvo estava danificado. Comece um novo pelo menu.', 'The saved notebook was damaged. Start a new one from the menu.'));
 } else {
   menu.show();
 }

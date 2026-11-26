@@ -1,6 +1,7 @@
 // Menu principal (tela inicial): botões "fita marcadora" sobre o fundo em xilogravura,
 // mais as páginas de papel de confirmação, opções, créditos e livro de receitas.
 import { buildBookHTML } from './ui.js';
+import { LANG } from './idioma.js';
 
 export function createMenu(doc, handlers) {
   const byId = (id) => doc.getElementById(id);
@@ -77,12 +78,15 @@ export function createMenu(doc, handlers) {
     if (opt.relaxed) opt.relaxed.checked = !!o.relaxed;
     for (const r of doc.querySelectorAll('input[name="opt-size"]')) r.checked = r.value === (o.textSize || 'normal');
     for (const r of doc.querySelectorAll('input[name="opt-quality"]')) r.checked = r.value === (o.quality || 'alta');
+    for (const r of doc.querySelectorAll('input[name="opt-lang"]')) r.checked = r.value === LANG;
   }
 
   function readOptions() {
     const size = doc.querySelector('input[name="opt-size"]:checked');
     const quality = doc.querySelector('input[name="opt-quality"]:checked');
+    const lang = doc.querySelector('input[name="opt-lang"]:checked');
     return {
+      lang: lang ? lang.value : LANG,
       sound: opt.sound.checked,
       volume: Number(opt.volume.value),
       reduceMotion: opt.motion.checked,
@@ -143,6 +147,10 @@ export function createMenu(doc, handlers) {
       next.focus();
     }
   });
+
+  // v1.30 — botão de idioma no canto do menu: recarrega o jogo no outro idioma
+  const langBtn = byId('menu-lang');
+  if (langBtn) langBtn.addEventListener('click', () => call('onLanguage', langBtn.dataset.lang));
 
   // ---------- páginas de papel ----------
   for (const d of Object.values(dialogs)) {

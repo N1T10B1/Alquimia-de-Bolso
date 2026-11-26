@@ -10,9 +10,10 @@ import {
 } from './progression.js';
 import { itemArt, customerArt } from './art.js';
 import { lineFor, pickLine, NOVEL_HINTS, MERCHANT_LINES, MERCHANT_HURRY_LINES, MERCHANT_BYE_LINES, IMPATIENT_LINES, HURRY_LINES, demoLetter } from './dialogue.js';
+import { L } from './idioma.js';
 
 // Raridade pelas cores da Grande Obra (guia de arte): nigredo, albedo, citrinitas, rubedo.
-const RARITY_LABEL = { comum: 'Comum', incomum: 'Incomum', rara: 'Rara', falha: 'Falha' };
+const RARITY_LABEL = L({ comum: 'Comum', incomum: 'Incomum', rara: 'Rara', falha: 'Falha' }, { comum: 'Common', incomum: 'Uncommon', rara: 'Rare', falha: 'Failed' });
 
 // Cores puramente cosméticas do líquido do caldeirão.
 const BREW_COLOR = {
@@ -34,7 +35,7 @@ function esc(value) {
 
 function rarityLabel(r) { return RARITY_LABEL[r] || ''; }
 function plural(n, one, many) { return `${n} ${n === 1 ? one : many}`; }
-function coins(n) { return `${n} ${n === 1 ? 'moeda' : 'moedas'}`; }
+function coins(n) { return `${n} ${n === 1 ? L('moeda', 'coin') : L('moedas', 'coins')}`; }
 function disabledAttr(disabled, reason) {
   return disabled ? ` disabled title="${esc(reason)}"` : '';
 }
@@ -48,9 +49,9 @@ const coinIcon = () => img('moeda', 'coin-ico');
 // ---------- Livro de receitas (também usado pelo menu, sem botões) ----------
 function remakeButton(state, recipe, label) {
   const check = canMix(state, recipe.a, recipe.b);
-  const why = check && check.ok ? '' : ((check && check.error && check.error.message) || 'Faltam ingredientes na prateleira.');
+  const why = check && check.ok ? '' : ((check && check.error && check.error.message) || L('Faltam ingredientes na prateleira.', 'Missing ingredients on the shelf.'));
   return `<button type="button" class="btn btn-small btn-remake" data-action="remake" data-id="${esc(recipe.id)}"
-    aria-label="Preparar ${esc(recipe.name)} de novo"${disabledAttr(!(check && check.ok), why)}>${label}</button>`;
+    aria-label="${L('Preparar', 'Brew')} ${esc(recipe.name)} ${L('de novo', 'again')}"${disabledAttr(!(check && check.ok), why)}>${label}</button>`;
 }
 
 export function buildBookHTML(state, { interactive = true } = {}) {
@@ -62,14 +63,14 @@ export function buildBookHTML(state, { interactive = true } = {}) {
       const recipe = getRecipe(e.id);
       return `
       <li class="book-entry is-known rarity-${esc(e.rarity)}">
-        <span class="book-seal" title="Ordem em que você descobriu esta receita">nº ${esc(e.order)}</span>
+        <span class="book-seal" title="${L('Ordem em que você descobriu esta receita', 'Order in which you discovered this recipe')}">${L('nº', 'no.')} ${esc(e.order)}</span>
         ${img(e.id, 'book-img')}
         <span class="book-text">
           <span class="book-name">${esc(e.name)}</span>
-          <span class="book-meta"><span class="rarity rarity-${esc(e.rarity)}">${esc(rarityLabel(e.rarity))}</span> · <span class="book-price" title="Pedido: quanto o cliente paga. Balcão: venda avulsa na prateleira.">Pedido ${coinIcon()} ${esc(orderReward(state, e.id))} · balcão ${esc(sellPrice(state, e.id))}</span></span>
+          <span class="book-meta"><span class="rarity rarity-${esc(e.rarity)}">${esc(rarityLabel(e.rarity))}</span> · <span class="book-price" title="${L('Pedido: quanto o cliente paga. Balcão: venda avulsa na prateleira.', 'Order: what the customer pays. Counter: selling it off the shelf.')}">${L('Pedido', 'Order')} ${coinIcon()} ${esc(orderReward(state, e.id))} · ${L('balcão', 'counter')} ${esc(sellPrice(state, e.id))}</span></span>
           ${a && b ? `<span class="book-recipe">${img(a.id, 'mini-img')} ${esc(a.name)} + ${img(b.id, 'mini-img')} ${esc(b.name)}</span>` : ''}
         </span>
-        ${recipe && interactive ? remakeButton(state, recipe, 'Preparar') : ''}
+        ${recipe && interactive ? remakeButton(state, recipe, L('Preparar', 'Brew')) : ''}
       </li>`;
     }
     const hint = e.hint ? getIngredient(e.hint) : null;
@@ -77,10 +78,10 @@ export function buildBookHTML(state, { interactive = true } = {}) {
     <li class="book-entry is-unknown">
       ${img(e.id, 'book-img book-silhouette')}
       <span class="book-text">
-        <span class="book-name">${esc(e.name || '???')}${e.name && e.name !== '???' ? '' : '<span class="sr-only"> (receita desconhecida)</span>'}</span>
+        <span class="book-name">${esc(e.name || '???')}${e.name && e.name !== '???' ? '' : `<span class="sr-only"> (${L('receita desconhecida', 'unknown recipe')})</span>`}</span>
         ${hint
-          ? `<span class="book-hint">Dica: leva ${img(hint.id, 'mini-img')} ${esc(hint.name)} + ???</span>`
-          : '<span class="book-hint is-muted">Página em branco</span>'}
+          ? `<span class="book-hint">${L('Dica: leva', 'Hint: takes')} ${img(hint.id, 'mini-img')} ${esc(hint.name)} + ???</span>`
+          : `<span class="book-hint is-muted">${L('Página em branco', 'Blank page')}</span>`}
       </span>
     </li>`;
   };
@@ -92,14 +93,14 @@ export function buildBookHTML(state, { interactive = true } = {}) {
   const fails = (state.failedPairs || []).map((k) => k.split('+').map(getIngredient)).filter(([a, b]) => a && b);
   const grimoire = `
     <section class="book-group grimoire" aria-labelledby="book-grimoire">
-      <h3 id="book-grimoire" class="book-cat">Grimório de tentativas <small>${esc(fails.length)} ${fails.length === 1 ? 'combinação' : 'combinações'} que viram Lodo</small></h3>
+      <h3 id="book-grimoire" class="book-cat">${L('Grimório de tentativas', 'Grimoire of attempts')} <small>${esc(fails.length)} ${fails.length === 1 ? L('combinação que vira Lodo', 'combination that turns into Sludge') : L('combinações que viram Lodo', 'combinations that turn into Sludge')}</small></h3>
       ${fails.length
         ? `<ul class="grimoire-list">${fails.map(([a, b]) => `<li>${img(a.id, 'mini-img')} ${esc(a.name)} + ${img(b.id, 'mini-img')} ${esc(b.name)}</li>`).join('')}</ul>`
-        : '<p class="empty">Nenhum borrão por enquanto. Quando uma mistura desandar em Lodo, ela fica anotada aqui.</p>'}
+        : `<p class="empty">${L('Nenhum borrão por enquanto. Quando uma mistura desandar em Lodo, ela fica anotada aqui.', 'No smudges yet. When a mixture turns into Sludge, it gets written down here.')}</p>`}
     </section>`;
   return `
     <div class="book-top">
-      <p class="book-progress">Receitas descobertas: <strong>${found}/${TOTAL()}</strong></p>
+      <p class="book-progress">${L('Receitas descobertas', 'Recipes discovered')}: <strong>${found}/${TOTAL()}</strong></p>
       <div class="xp-bar book-bar" aria-hidden="true"><span class="xp-fill" style="width:${Math.round((found / TOTAL()) * 100)}%"></span></div>
     </div>
     <div class="book-cats">${sections}</div>
@@ -116,10 +117,10 @@ export function buildIngredientsHTML(state, { intro = '' } = {}) {
         <h3 class="ing-page-name">${esc(ing.name)} <span class="ing-page-quality">${esc(ing.quality)}</span></h3>
         <p class="ing-page-lore">${esc(ing.lore)}</p>
         <dl class="ing-page-facts">
-          <dt>Propriedade</dt><dd>${esc(ing.property)}</dd>
-          <dt>Ajuda em</dt><dd>${esc(ing.helps)}</dd>
+          <dt>${L('Propriedade', 'Property')}</dt><dd>${esc(ing.property)}</dd>
+          <dt>${L('Ajuda em', 'Helps with')}</dt><dd>${esc(ing.helps)}</dd>
         </dl>
-        <p class="ing-page-meta">Elemento: ${esc(ing.element)} · ${coinIcon()} ${esc(ing.cost)} com a mercadora · na prateleira: <strong>${esc(stock[ing.id] ?? 0)}</strong></p>
+        <p class="ing-page-meta">${L('Elemento', 'Element')}: ${esc(ing.element)} · ${coinIcon()} ${esc(ing.cost)} ${L('com a mercadora', 'from the merchant')} · ${L('na prateleira', 'on the shelf')}: <strong>${esc(stock[ing.id] ?? 0)}</strong></p>
       </div>
     </li>`).join('');
   return `
@@ -140,11 +141,11 @@ export function buildNotesHTML(state) {
   return `
     <div class="notes-page">
       <div class="notes-top">
-        <p class="notes-count"><strong>${known.length}/${TIPS.length}</strong> anotadas</p>
+        <p class="notes-count"><strong>${known.length}/${TIPS.length}</strong> ${L('anotadas', 'noted')}</p>
       </div>
       <div class="notes-body">
-        ${known.length ? `<ol class="notes">${items}</ol>` : '<p class="notes-empty">Nada anotado ainda. As dicas aparecem enquanto você atende.</p>'}
-        ${missing && known.length ? `<p class="notes-more">Faltam ${missing} ${missing === 1 ? 'anotação' : 'anotações'}: aparecem quando a situação acontecer.</p>` : ''}
+        ${known.length ? `<ol class="notes">${items}</ol>` : `<p class="notes-empty">${L('Nada anotado ainda. As dicas aparecem enquanto você atende.', 'Nothing noted yet. Tips show up while you serve customers.')}</p>`}
+        ${missing && known.length ? `<p class="notes-more">${L(`Faltam ${missing} ${missing === 1 ? 'anotação' : 'anotações'}: aparecem quando a situação acontecer.`, `${missing} more ${missing === 1 ? 'note' : 'notes'} to go: they show up when the situation comes up.`)}</p>` : ''}
       </div>
       <div class="notes-foot" aria-hidden="true"></div>
     </div>`;
@@ -262,7 +263,7 @@ export function createUI(root, handlers = {}) {
   // ---------- pedidos / cliente no balcão ----------
   function customerOf(id) {
     if (id === MERCHANT.id) return MERCHANT;
-    return CUSTOMERS.find((c) => c.id === id) || { id, name: 'Cliente', icon: '' };
+    return CUSTOMERS.find((c) => c.id === id) || { id, name: L('Cliente', 'Customer'), icon: '' };
   }
 
   function currentOrder(state) {
@@ -284,28 +285,28 @@ export function createUI(root, handlers = {}) {
     const best = state.stats && Number.isFinite(state.stats.bestCoins) ? state.stats.bestCoins : state.coins;
     const plan = state.plan || { total: 0, served: 0 };
     setHTML(els.hud, `
-      <div class="hud-item hud-day" title="${isNight(state) ? 'Loja fechada: a mercadora está na porta' : `Clientes atendidos hoje: ${plan.served} de ${plan.total}`}">
-        <span>Dia <strong class="hud-value">${esc(state.day || 1)}</strong></span>
-        <small class="hud-sub">${isNight(state) ? 'loja fechada' : `${esc(plan.served)}/${esc(plan.total)} clientes`}</small>
-        <small class="hud-sub-lv">nível ${esc(lp.level)}</small>
+      <div class="hud-item hud-day" title="${isNight(state) ? L('Loja fechada: a mercadora está na porta', 'Shop closed: the merchant is at the door') : L(`Clientes atendidos hoje: ${plan.served} de ${plan.total}`, `Customers served today: ${plan.served} of ${plan.total}`)}">
+        <span>${L('Dia', 'Day')} <strong class="hud-value">${esc(state.day || 1)}</strong></span>
+        <small class="hud-sub">${isNight(state) ? L('loja fechada', 'shop closed') : `${esc(plan.served)}/${esc(plan.total)} ${L('clientes', 'customers')}`}</small>
+        <small class="hud-sub-lv">${L('nível', 'level')} ${esc(lp.level)}</small>
       </div>
-      <div class="hud-item hud-coins" title="Recorde: ${esc(best)} moedas">
-        ${coinIcon()}<strong class="hud-value">${esc(state.coins)}</strong><span class="sr-only"> moedas</span>
+      <div class="hud-item hud-coins" title="${L('Recorde', 'Record')}: ${esc(best)} ${L('moedas', 'coins')}">
+        ${coinIcon()}<strong class="hud-value">${esc(state.coins)}</strong><span class="sr-only"> ${L('moedas', 'coins')}</span>
       </div>
       <div class="hud-item hud-level">
-        <span>Nível <strong class="hud-value">${esc(lp.level)}</strong></span>
-        <div class="xp-bar" role="progressbar" aria-label="Experiência rumo ao nível ${esc(lp.level + 1)}"
+        <span>${L('Nível', 'Level')} <strong class="hud-value">${esc(lp.level)}</strong></span>
+        <div class="xp-bar" role="progressbar" aria-label="${L('Experiência rumo ao nível', 'Experience toward level')} ${esc(lp.level + 1)}"
              aria-valuemin="0" aria-valuemax="${esc(lp.needed)}" aria-valuenow="${esc(lp.current)}"
-             aria-valuetext="${esc(lp.current)} de ${esc(lp.needed)} XP">
+             aria-valuetext="${esc(lp.current)} ${L('de', 'of')} ${esc(lp.needed)} XP">
           <span class="xp-fill" style="width:${pct}%"></span>
         </div>
       </div>
       <div class="hud-item hud-rep" title="${esc(fameTitle(state.reputation || 0))}">
-        <span>Fama <strong class="hud-value">${esc(state.reputation || 0)}</strong></span>
+        <span>${L('Fama', 'Fame')} <strong class="hud-value">${esc(state.reputation || 0)}</strong></span>
         <small class="hud-sub hud-tier">${esc(fameTier(state.reputation || 0).name)}</small>
       </div>
-      <div class="hud-item hud-recipes" title="Receitas no caderno">
-        <span>Receitas <strong class="hud-value">${found}/${TOTAL()}</strong></span>
+      <div class="hud-item hud-recipes" title="${L('Receitas no caderno', 'Recipes in the notebook')}">
+        <span>${L('Receitas', 'Recipes')} <strong class="hud-value">${found}/${TOTAL()}</strong></span>
       </div>`);
   }
 
@@ -313,11 +314,11 @@ export function createUI(root, handlers = {}) {
   function fameTitle(rep) {
     const t = fameTier(rep);
     const perks = [];
-    if (t.coins) perks.push(`+${coins(t.coins)} por pedido`);
-    if (t.patience) perks.push(`clientes ${Math.round(t.patience * 100)}% mais pacientes`);
+    if (t.coins) perks.push(L(`+${coins(t.coins)} por pedido`, `+${coins(t.coins)} per order`));
+    if (t.patience) perks.push(L(`clientes ${Math.round(t.patience * 100)}% mais pacientes`, `customers ${Math.round(t.patience * 100)}% more patient`));
     const now = `${t.name}${perks.length ? `: ${perks.join(', ')}` : ''}.`;
-    const next = t.next ? ` Faltam ${t.next.min - rep} de fama para "${t.next.name}".` : '';
-    return `${now}${next} Sobe 1 a cada pedido certo; cai 1 por frasco errado ou cliente mandado embora, e 2 quando o cliente cansa de esperar.`;
+    const next = t.next ? L(` Faltam ${t.next.min - rep} de fama para "${t.next.name}".`, ` ${t.next.min - rep} more fame to reach "${t.next.name}".`) : '';
+    return `${now}${next} ${L('Sobe 1 a cada pedido certo; cai 1 por frasco errado ou cliente mandado embora, e 2 quando o cliente cansa de esperar.', 'Goes up 1 for every correct order; drops 1 for a wrong flask or a customer sent away, and 2 when a customer gets tired of waiting.')}`;
   }
 
   // Vela da paciência: só aparece quando o cliente tem pressa (do dia 3 em diante).
@@ -328,7 +329,7 @@ export function createUI(root, handlers = {}) {
     if (!order || !(order.patience > 0)) return '';
     const left = patienceLeft(order);
     return `<span class="${cls}${patienceClass(left)}" data-patience="${esc(order.id)}" data-vela="${velaFrame(left)}" style="--left:${left.toFixed(3)}"
-      role="meter" aria-label="Paciência" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(left * 100)}"><span class="patience-fill"></span></span>`;
+      role="meter" aria-label="${L('Paciência', 'Patience')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(left * 100)}"><span class="patience-fill"></span></span>`;
   }
   function moodBucket(order) {
     if (!order || !(order.patience > 0)) return 0;
@@ -388,7 +389,7 @@ export function createUI(root, handlers = {}) {
   function tipHTML(id) {
     const t = id && TIPS.find((x) => x.id === id);
     if (!t) return '';
-    return `<p class="tip-once"><span class="tip-tag">Anotado no caderno</span> ${esc(t.text)}</p>`;
+    return `<p class="tip-once"><span class="tip-tag">${L('Anotado no caderno', 'Noted in the notebook')}</span> ${esc(t.text)}</p>`;
   }
   const sheetCtx = (name) => (ui.sheet === name ? `${name}-${ui.sheetSeq}` : null);
 
@@ -405,8 +406,8 @@ export function createUI(root, handlers = {}) {
       ui.clockAngle = angle;
       els.clock.style.setProperty('--clock-turn', `${angle}deg`);
     }
-    const label = night ? `Noite do dia ${state.day || 1}: loja fechada`
-      : `Dia ${state.day || 1}: ${plan.served || 0} de ${plan.total || 0} clientes atendidos`;
+    const label = night ? L(`Noite do dia ${state.day || 1}: loja fechada`, `Night of day ${state.day || 1}: shop closed`)
+      : L(`Dia ${state.day || 1}: ${plan.served || 0} de ${plan.total || 0} clientes atendidos`, `Day ${state.day || 1}: ${plan.served || 0} of ${plan.total || 0} customers served`);
     if (els.clock.getAttribute('aria-label') !== label) { els.clock.setAttribute('aria-label', label); els.clock.title = label; }
     els.clock.classList.toggle('is-night', night);
   }
@@ -435,26 +436,26 @@ export function createUI(root, handlers = {}) {
     const sign = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : '0');
     const rows = [];
     const row = (qty, label, coins = '', cls = '') => rows.push({ qty, label, coins, cls });
-    row(served, `${served === 1 ? 'Cliente atendido' : 'Clientes atendidos'} <span class="lstamp lstamp-ok" aria-hidden="true"></span>`);
-    row(p.sentAway || 0, `${p.sentAway === 1 ? 'Mandado embora' : 'Mandados embora'} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
-    if (p.gaveUp) row(p.gaveUp, `${p.gaveUp === 1 ? 'Cansou de esperar' : 'Cansaram de esperar'} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
-    if (found) row(found, `${found === 1 ? 'Receita nova no caderno' : 'Receitas novas no caderno'} <span class="lstamp lstamp-new" aria-hidden="true"></span>`);
+    row(served, `${served === 1 ? L('Cliente atendido', 'Customer served') : L('Clientes atendidos', 'Customers served')} <span class="lstamp lstamp-ok" aria-hidden="true"></span>`);
+    row(p.sentAway || 0, `${p.sentAway === 1 ? L('Mandado embora', 'Sent away') : L('Mandados embora', 'Sent away')} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
+    if (p.gaveUp) row(p.gaveUp, `${p.gaveUp === 1 ? L('Cansou de esperar', 'Got tired of waiting') : L('Cansaram de esperar', 'Got tired of waiting')} <span class="lstamp lstamp-out" aria-hidden="true"></span>`);
+    if (found) row(found, `${found === 1 ? L('Receita nova no caderno', 'New recipe in the notebook') : L('Receitas novas no caderno', 'New recipes in the notebook')} <span class="lstamp lstamp-new" aria-hidden="true"></span>`);
     let listed = 0;
     for (const [id, e] of byPotion) {
       if (listed++ >= 6) break;
       const r = getRecipe(id);
       row(`${e.n}×`, `${img(id, 'ledger-img')} ${esc(r ? r.name : id)}`, `+${e.coins}`, 'is-item');
     }
-    if (!byPotion.size) row('', '<em>Nenhuma poção entregue hoje</em>', '', 'is-item');
-    row('', 'Bolsa ao abrir a loja', String(start), 'is-sum');
-    row('', 'Ganho com pedidos', sign(earned), 'is-sum');
-    if (tips) row('', 'Gorjetas por atender rápido', sign(tips), 'is-sum');
-    if (perfect) row('', 'Dia perfeito: ninguém saiu sem poção', sign(perfect), 'is-sum');
-    if (other) row('', other > 0 ? 'Vendas na prateleira' : 'Gastos do dia', sign(other), 'is-sum');
-    if (paid) row('', paid > upkeep ? `Aluguel do dia (${upkeep}) e atrasado` : 'Aluguel do dia', sign(-paid), 'is-sum is-cost');
-    else if (upkeep) row('', 'Aluguel do dia: ficou na conta', '0', 'is-sum is-cost');
-    if (state.debt) row('', 'Ficou na conta do senhorio', String(state.debt), 'is-sum is-cost');
-    row('', 'Fama do dia', sign(rep), 'is-sum is-rep');
+    if (!byPotion.size) row('', `<em>${L('Nenhuma poção entregue hoje', 'No potions delivered today')}</em>`, '', 'is-item');
+    row('', L('Bolsa ao abrir a loja', 'Purse when the shop opened'), String(start), 'is-sum');
+    row('', L('Ganho com pedidos', 'Earned from orders'), sign(earned), 'is-sum');
+    if (tips) row('', L('Gorjetas por atender rápido', 'Tips for quick service'), sign(tips), 'is-sum');
+    if (perfect) row('', L('Dia perfeito: ninguém saiu sem poção', 'Perfect day: nobody left without a potion'), sign(perfect), 'is-sum');
+    if (other) row('', other > 0 ? L('Vendas na prateleira', 'Shelf sales') : L('Gastos do dia', 'Spent today'), sign(other), 'is-sum');
+    if (paid) row('', paid > upkeep ? L(`Aluguel do dia (${upkeep}) e atrasado`, `Today’s rent (${upkeep}) and overdue rent`) : L('Aluguel do dia', 'Today’s rent'), sign(-paid), 'is-sum is-cost');
+    else if (upkeep) row('', L('Aluguel do dia: ficou na conta', 'Today’s rent: put on the tab'), '0', 'is-sum is-cost');
+    if (state.debt) row('', L('Ficou na conta do senhorio', 'Owed to the landlord'), String(state.debt), 'is-sum is-cost');
+    row('', L('Fama do dia', 'Fame today'), sign(rep), 'is-sum is-rep');
     const lines = rows.map((r, i) => `
       <li class="ledger-row ${r.cls}" style="--i:${i}">
         <span class="ledger-qty">${esc(r.qty)}</span>
@@ -462,18 +463,18 @@ export function createUI(root, handlers = {}) {
         <span class="ledger-coins">${esc(r.coins)}</span>
       </li>`).join('');
     setHTML(els.ledger, `
-      <p class="ledger-day">Fechamento do dia ${esc(state.day || 1)}</p>
+      <p class="ledger-day">${L('Fechamento do dia', 'Closing of day')} ${esc(state.day || 1)}</p>
       <div class="ledger-page" style="--n:${rows.length}">
         <ol class="ledger-rows">${lines}</ol>
         <p class="ledger-total" style="--i:${rows.length}">
-          <span>Saldo</span>
+          <span>${L('Saldo', 'Balance')}</span>
           <span class="ledger-total-value">${coinIcon()} ${esc(end)}</span>
         </p>
 
-        <span class="ledger-seal" style="--i:${rows.length + 1}" title="Dia fechado" aria-hidden="true"></span>
+        <span class="ledger-seal" style="--i:${rows.length + 1}" title="${L('Dia fechado', 'Day closed')}" aria-hidden="true"></span>
       </div>
       <div class="ledger-actions">
-        <button type="button" class="btn btn-primary" data-action="${isDemoOver(state) ? 'demo-end' : 'close-sheet'}">${state.landlord ? 'Atender o senhorio' : isDemoOver(state) ? 'Ler a carta que chegou' : 'Chamar a mercadora'}</button>
+        <button type="button" class="btn btn-primary" data-action="${isDemoOver(state) ? 'demo-end' : 'close-sheet'}">${state.landlord ? L('Atender o senhorio', 'See the landlord') : isDemoOver(state) ? L('Ler a carta que chegou', 'Read the letter that arrived') : L('Chamar a mercadora', 'Call the merchant')}</button>
       </div>`);
   }
 
@@ -484,9 +485,9 @@ export function createUI(root, handlers = {}) {
     const on = !!state.sound;
     els.sound.setAttribute('aria-pressed', on ? 'true' : 'false');
     els.sound.classList.toggle('is-on', on);
-    els.sound.title = on ? 'Desligar efeitos sonoros' : 'Ligar efeitos sonoros';
+    els.sound.title = on ? L('Desligar efeitos sonoros', 'Turn sound effects off') : L('Ligar efeitos sonoros', 'Turn sound effects on');
     const label = els.sound.querySelector('.sound-label');
-    const text = on ? 'Som ligado' : 'Som desligado';
+    const text = on ? L('Som ligado', 'Sound on') : L('Som desligado', 'Sound off');
     if (label && label.textContent !== text) label.textContent = text;
   }
 
@@ -571,19 +572,19 @@ export function createUI(root, handlers = {}) {
     const canRaise = !canPay && coinsNow + shelf >= debt;
     return `
       <div class="talk-box is-night is-sad talk-landlord">
-        <p class="talk-day">Noite do dia ${esc(state.day)}</p>
+        <p class="talk-day">${L('Noite do dia', 'Night of day')} ${esc(state.day)}</p>
         <div class="talk-head"><p id="talk-name" class="talk-name">${esc(LANDLORD.name)}</p></div>
         <p class="talk-line">“${esc(canPay
-          ? `Três noites sem aluguel, boticária. São ${debt} moedas, e eu vejo que a bolsa alcança.`
-          : `Três noites sem aluguel, boticária. São ${debt} moedas. Se não tiver, vou precisar da chave da loja.`)}”</p>
-        <p class="talk-note talk-debt">Aluguel atrasado: <strong>${coinIcon()} ${esc(debt)}</strong> · na bolsa: <strong>${esc(coinsNow)}</strong>${missing ? ` · faltam <strong>${esc(missing)}</strong>` : ''}</p>
-        ${canRaise ? `<p class="talk-note">Os frascos da prateleira valem ${coinIcon()} ${esc(shelf)} vendidos no balcão: dá para juntar o que falta.</p>` : ''}
-        ${!canPay && !canRaise ? `<p class="talk-note">Nem vendendo a prateleira inteira (${coinIcon()} ${esc(shelf)}) a bolsa alcança.</p>` : ''}
+          ? L(`Três noites sem aluguel, boticária. São ${debt} moedas, e eu vejo que a bolsa alcança.`, `Three nights without rent, apothecary. That’s ${debt} coins, and I can see your purse can cover it.`)
+          : L(`Três noites sem aluguel, boticária. São ${debt} moedas. Se não tiver, vou precisar da chave da loja.`, `Three nights without rent, apothecary. That’s ${debt} coins. If you don’t have it, I’ll need the key to the shop.`))}”</p>
+        <p class="talk-note talk-debt">${L('Aluguel atrasado', 'Overdue rent')}: <strong>${coinIcon()} ${esc(debt)}</strong> · ${L('na bolsa', 'in your purse')}: <strong>${esc(coinsNow)}</strong>${missing ? ` · ${L('faltam', 'short by')} <strong>${esc(missing)}</strong>` : ''}</p>
+        ${canRaise ? `<p class="talk-note">${L('Os frascos da prateleira valem', 'The flasks on the shelf are worth')} ${coinIcon()} ${esc(shelf)} ${L('vendidos no balcão: dá para juntar o que falta.', 'sold at the counter: enough to make up the difference.')}</p>` : ''}
+        ${!canPay && !canRaise ? `<p class="talk-note">${L('Nem vendendo a prateleira inteira', 'Not even selling the whole shelf')} (${coinIcon()} ${esc(shelf)}) ${L('a bolsa alcança.', 'would cover it.')}</p>` : ''}
         <div class="talk-actions">
-          ${canPay ? `<button type="button" class="btn btn-primary" data-action="pay-landlord">Pagar ${esc(debt)} moedas</button>` : ''}
-          ${canRaise ? '<button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira">Vender frascos da prateleira</button>' : ''}
-          ${!canPay ? '<button type="button" class="btn btn-danger" data-action="evict">Entregar a chave</button>' : ''}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button>
+          ${canPay ? `<button type="button" class="btn btn-primary" data-action="pay-landlord">${L(`Pagar ${esc(debt)} moedas`, `Pay ${esc(debt)} coins`)}</button>` : ''}
+          ${canRaise ? `<button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira">${L('Vender frascos da prateleira', 'Sell flasks from the shelf')}</button>` : ''}
+          ${!canPay ? `<button type="button" class="btn btn-danger" data-action="evict">${L('Entregar a chave', 'Hand over the key')}</button>` : ''}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button>
         </div>
       </div>`;
   }
@@ -592,7 +593,7 @@ export function createUI(root, handlers = {}) {
     const debt = state.debt || 0;
     if (!debt) return '';
     const n = closesUntilLandlord(state);
-    return `<p class="talk-note talk-debt">Aluguel atrasado: <strong>${coinIcon()} ${esc(debt)}</strong>. A bolsa paga o atrasado junto com o aluguel no próximo fechamento. ${n === 1 ? 'Se ainda dever amanhã à noite, o senhorio vem cobrar.' : `Se continuar devendo por mais ${esc(n)} fechamentos, o senhorio vem cobrar.`}</p>`;
+    return `<p class="talk-note talk-debt">${L('Aluguel atrasado', 'Overdue rent')}: <strong>${coinIcon()} ${esc(debt)}</strong>. ${L('A bolsa paga o atrasado junto com o aluguel no próximo fechamento.', 'Your purse pays the overdue amount along with the rent at the next closing.')} ${n === 1 ? L('Se ainda dever amanhã à noite, o senhorio vem cobrar.', 'If you still owe tomorrow night, the landlord comes to collect.') : L(`Se continuar devendo por mais ${esc(n)} fechamentos, o senhorio vem cobrar.`, `If you keep owing for ${esc(n)} more closings, the landlord comes to collect.`)}</p>`;
   }
 
   // v1.28 — última noite da demo: no lugar da mercadora, uma carta da Mestra Benvinda.
@@ -602,13 +603,13 @@ export function createUI(root, handlers = {}) {
     const diff = (state.coins || 0) - (p.startCoins || 0);
     return `
       <div class="talk-box is-night talk-demo-fim">
-        <p class="talk-day">Fim do dia ${esc(state.day)}</p>
-        <p class="day-sum-line"><strong>${esc(served)}</strong> de ${esc(p.total || 0)} atendidos · bolsa ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button></p>
-        ${p.perfect ? `<p class="talk-note talk-perfect">Dia perfeito! Ninguém saiu sem poção: +${esc(p.perfect)} ${coinIcon()} e +${esc(CONFIG.PERFECT_FAME)} de fama.</p>` : ''}
-        <p class="talk-line">A carroça da Zuleica não veio hoje. No lugar dela, um menino entregou uma carta amarrada com barbante, com cheiro de maresia e um grãozinho de areia no lacre.</p>
+        <p class="talk-day">${L('Fim do dia', 'End of day')} ${esc(state.day)}</p>
+        <p class="day-sum-line"><strong>${esc(served)}</strong> ${L('de', 'of')} ${esc(p.total || 0)} ${L('atendidos', 'served')} · ${L('bolsa', 'purse')} ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button></p>
+        ${p.perfect ? `<p class="talk-note talk-perfect">${L('Dia perfeito! Ninguém saiu sem poção', 'Perfect day! Nobody left without a potion')}: +${esc(p.perfect)} ${coinIcon()} ${L('e', 'and')} +${esc(CONFIG.PERFECT_FAME)} ${L('de fama', 'fame')}.</p>` : ''}
+        <p class="talk-line">${L('A carroça da Zuleica não veio hoje. No lugar dela, um menino entregou uma carta amarrada com barbante, com cheiro de maresia e um grãozinho de areia no lacre.', 'Zuleica’s cart didn’t come today. Instead, a boy delivered a letter tied with string, smelling of the sea, with a tiny grain of sand in the seal.')}</p>
         <div class="talk-actions">
-          <button type="button" class="btn btn-primary" data-action="demo-end">Ler a carta da Mestra</button>
+          <button type="button" class="btn btn-primary" data-action="demo-end">${L('Ler a carta da Mestra', 'Read the Mistress’s letter')}</button>
         </div>
       </div>`;
   }
@@ -624,30 +625,30 @@ export function createUI(root, handlers = {}) {
     const wait = state.relaxed ? 0 : patienceForDay((state.day || 1) + 1);
     const tier = fameTier(state.reputation || 0);
     const waitS = wait ? Math.round((wait * (1 + (tier.patience || 0))) / 1000) : 0;
-    const waitText = waitS >= 60 ? `${Math.floor(waitS / 60)} min${waitS % 60 ? ` e ${waitS % 60} s` : ''}` : `${waitS} s`;
+    const waitText = waitS >= 60 ? `${Math.floor(waitS / 60)} min${waitS % 60 ? ` ${L('e', 'and')} ${waitS % 60} s` : ''}` : `${waitS} s`;
     const merchant = merchantCandle(state);
     const hurry = moodBucket(merchant) === 2;
     if (merchant) ui.moodKey = `${merchant.id}:${moodBucket(merchant)}`;
     return `
       <div class="talk-box is-night${hurry ? ' is-sad' : ''}">
-        <p class="talk-day">Fim do dia ${esc(state.day)}</p>
-        <p class="day-sum-line"><strong>${esc(served)}</strong> de ${esc(p.total || 0)} atendidos · bolsa ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
-          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">Ver o livro-caixa</button></p>
+        <p class="talk-day">${L('Fim do dia', 'End of day')} ${esc(state.day)}</p>
+        <p class="day-sum-line"><strong>${esc(served)}</strong> ${L('de', 'of')} ${esc(p.total || 0)} ${L('atendidos', 'served')} · ${L('bolsa', 'purse')} ${diff >= 0 ? '+' : '−'}${esc(Math.abs(diff))} ${coinIcon()}
+          <button type="button" class="btn btn-small btn-quiet" data-action="open-sheet" data-id="caixa">${L('Ver o livro-caixa', 'See the ledger')}</button></p>
         ${state.merchantGone
-          ? '<p class="talk-note talk-gone">A carroça da mercadora já virou a esquina. Ela volta amanhã à noite; hoje não há onde comprar ingredientes.</p>'
+          ? `<p class="talk-note talk-gone">${L('A carroça da mercadora já virou a esquina. Ela volta amanhã à noite; hoje não há onde comprar ingredientes.', 'The merchant’s cart has already turned the corner. She’ll be back tomorrow night; there’s nowhere to buy ingredients tonight.')}</p>`
           : `<div class="talk-head"><p id="talk-name" class="talk-name">${esc(MERCHANT.name)}</p></div>
-        ${merchant ? `<p class="talk-temper">Espera um bom tempo, mas segue viagem antes de a vela apagar${hurry ? '' : ' · o relógio dela para com a banca aberta'}</p>` : ''}
+        ${merchant ? `<p class="talk-temper">${L('Espera um bom tempo, mas segue viagem antes de a vela apagar', 'Waits a good while, but moves on before the candle goes out')}${hurry ? '' : L(' · o relógio dela para com a banca aberta', ' · her clock stops while the stall is open')}</p>` : ''}
         <p class="talk-line${hurry ? ' talk-hurry' : ''}">“${esc(hurry ? pickLine(MERCHANT_HURRY_LINES, `pressa-${state.day}`) : pickLine(MERCHANT_LINES, `noite-${state.day}`))}”</p>`}
-        ${p.perfect ? `<p class="talk-note talk-perfect">Dia perfeito! Ninguém saiu sem poção: +${esc(p.perfect)} ${coinIcon()} e +${esc(CONFIG.PERFECT_FAME)} de fama.</p>` : ''}
+        ${p.perfect ? `<p class="talk-note talk-perfect">${L('Dia perfeito! Ninguém saiu sem poção', 'Perfect day! Nobody left without a potion')}: +${esc(p.perfect)} ${coinIcon()} ${L('e', 'and')} +${esc(CONFIG.PERFECT_FAME)} ${L('de fama', 'fame')}.</p>` : ''}
         ${debtNote(state)}
-        ${aid ? '<p class="talk-note">A mercadora deixou um punhado de ingredientes fiado para você não fechar as portas.</p>' : ''}
+        ${aid ? `<p class="talk-note">${L('A mercadora deixou um punhado de ingredientes fiado para você não fechar as portas.', 'The merchant left you a handful of ingredients on credit so you don’t have to close your doors.')}</p>` : ''}
         <div class="talk-divider" aria-hidden="true"></div>
-        <p class="talk-note">Amanhã vêm <strong>${esc(tomorrow)}</strong> clientes${wait ? `, e cada um espera cerca de <strong>${esc(waitText)}</strong> no balcão` : ', sem pressa nenhuma'}.</p>
+        <p class="talk-note">${L('Amanhã vêm', 'Tomorrow')} <strong>${esc(tomorrow)}</strong> ${L('clientes', 'customers are coming')}${wait ? L(`, e cada um espera cerca de <strong>${esc(waitText)}</strong> no balcão`, `, and each one waits about <strong>${esc(waitText)}</strong> at the counter`) : L(', sem pressa nenhuma', ', in no hurry at all')}.</p>
         ${tipHTML(pickTip(['mercadora', (p.upkeep || upkeepForDay(state.day + 1)) ? 'despesas' : null, wait && (state.discovered || []).length ? 'preparar-antes' : null, (state.reputation || 0) >= 5 ? 'fama' : null], `noite-${state.day}`))}
         <div class="talk-actions">
-          <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="mercador"${disabledAttr(!!state.merchantGone, 'A mercadora já foi embora: volta amanhã à noite')}>Comprar ingredientes</button>
-          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">Preparar poções</button>
-          <button type="button" class="btn" data-action="next-day">Abrir a loja: dia ${esc((state.day || 1) + 1)}</button>
+          <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="mercador"${disabledAttr(!!state.merchantGone, L('A mercadora já foi embora: volta amanhã à noite', 'The merchant has left: she’ll be back tomorrow night'))}>${L('Comprar ingredientes', 'Buy ingredients')}</button>
+          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">${L('Preparar poções', 'Brew potions')}</button>
+          <button type="button" class="btn" data-action="next-day">${L('Abrir a loja: dia', 'Open the shop: day')} ${esc((state.day || 1) + 1)}</button>
         </div>
       </div>`;
   }
@@ -662,8 +663,8 @@ export function createUI(root, handlers = {}) {
           <p id="talk-name" class="talk-name">${esc(c.name)}</p>
           <p class="talk-line">“${esc(f.line)}”</p>
           ${f.reward != null
-            ? `<p class="talk-pay">${coinIcon()} +${esc(f.reward + (f.tip || 0))}${f.bonus ? ` (com ${esc(f.bonus)} de bônus pela novidade)` : ''}${f.tip ? ` (com ${esc(f.tip)} de gorjeta pela rapidez)` : ''} · +${esc(f.xp)} XP · +1 de fama</p>`
-            : `<p class="talk-pay is-loss">${f.merchant ? 'Fechou a banca e seguiu viagem até amanhã à noite' : f.walkout ? `Cansou de esperar · −${esc(f.fame)} de fama` : 'Foi embora sem poção · −1 de fama'}</p>`}
+            ? `<p class="talk-pay">${coinIcon()} +${esc(f.reward + (f.tip || 0))}${f.bonus ? L(` (com ${esc(f.bonus)} de bônus pela novidade)`, ` (including a ${esc(f.bonus)} novelty bonus)`) : ''}${f.tip ? L(` (com ${esc(f.tip)} de gorjeta pela rapidez)`, ` (including a ${esc(f.tip)} tip for speed)`) : ''} · +${esc(f.xp)} XP · ${L('+1 de fama', '+1 fame')}</p>`
+            : `<p class="talk-pay is-loss">${f.merchant ? L('Fechou a banca e seguiu viagem até amanhã à noite', 'Closed the stall and moved on until tomorrow night') : f.walkout ? L(`Cansou de esperar · −${esc(f.fame)} de fama`, `Got tired of waiting · −${esc(f.fame)} fame`) : L('Foi embora sem poção · −1 de fama', 'Left without a potion · −1 fame')}</p>`}
         </div>`);
       return;
     }
@@ -672,10 +673,10 @@ export function createUI(root, handlers = {}) {
       const c = customerOf(GREETER);
       setHTML(els.talk, `
         <div class="talk-box">
-          <p id="talk-name" class="talk-name">${esc(c.name)}, o gato da loja</p>
-          <p class="talk-line">“Miau. Ninguém no balcão por enquanto. Aproveite para mexer no caldeirão.”</p>
+          <p id="talk-name" class="talk-name">${esc(c.name)}${L(', o gato da loja', ', the shop cat')}</p>
+          <p class="talk-line">“${L('Miau. Ninguém no balcão por enquanto. Aproveite para mexer no caldeirão.', 'Meow. Nobody at the counter for now. A good time to stir the cauldron.')}”</p>
           <div class="talk-actions">
-            <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">Abrir o caldeirão</button>
+            <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">${L('Abrir o caldeirão', 'Open the cauldron')}</button>
           </div>
         </div>`);
       return;
@@ -689,31 +690,31 @@ export function createUI(root, handlers = {}) {
     const reward = orderReward(state, order.potionId) + bonus;
     const potions = potionsOnShelf(state);
     const sad = ui.reaction && ui.reaction.orderId === order.id;
-    const lines = clues.map((txt, i) => `<p class="talk-line">${i ? '<span class="talk-more">E tem mais:</span> ' : ''}“${esc(txt)}”</p>`).join('');
+    const lines = clues.map((txt, i) => `<p class="talk-line">${i ? `<span class="talk-more">${L('E tem mais:', 'And there’s more:')}</span> ` : ''}“${esc(txt)}”</p>`).join('');
     const known = (state.discovered || []).includes(order.potionId);
     const hurry = moodBucket(order) === 2;
     ui.moodKey = `${order.id}:${moodBucket(order)}`;
     const timed = order.patience > 0;
     setHTML(els.talk, `
       <div class="talk-box${sad || hurry ? ' is-sad' : ''}${timed ? ' is-timed' : ''}">
-        ${order.novel ? `<p class="stamp-novel" title="Pedido de uma receita que não estava no caderno">Receita nova! +${esc(bonus)}</p>` : ''}
+        ${order.novel ? `<p class="stamp-novel" title="${L('Pedido de uma receita que não estava no caderno', 'An order for a recipe that wasn’t in the notebook')}">${L('Receita nova!', 'New recipe!')} +${esc(bonus)}</p>` : ''}
         <div class="talk-head"><p id="talk-name" class="talk-name">${esc(c.name)}</p></div>
-        ${timed && c.temper ? `<p class="talk-temper" title="Cada freguês espera de um jeito">${esc(c.temper)}${c.patience > 1 ? ' · espera mais' : c.patience < 1 ? ' · espera menos' : ''}</p>` : ''}
+        ${timed && c.temper ? `<p class="talk-temper" title="${L('Cada freguês espera de um jeito', 'Every customer waits in their own way')}">${esc(c.temper)}${c.patience > 1 ? L(' · espera mais', ' · waits longer') : c.patience < 1 ? L(' · espera menos', ' · waits less') : ''}</p>` : ''}
         ${sad ? `<p class="talk-line talk-react">“${esc(lineFor(c.id, 'sad', `${order.id}-${misses}`))}”</p>`
           : hurry ? `<p class="talk-greet talk-hurry">${esc(pickLine(HURRY_LINES, order.id))}</p>`
-          : `<p class="talk-greet">${esc(lineFor(c.id, 'greet', order.id) || 'Boa tarde!')}</p>`}
+          : `<p class="talk-greet">${esc(lineFor(c.id, 'greet', order.id) || L('Boa tarde!', 'Good afternoon!'))}</p>`}
         ${lines}
         ${order.novel && !known ? `<p class="talk-greet talk-novel">${esc(pickLine(NOVEL_HINTS, order.id))}</p>` : ''}
-        ${revealed && potion ? `<p class="talk-want">Quero: ${img(potion.id, 'mini-img')} <strong>${esc(potion.name)}</strong></p>` : ''}
+        ${revealed && potion ? `<p class="talk-want">${L('Quero', 'I want')}: ${img(potion.id, 'mini-img')} <strong>${esc(potion.name)}</strong></p>` : ''}
 
         <div class="talk-divider" aria-hidden="true"></div>
-        <p class="talk-pay">Paga ${coinIcon()} <strong>${esc(reward)}</strong> e +${esc(CONFIG.XP_DELIVERY + (order.novel ? CONFIG.NOVEL_XP : 0))} XP${timed ? `<span class="talk-tip${moodBucket(order) ? ' is-gone' : ''}"> · +${esc(CONFIG.TIP_FAST)} de gorjeta se for rápido</span>` : ''}</p>
+        <p class="talk-pay">${L('Paga', 'Pays')} ${coinIcon()} <strong>${esc(reward)}</strong> ${L('e', 'and')} +${esc(CONFIG.XP_DELIVERY + (order.novel ? CONFIG.NOVEL_XP : 0))} XP${timed ? `<span class="talk-tip${moodBucket(order) ? ' is-gone' : ''}"> · ${L(`+${esc(CONFIG.TIP_FAST)} de gorjeta se for rápido`, `+${esc(CONFIG.TIP_FAST)} tip if you’re quick`)}</span>` : ''}</p>
         <div class="talk-actions">
           <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="prateleira"
-            ${disabledAttr(!potions.length, 'A prateleira está vazia: prepare uma poção no caldeirão')}>Entregar poção</button>
-          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">Misturar no caldeirão</button>
+            ${disabledAttr(!potions.length, L('A prateleira está vazia: prepare uma poção no caldeirão', 'The shelf is empty: brew a potion in the cauldron'))}>${L('Entregar poção', 'Give potion')}</button>
+          <button type="button" class="btn" data-action="open-sheet" data-id="caldeirao">${L('Misturar no caldeirão', 'Mix in the cauldron')}</button>
           <button type="button" class="btn btn-small btn-quiet" data-action="dismiss" data-id="${esc(order.id)}"
-            aria-label="Mandar ${esc(c.name)} embora sem poção (−1 de fama)" title="Sem ingredientes ou sem ideia? O cliente vai embora e você perde 1 de fama.">Mandar embora</button>
+            aria-label="${L(`Mandar ${esc(c.name)} embora sem poção (−1 de fama)`, `Send ${esc(c.name)} away without a potion (−1 fame)`)}" title="${L('Sem ingredientes ou sem ideia? O cliente vai embora e você perde 1 de fama.', 'Out of ingredients or ideas? The customer leaves and you lose 1 fame.')}">${L('Mandar embora', 'Send away')}</button>
         </div>
         ${tipHTML(pickTip([misses ? 'erro-revela' : null, timed ? 'paciencia' : null, 'pistas', order.novel ? 'receita-nova' : null, !potions.length ? 'prateleira-vazia' : null, 'mandar-embora'], `pedido-${order.id}`))}
       </div>`);
@@ -727,9 +728,9 @@ export function createUI(root, handlers = {}) {
     setHTML(els.queue, others.map((o) => {
       const c = customerOf(o.customerId);
       return `<li><button type="button" class="queue-btn" data-action="call" data-id="${esc(o.id)}"
-        aria-label="Chamar ${esc(c.name)} ao balcão" title="${esc(c.name)}${o.patience > 0 && c.temper ? ` · ${esc(c.temper)}` : ''}">
+        aria-label="${L(`Chamar ${esc(c.name)} ao balcão`, `Call ${esc(c.name)} to the counter`)}" title="${esc(c.name)}${o.patience > 0 && c.temper ? ` · ${esc(c.temper)}` : ''}">
         <img src="${customerArt(o.customerId, 'neutro')}" alt="" draggable="false">${patienceHTML(o, 'patience patience-mini')}</button></li>`;
-    }).join('') + (coming ? `<li class="queue-more" title="Clientes que ainda vão chegar hoje">+${esc(coming)} <span class="sr-only">ainda vão chegar</span></li>` : ''));
+    }).join('') + (coming ? `<li class="queue-more" title="${L('Clientes que ainda vão chegar hoje', 'Customers still coming today')}">+${esc(coming)} <span class="sr-only">${L('ainda vão chegar', 'still coming')}</span></li>` : ''));
   }
 
   function renderScene(state) {
@@ -757,7 +758,7 @@ export function createUI(root, handlers = {}) {
     const due = rent + (state.debt || 0);
     if (!due) return '';
     const short = (state.coins || 0) < due;
-    return `<p class="shelf-ask rent-note${short ? ' is-short' : ''}">Guarde para o aluguel: amanhã, ao fechar, saem ${coinIcon()} <strong>${esc(due)}</strong>${state.debt ? ` (${esc(rent)} do dia + ${esc(state.debt)} atrasado)` : ''}. ${short ? 'A bolsa já está abaixo disso; o que vender amanhã ajuda a cobrir.' : ''}</p>`;
+    return `<p class="shelf-ask rent-note${short ? ' is-short' : ''}">${L('Guarde para o aluguel: amanhã, ao fechar, saem', 'Save for the rent: tomorrow, at closing, you pay')} ${coinIcon()} <strong>${esc(due)}</strong>${state.debt ? L(` (${esc(rent)} do dia + ${esc(state.debt)} atrasado)`, ` (${esc(rent)} for the day + ${esc(state.debt)} overdue)`) : ''}. ${short ? L('A bolsa já está abaixo disso; o que vender amanhã ajuda a cobrir.', 'Your purse is already below that; what you sell tomorrow will help cover it.') : ''}</p>`;
   }
 
   // ---------- banca da mercadora (fim do dia) ----------
@@ -774,13 +775,13 @@ export function createUI(root, handlers = {}) {
           <span class="card-count" aria-hidden="true">${esc(qty)}</span>
           ${img(ing.id, 'card-img')}
           <span class="card-name">${esc(ing.name)}</span>
-          <span class="card-quality">${esc(ing.quality)} · ${coinIcon()} ${esc(ing.cost)} cada</span>
+          <span class="card-quality">${esc(ing.quality)} · ${coinIcon()} ${esc(ing.cost)} ${L('cada', 'each')}</span>
         </div>
         <div class="card-btns">
           <button type="button" class="btn btn-small btn-coin" data-action="buy" data-id="${esc(ing.id)}" data-qty="1"
-            aria-label="Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas (tem ${esc(qty)})"${disabledAttr(!can1, here ? `A bolsa não alcança: custa ${ing.cost}` : 'A mercadora só vem no fim do dia')}>+1</button>
+            aria-label="${L(`Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas (tem ${esc(qty)})`, `Buy 1 ${esc(ing.name)} for ${esc(ing.cost)} coins (you have ${esc(qty)})`)}"${disabledAttr(!can1, here ? L(`A bolsa não alcança: custa ${ing.cost}`, `Not enough coins: it costs ${ing.cost}`) : L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day'))}>+1</button>
           <button type="button" class="btn btn-small btn-coin" data-action="buy" data-id="${esc(ing.id)}" data-qty="5"
-            aria-label="Comprar 5 ${esc(ing.name)} por ${esc(ing.cost * 5)} moedas"${disabledAttr(!can5, here ? `A bolsa não alcança: custa ${ing.cost * 5}` : 'A mercadora só vem no fim do dia')}>+5</button>
+            aria-label="${L(`Comprar 5 ${esc(ing.name)} por ${esc(ing.cost * 5)} moedas`, `Buy 5 ${esc(ing.name)} for ${esc(ing.cost * 5)} coins`)}"${disabledAttr(!can5, here ? L(`A bolsa não alcança: custa ${ing.cost * 5}`, `Not enough coins: it costs ${ing.cost * 5}`) : L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day'))}>+5</button>
         </div>
       </li>`;
     }).join('');
@@ -790,27 +791,27 @@ export function createUI(root, handlers = {}) {
     const lodoPrice = CONFIG.MERCHANT_SLUDGE_PRICE ?? 3;
     const lodoLeft = merchantSludgeLeft(state);
     const lodoTaken = Math.min(lodoMax, Number(state.merchantSludge) || 0);
-    const lodoWhy = !here ? 'A mercadora só vem no fim do dia'
-      : !lodo ? 'Não há Lodo na prateleira'
-      : 'A carroça já está cheia de Lodo por hoje';
+    const lodoWhy = !here ? L('A mercadora só vem no fim do dia', 'The merchant only comes at the end of the day')
+      : !lodo ? L('Não há Lodo na prateleira', 'There is no Sludge on the shelf')
+      : L('A carroça já está cheia de Lodo por hoje', 'The cart is already full of Sludge for today');
     const lodoCard = here ? `
       <li class="card ing-card merchant-lodo${lodo === 0 ? ' is-empty' : ''}" style="--i:${INGREDIENTS.length};--ing:#5b4a2e">
         <div class="card-face">
           <span class="card-count" aria-hidden="true">${esc(lodo)}</span>
           ${img('lodo', 'card-img')}
-          <span class="card-name">Lodo Instável</span>
-          <span class="card-quality" title="A mercadora leva até ${esc(lodoMax)} Lodos por noite">${coinIcon()} ${esc(lodoPrice)} cada · ${esc(lodoTaken)}/${esc(lodoMax)}</span>
+          <span class="card-name">${L('Lodo Instável', 'Unstable Sludge')}</span>
+          <span class="card-quality" title="${L(`A mercadora leva até ${esc(lodoMax)} Lodos por noite`, `The merchant takes up to ${esc(lodoMax)} Sludges a night`)}">${coinIcon()} ${esc(lodoPrice)} ${L('cada', 'each')} · ${esc(lodoTaken)}/${esc(lodoMax)}</span>
         </div>
         <div class="card-btns">
           <button type="button" class="btn btn-small btn-coin" data-action="sell-sludge"
-            aria-label="Vender 1 Lodo Instável à mercadora por ${esc(lodoPrice)} moedas (tem ${esc(lodo)})"${disabledAttr(lodoLeft < 1, lodoWhy)}>Vender</button>
+            aria-label="${L(`Vender 1 Lodo Instável à mercadora por ${esc(lodoPrice)} moedas (tem ${esc(lodo)})`, `Sell 1 Unstable Sludge to the merchant for ${esc(lodoPrice)} coins (you have ${esc(lodo)})`)}"${disabledAttr(lodoLeft < 1, lodoWhy)}>${L('Vender', 'Sell')}</button>
         </div>
       </li>` : '';
     const plan = state.plan || {};
     setHTML(els.merchant, `
       <p class="shelf-ask">${here
-        ? `Compre o que vai precisar amanhã: vêm <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> clientes, e durante o dia não há onde comprar.`
-        : isNight(state) ? 'A mercadora já seguiu viagem. Ela volta amanhã à noite.' : 'A mercadora só abre a banca no fim do dia.'} Bolsa: ${coinIcon()} <strong>${esc(state.coins)}</strong></p>
+        ? L(`Compre o que vai precisar amanhã: vêm <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> clientes, e durante o dia não há onde comprar.`, `Buy what you’ll need tomorrow: <strong>${esc(Math.min(CONFIG.DAY_MAX_CUSTOMERS, (plan.total || 0) + CONFIG.DAY_GROWTH))}</strong> customers are coming, and there’s nowhere to buy during the day.`)
+        : isNight(state) ? L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.') : L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.')} ${L('Bolsa', 'Purse')}: ${coinIcon()} <strong>${esc(state.coins)}</strong></p>
       ${here ? rentNote(state) : ''}
       <ul class="hand merchant-cards">${cards}${lodoCard}</ul>`);
   }
@@ -821,10 +822,10 @@ export function createUI(root, handlers = {}) {
     const n = index + 1;
     if (!ing) {
       return `<button type="button" class="slot is-empty" data-action="slot" data-slot="${index}"
-        aria-label="Espaço ${n} vazio: escolha uma carta de ingrediente"><span class="slot-plus" aria-hidden="true">+</span></button>`;
+        aria-label="${L(`Espaço ${n} vazio: escolha uma carta de ingrediente`, `Slot ${n} empty: choose an ingredient card`)}"><span class="slot-plus" aria-hidden="true">+</span></button>`;
     }
     return `<button type="button" class="slot card-mini" data-action="slot" data-slot="${index}" style="--ing:${BREW_COLOR[ing.id] || '#c87533'}"
-      aria-label="Espaço ${n}: ${esc(ing.name)}. Clique para tirar" title="Clique para tirar">
+      aria-label="${L(`Espaço ${n}: ${esc(ing.name)}. Clique para tirar`, `Slot ${n}: ${esc(ing.name)}. Click to remove`)}" title="${L('Clique para tirar', 'Click to remove')}">
       ${img(ing.id, 'slot-img')}<span class="slot-name">${esc(ing.name)}</span></button>`;
   }
 
@@ -834,17 +835,17 @@ export function createUI(root, handlers = {}) {
     let reason;
     if (!a || !b) {
       reason = !a && !b
-        ? 'Escolha 2 cartas de ingrediente.'
-        : 'Falta 1 ingrediente: escolha mais uma carta.';
+        ? L('Escolha 2 cartas de ingrediente.', 'Choose 2 ingredient cards.')
+        : L('Falta 1 ingrediente: escolha mais uma carta.', '1 ingredient missing: choose one more card.');
     } else {
       const check = canMix(state, a, b);
       ready = !!(check && check.ok);
       if (ready) {
         const ia = getIngredient(a); const ib = getIngredient(b);
-        reason = a === b ? `Tudo pronto: vão 2 porções de ${ia.name}.` : `Tudo pronto: vão 1 ${ia.name} e 1 ${ib.name}.`;
-        if (isKnownFailure(state, a, b)) reason += ' O grimório lembra: essa dupla já desandou em Lodo.';
+        reason = a === b ? L(`Tudo pronto: vão 2 porções de ${ia.name}.`, `All set: 2 portions of ${ia.name}.`) : L(`Tudo pronto: vão 1 ${ia.name} e 1 ${ib.name}.`, `All set: 1 ${ia.name} and 1 ${ib.name}.`);
+        if (isKnownFailure(state, a, b)) reason += L(' O grimório lembra: essa dupla já desandou em Lodo.', ' The grimoire remembers: this pair already turned into Sludge.');
       } else {
-        reason = (check && check.error && check.error.message) || 'O caldeirão não aceita essa mistura agora.';
+        reason = (check && check.error && check.error.message) || L('O caldeirão não aceita essa mistura agora.', 'The cauldron won’t take that mixture right now.');
       }
     }
     const ca = a ? BREW_COLOR[a] : '#3b2a1c';
@@ -862,8 +863,8 @@ export function createUI(root, handlers = {}) {
         ${slotHTML(1, b)}
       </div>
       <div class="cauldron-actions">
-        <button type="button" class="btn" data-action="clear"${disabledAttr(!hasAny, 'O caldeirão já está vazio')}>Esvaziar</button>
-        <button type="button" class="btn btn-primary btn-mix" data-action="mix" aria-describedby="mix-reason"${disabledAttr(!ready, reason)}>Misturar</button>
+        <button type="button" class="btn" data-action="clear"${disabledAttr(!hasAny, L('O caldeirão já está vazio', 'The cauldron is already empty'))}>${L('Esvaziar', 'Empty')}</button>
+        <button type="button" class="btn btn-primary btn-mix" data-action="mix" aria-describedby="mix-reason"${disabledAttr(!ready, reason)}>${L('Misturar', 'Mix')}</button>
       </div>
       <p id="mix-reason" class="reason${ready ? ' is-ready' : ''}${ready && isKnownFailure(state, a, b) ? ' is-warning' : ''}">${esc(reason)}</p>`);
   }
@@ -882,22 +883,22 @@ export function createUI(root, handlers = {}) {
       const poor = (state.coins || 0) < ing.cost;
       const here = isMerchantHere(state);
       const why = qty < 1
-        ? (here ? `Sem ${ing.name}: compre com a mercadora` : `Sem ${ing.name}: a mercadora só vem no fim do dia`)
-        : 'O caldeirão já tem dois ingredientes: toque em um para tirá-lo';
+        ? (here ? L(`Sem ${ing.name}: compre com a mercadora`, `No ${ing.name}: buy some from the merchant`) : L(`Sem ${ing.name}: a mercadora só vem no fim do dia`, `No ${ing.name}: the merchant only comes at the end of the day`))
+        : L('O caldeirão já tem dois ingredientes: toque em um para tirá-lo', 'The cauldron already has two ingredients: tap one to remove it');
       return `
       <li class="card ing-card${qty === 0 ? ' is-empty' : ''}${inPot ? ' is-in-pot' : ''}" style="--i:${i};--ing:${BREW_COLOR[ing.id] || '#c87533'}">
         <button type="button" class="card-face" data-action="select" data-id="${esc(ing.id)}"
-          aria-label="Pôr ${esc(ing.name)} no caldeirão (${esc(qty)} em estoque)"${disabledAttr(full || qty < 1, why)}>
+          aria-label="${L(`Pôr ${esc(ing.name)} no caldeirão (${esc(qty)} em estoque)`, `Put ${esc(ing.name)} in the cauldron (${esc(qty)} in stock)`)}"${disabledAttr(full || qty < 1, why)}>
           <span class="card-count" aria-hidden="true">${esc(qty)}</span>
           ${img(ing.id, 'card-img')}
           <span class="card-name">${esc(ing.name)}</span>
           <span class="card-quality">${esc(ing.quality)}</span>
-          ${inPot ? `<span class="card-flag">no caldeirão${inPot > 1 ? ` ×${inPot}` : ''}</span>` : ''}
+          ${inPot ? `<span class="card-flag">${L('no caldeirão', 'in the cauldron')}${inPot > 1 ? ` ×${inPot}` : ''}</span>` : ''}
         </button>
         ${here
           ? `<button type="button" class="card-buy" data-action="buy" data-id="${esc(ing.id)}" data-qty="1"
-          aria-label="Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas"${disabledAttr(poor, `A bolsa não alcança: custa ${ing.cost}`)}>+1 · ${coinIcon()} ${esc(ing.cost)}</button>`
-          : `<span class="card-buy is-off" title="Durante o dia não há onde comprar: a mercadora vem no fim do dia">${qty ? 'em estoque' : 'acabou'}</span>`}
+          aria-label="${L(`Comprar 1 ${esc(ing.name)} por ${esc(ing.cost)} moedas`, `Buy 1 ${esc(ing.name)} for ${esc(ing.cost)} coins`)}"${disabledAttr(poor, L(`A bolsa não alcança: custa ${ing.cost}`, `Not enough coins: it costs ${ing.cost}`))}>+1 · ${coinIcon()} ${esc(ing.cost)}</button>`
+          : `<span class="card-buy is-off" title="${L('Durante o dia não há onde comprar: a mercadora vem no fim do dia', 'There’s nowhere to buy during the day: the merchant comes at the end of the day')}">${qty ? L('em estoque', 'in stock') : L('acabou', 'sold out')}</span>`}
       </li>`;
     }).join(''));
   }
@@ -905,7 +906,7 @@ export function createUI(root, handlers = {}) {
   function renderQuick(state) {
     const known = (state.discovered || []).map(getRecipe).filter(Boolean);
     setHTML(els.quick, known.length
-      ? `<p class="quick-title">Receitas do caderno (um toque para repetir)</p>
+      ? `<p class="quick-title">${L('Receitas do caderno (um toque para repetir)', 'Notebook recipes (one tap to brew again)')}</p>
          <ul class="quick-list">${known.map((r) => `<li>${remakeButton(state, r, `${img(r.id, 'mini-img')} ${esc(r.name)}`)}</li>`).join('')}</ul>`
       : '');
   }
@@ -913,7 +914,7 @@ export function createUI(root, handlers = {}) {
   function renderResultPlaceholder() {
     const ctx = sheetCtx('caldeirao');
     const t = ctx && pickTip(['misturar'], ctx);
-    setHTML(els.result, t ? `<p class="result-empty">${esc(TIPS.find((x) => x.id === t).text)}</p>` : '<p class="result-empty">O resultado da mistura aparece aqui.</p>');
+    setHTML(els.result, t ? `<p class="result-empty">${esc(TIPS.find((x) => x.id === t).text)}</p>` : `<p class="result-empty">${L('O resultado da mistura aparece aqui.', 'The result of the mixture shows up here.')}</p>`);
   }
 
   // ---------- prateleira ----------
@@ -923,12 +924,12 @@ export function createUI(root, handlers = {}) {
     const order = ui.farewell ? null : currentOrder(state);
     const c = order ? customerOf(order.customerId) : null;
     const head = c
-      ? `<p class="shelf-ask">Qual frasco resolve o pedido de <strong>${esc(c.name)}</strong>? Errar não gasta a poção, só custa 1 de fama.</p>
+      ? `<p class="shelf-ask">${L(`Qual frasco resolve o pedido de <strong>${esc(c.name)}</strong>? Errar não gasta a poção, só custa 1 de fama.`, `Which flask solves <strong>${esc(c.name)}</strong>’s request? A wrong guess doesn’t use up the potion, it only costs 1 fame.`)}</p>
          <blockquote class="shelf-clue">“${esc(getOrderClues(order).join(' '))}”</blockquote>`
-      : '<p class="shelf-ask">Sem ninguém no balcão agora. Dá para vender frascos para o mercador.</p>';
+      : `<p class="shelf-ask">${L('Sem ninguém no balcão agora. Dá para vender frascos para o mercador.', 'Nobody at the counter right now. You can sell flasks to the trader.')}</p>`;
     if (!ids.length) {
-      setHTML(els.shelf, `${head}<p class="empty">A prateleira está vazia. Misture ingredientes no caldeirão para encher os frascos.</p>
-        <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">Ir ao caldeirão</button>`);
+      setHTML(els.shelf, `${head}<p class="empty">${L('A prateleira está vazia. Misture ingredientes no caldeirão para encher os frascos.', 'The shelf is empty. Mix ingredients in the cauldron to fill the flasks.')}</p>
+        <button type="button" class="btn btn-primary" data-action="open-sheet" data-id="caldeirao">${L('Ir ao caldeirão', 'Go to the cauldron')}</button>`);
       return;
     }
     const cards = ids.map((id, i) => {
@@ -947,9 +948,9 @@ export function createUI(root, handlers = {}) {
         </div>
         <div class="card-btns">
           ${c && potion ? `<button type="button" class="btn btn-small btn-primary" data-action="give" data-id="${esc(id)}"
-              aria-label="Entregar ${esc(item.name)} a ${esc(c.name)}">Entregar</button>` : ''}
+              aria-label="${L(`Entregar ${esc(item.name)} a ${esc(c.name)}`, `Give ${esc(item.name)} to ${esc(c.name)}`)}">${L('Entregar', 'Give')}</button>` : ''}
           <button type="button" class="btn btn-small btn-coin" data-action="sell" data-id="${esc(id)}"
-            aria-label="Vender 1 ${esc(item.name)} por ${esc(coins(price))}"><span class="btn-word">Vender · </span>${coinIcon()} ${esc(price)}</button>
+            aria-label="${L(`Vender 1 ${esc(item.name)} por ${esc(coins(price))}`, `Sell 1 ${esc(item.name)} for ${esc(coins(price))}`)}"><span class="btn-word">${L('Vender', 'Sell')} · </span>${coinIcon()} ${esc(price)}</button>
         </div>
       </li>`;
     }).join('');
@@ -961,7 +962,7 @@ export function createUI(root, handlers = {}) {
     const total = Math.ceil(ms / 1000);
     const m = Math.floor(total / 60);
     const sec = total % 60;
-    return m ? `${m} min${sec >= 30 ? ' e meio' : ''}` : 'menos de 1 min';
+    return m ? (sec >= 30 ? L(`${m} min e meio`, `${m} and a half min`) : `${m} min`) : L('menos de 1 min', 'less than 1 min');
   }
 
   function renderTools(state) {
@@ -978,9 +979,9 @@ export function createUI(root, handlers = {}) {
         </div>
         <div class="card-btns">
         ${has
-          ? '<span class="stamp-owned">Na botica</span>'
+          ? `<span class="stamp-owned">${L('Na botica', 'In the shop')}</span>`
           : `<button type="button" class="btn btn-small btn-coin" data-action="upgrade" data-id="${esc(u.id)}"
-              aria-label="Comprar ${esc(u.name)} por ${esc(u.cost)} moedas"${disabledAttr(poor, `A bolsa não alcança: custa ${u.cost}`)}>Comprar · ${coinIcon()} ${esc(u.cost)}</button>`}
+              aria-label="${L(`Comprar ${esc(u.name)} por ${esc(u.cost)} moedas`, `Buy ${esc(u.name)} for ${esc(u.cost)} coins`)}"${disabledAttr(poor, L(`A bolsa não alcança: custa ${u.cost}`, `Not enough coins: it costs ${u.cost}`))}>${L('Comprar', 'Buy')} · ${coinIcon()} ${esc(u.cost)}</button>`}
         </div>
       </li>`;
     }).join('');
@@ -990,13 +991,13 @@ export function createUI(root, handlers = {}) {
     if (!check.ok) {
       const code = check.error && check.error.code;
       reason = (check.error && check.error.message)
-        || (code === 'LOCKED' ? 'Compre a Lupa Arcana para estudar dicas pagas.' : 'Nenhuma dica disponível agora.');
+        || (code === 'LOCKED' ? L('Compre a Lupa Arcana para estudar dicas pagas.', 'Buy the Arcane Lens to study paid hints.') : L('Nenhuma dica disponível agora.', 'No hints available right now.'));
     }
     let last = '';
     if (ui.lastHint) {
       const ing = getIngredient(ui.lastHint.ingredientId);
       const rec = getItem(ui.lastHint.recipeId);
-      if (ing && rec) last = `<p class="hint-last"><strong>${esc(rec.name)}</strong> leva ${img(ing.id, 'mini-img')} ${esc(ing.name)} + ???</p>`;
+      if (ing && rec) last = `<p class="hint-last"><strong>${esc(rec.name)}</strong> ${L('leva', 'takes')} ${img(ing.id, 'mini-img')} ${esc(ing.name)} + ???</p>`;
     }
     const now = Date.now();
     const free = canRequestFreeHint(state, now) || { ok: false };
@@ -1004,31 +1005,31 @@ export function createUI(root, handlers = {}) {
     if (!free.ok) {
       const code = free.error && free.error.code;
       freeReason = code === 'COOLDOWN'
-        ? `A próxima dica grátis chega em ${formatWait(freeHintWaitMs(state, now))}.`
-        : ((free.error && free.error.message) || 'Nenhuma dica grátis agora.');
+        ? L(`A próxima dica grátis chega em ${formatWait(freeHintWaitMs(state, now))}.`, `The next free hint arrives in ${formatWait(freeHintWaitMs(state, now))}.`)
+        : ((free.error && free.error.message) || L('Nenhuma dica grátis agora.', 'No free hint right now.'));
     }
     const toolsCtx = sheetCtx('utensilios');
     setHTML(els.tools, `
       ${toolsCtx ? tipHTML(pickTip(['dica-gratis'], toolsCtx)) : ''}
-      <h3 class="tools-title">Dicas</h3>
+      <h3 class="tools-title">${L('Dicas', 'Hints')}</h3>
       <ul class="hint-row">
         <li class="hint-card">
           ${img('vela', 'hint-img')}
           <div>
-            <button type="button" class="btn btn-primary" data-action="free-hint" aria-describedby="free-hint-reason"${disabledAttr(!free.ok, freeReason)}>Dica grátis</button>
-            <p id="free-hint-reason" class="reason">${free.ok ? 'Pronta! A cada 4 minutos a vela acende uma dica grátis.' : esc(freeReason)}</p>
+            <button type="button" class="btn btn-primary" data-action="free-hint" aria-describedby="free-hint-reason"${disabledAttr(!free.ok, freeReason)}>${L('Dica grátis', 'Free hint')}</button>
+            <p id="free-hint-reason" class="reason">${free.ok ? L('Pronta! A cada 4 minutos a vela acende uma dica grátis.', 'Ready! Every 4 minutes the candle lights up a free hint.') : esc(freeReason)}</p>
           </div>
         </li>
         <li class="hint-card">
           ${img('up-lupa', 'hint-img')}
           <div>
-            <button type="button" class="btn" data-action="hint" aria-describedby="hint-reason"${disabledAttr(!check.ok, reason)}>Dica da Lupa · ${coinIcon()} ${esc(CONFIG.HINT_COST)}</button>
-            <p id="hint-reason" class="reason">${check.ok ? 'Revela 1 ingrediente de uma poção ainda fora do caderno.' : esc(reason)}</p>
+            <button type="button" class="btn" data-action="hint" aria-describedby="hint-reason"${disabledAttr(!check.ok, reason)}>${L('Dica da Lupa', 'Lens hint')} · ${coinIcon()} ${esc(CONFIG.HINT_COST)}</button>
+            <p id="hint-reason" class="reason">${check.ok ? L('Revela 1 ingrediente de uma poção ainda fora do caderno.', 'Reveals 1 ingredient of a potion not yet in the notebook.') : esc(reason)}</p>
           </div>
         </li>
       </ul>
       ${last}
-      <h3 class="tools-title">Utensílios da botica</h3>
+      <h3 class="tools-title">${L('Utensílios da botica', 'Apothecary tools')}</h3>
       <ul class="hand tool-cards">${ups}</ul>`);
   }
 
@@ -1044,7 +1045,7 @@ export function createUI(root, handlers = {}) {
       t.tabIndex = on ? 0 : -1;
     }
     const title = byId('h-book');
-    const text = notes ? 'Anotações da boticária' : ings ? 'Caderno de ingredientes' : 'Livro de receitas';
+    const text = notes ? L('Anotações da boticária', 'The apothecary’s notes') : ings ? L('Caderno de ingredientes', 'Ingredient notebook') : L('Livro de receitas', 'Recipe book');
     if (title && title.textContent !== text) title.textContent = text;
   }
 
@@ -1090,8 +1091,8 @@ export function createUI(root, handlers = {}) {
       const clue = sludgeClue(st, ui.lastPair[0], ui.lastPair[1]);
       const ing = clue ? getIngredient(clue.ingredientId) : null;
       clueText = ing
-        ? `${ing.name} borbulhou de leve: pede algo ${clue.quality}.`
-        : 'Esses ingredientes já contaram todos os seus segredos.';
+        ? L(`${ing.name} borbulhou de leve: pede algo ${clue.quality}.`, `${ing.name} bubbled faintly: it wants something ${clue.quality}.`)
+        : L('Esses ingredientes já contaram todos os seus segredos.', 'These ingredients have already told all their secrets.');
     }
     const particles = isNew
       ? `<span class="particles" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<span class="particle" style="--i:${i}"></span>`).join('')}</span>`
@@ -1103,16 +1104,16 @@ export function createUI(root, handlers = {}) {
     const html = `
       <div class="result-card card reveal${isNew ? ' is-new' : ''}${sludge ? ' is-sludge' : ''} rarity-${esc(item.rarity)}">
         ${particles}
-        ${isNew ? '<p class="stamp-new">Nova página!</p>' : ''}
+        ${isNew ? `<p class="stamp-new">${L('Nova página!', 'New page!')}</p>` : ''}
         <span class="seal seal-${esc(item.rarity)}" title="${esc(rarityLabel(item.rarity))}"></span>
         ${img(item.id, 'result-img')}
         <p class="result-name">${esc(item.name)}</p>
-        <p class="result-meta">${esc(rarityLabel(item.rarity))} · vende por ${coinIcon()} ${esc(price)}</p>
-        ${sludge ? `<p class="result-note">A mistura desandou… mas o Lodo ainda vale uma moedinha.</p>${clueText ? `<p class="result-clue">${esc(clueText)}</p>` : ''}` : ''}
-        ${result.free ? '<p class="result-free">O Caldeirão Eficiente devolveu os ingredientes!</p>' : ''}
-        ${result.double ? '<p class="result-free">O Alambique Duplo encheu dois frascos!</p>' : ''}
+        <p class="result-meta">${esc(rarityLabel(item.rarity))} · ${L('vende por', 'sells for')} ${coinIcon()} ${esc(price)}</p>
+        ${sludge ? `<p class="result-note">${L('A mistura desandou… mas o Lodo ainda vale uma moedinha.', 'The mixture went wrong… but Sludge is still worth a little coin.')}</p>${clueText ? `<p class="result-clue">${esc(clueText)}</p>` : ''}` : ''}
+        ${result.free ? `<p class="result-free">${L('O Caldeirão Eficiente devolveu os ingredientes!', 'The Efficient Cauldron gave the ingredients back!')}</p>` : ''}
+        ${result.double ? `<p class="result-free">${L('O Alambique Duplo encheu dois frascos!', 'The Double Still filled two flasks!')}</p>` : ''}
         ${result.xpGained ? `<p class="result-xp">+${esc(result.xpGained)} XP</p>` : ''}
-        ${!sludge && order ? '<button type="button" class="btn btn-small btn-primary" data-action="close-sheet">Levar ao balcão</button>' : ''}
+        ${!sludge && order ? `<button type="button" class="btn btn-small btn-primary" data-action="close-sheet">${L('Levar ao balcão', 'Take it to the counter')}</button>` : ''}
       </div>`;
     cache.set(els.result, html);
     els.result.innerHTML = html; // sempre recria para reiniciar a animação
@@ -1120,11 +1121,11 @@ export function createUI(root, handlers = {}) {
     if (pot) { pot.classList.remove('is-stirring'); void pot.offsetWidth; pot.classList.add('is-stirring'); }
 
     let msg;
-    if (sludge) msg = `A mistura desandou em ${item.name} (vende por ${coins(price)}). ${clueText}`;
-    else msg = `${isNew ? 'Nova página no caderno! ' : ''}Do caldeirão saiu ${item.name}, poção ${rarityLabel(item.rarity).toLowerCase()} que vale ${coins(price)}.`;
+    if (sludge) msg = L(`A mistura desandou em ${item.name} (vende por ${coins(price)}). ${clueText}`, `The mixture turned into ${item.name} (sells for ${coins(price)}). ${clueText}`);
+    else msg = L(`${isNew ? 'Nova página no caderno! ' : ''}Do caldeirão saiu ${item.name}, poção ${rarityLabel(item.rarity).toLowerCase()} que vale ${coins(price)}.`, `${isNew ? 'New page in the notebook! ' : ''}Out of the cauldron came ${item.name}, a ${rarityLabel(item.rarity).toLowerCase()} potion worth ${coins(price)}.`);
     if (result.xpGained) msg += ` +${result.xpGained} XP.`;
-    if (result.free) msg += ' O Caldeirão Eficiente devolveu os ingredientes!';
-    if (result.double) msg += ' O Alambique Duplo encheu dois frascos!';
+    if (result.free) msg += L(' O Caldeirão Eficiente devolveu os ingredientes!', ' The Efficient Cauldron gave the ingredients back!');
+    if (result.double) msg += L(' O Alambique Duplo encheu dois frascos!', ' The Double Still filled two flasks!');
     notify(msg, sludge ? 'info' : 'success');
   }
 
@@ -1203,7 +1204,7 @@ export function createUI(root, handlers = {}) {
     rerender();
     const ing = getIngredient(result.ingredientId);
     const rec = getItem(result.recipeId);
-    if (ing && rec) notify(`Anotado${result.repeated ? ' de novo' : ''}: ${rec.name} leva ${ing.name} e um ingrediente secreto.`, 'success');
+    if (ing && rec) notify(L(`Anotado${result.repeated ? ' de novo' : ''}: ${rec.name} leva ${ing.name} e um ingrediente secreto.`, `Noted${result.repeated ? ' again' : ''}: ${rec.name} takes ${ing.name} and a secret ingredient.`), 'success');
   }
 
   // ---------- folhas (livro, caldeirão, prateleira, utensílios) ----------
@@ -1254,8 +1255,8 @@ export function createUI(root, handlers = {}) {
     if (ui.sheet) closeSheet({ restore: false });
     const desc = doc.getElementById('victory-desc');
     if (desc) desc.textContent = IS_DEMO
-      ? `As ${TOTAL()} receitas da demo estão no caderno. A botica segue aberta até o fim do dia ${CONFIG.DEMO_LAST_DAY}: atenda a freguesia e encha a bolsa.`
-      : `As ${TOTAL()} receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.`;
+      ? L(`As ${TOTAL()} receitas da demo estão no caderno. A botica segue aberta até o fim do dia ${CONFIG.DEMO_LAST_DAY}: atenda a freguesia e encha a bolsa.`, `All ${TOTAL()} demo recipes are in the notebook. The apothecary stays open until the end of day ${CONFIG.DEMO_LAST_DAY}: serve your customers and fill your purse.`)
+      : L(`As ${TOTAL()} receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.`, `All ${TOTAL()} recipes are in the notebook. The shop stays open: serve your customers, sell potions and try to beat your coin record.`);
     ui.dialogOpener = doc.activeElement;
     try { if (!d.open) d.showModal(); } catch { d.setAttribute('open', ''); }
   }
@@ -1292,7 +1293,7 @@ export function createUI(root, handlers = {}) {
   function selectIngredient(id) {
     const i = ui.selection.indexOf(null);
     if (i === -1) {
-      notify('O caldeirão já tem dois ingredientes. Toque em um deles para tirá-lo.', 'info');
+      notify(L('O caldeirão já tem dois ingredientes. Toque em um deles para tirá-lo.', 'The cauldron already has two ingredients. Tap one of them to remove it.'), 'info');
       return;
     }
     ui.selection[i] = id;
@@ -1335,7 +1336,7 @@ export function createUI(root, handlers = {}) {
         else {
           const first = els.hand && els.hand.querySelector('.card-face:not(:disabled)');
           if (first) first.focus();
-          notify('Espaço vazio: escolha uma carta de ingrediente.', 'info');
+          notify(L('Espaço vazio: escolha uma carta de ingrediente.', 'Empty slot: choose an ingredient card.'), 'info');
         }
         break;
       }
@@ -1438,11 +1439,11 @@ export function createUI(root, handlers = {}) {
     ui.timers = [];
     if (ui.sheet) closeSheet({ restore: false });
     const set = (id, html) => { const el = doc.getElementById(id); if (el) el.innerHTML = html; };
-    set('gameover-sub', `O senhorio levou a chave. Ficaram ${esc(r.debt)} ${r.debt === 1 ? 'moeda' : 'moedas'} de aluguel atrasado.`);
+    set('gameover-sub', L(`O senhorio levou a chave. Ficaram ${esc(r.debt)} ${r.debt === 1 ? 'moeda' : 'moedas'} de aluguel atrasado.`, `The landlord took the key. ${esc(r.debt)} ${r.debt === 1 ? 'coin' : 'coins'} of rent were left unpaid.`));
     const portrait = (globalThis.matchMedia && matchMedia('(orientation: portrait), (max-aspect-ratio: 4/5)').matches);
     const rows = portrait
-      ? [['Dias', r.day], ['Clientes', r.served], ['Poções', r.brewed], ['Receitas', `${r.found} de ${r.total}`]]
-      : [['Dias de loja aberta', r.day], ['Clientes atendidos', r.served], ['Poções preparadas', r.brewed], ['Receitas descobertas', `${r.found} de ${r.total}`]];
+      ? [[L('Dias', 'Days'), r.day], [L('Clientes', 'Customers'), r.served], [L('Poções', 'Potions'), r.brewed], [L('Receitas', 'Recipes'), `${r.found} ${L('de', 'of')} ${r.total}`]]
+      : [[L('Dias de loja aberta', 'Days the shop was open'), r.day], [L('Clientes atendidos', 'Customers served'), r.served], [L('Poções preparadas', 'Potions brewed'), r.brewed], [L('Receitas descobertas', 'Recipes discovered'), `${r.found} ${L('de', 'of')} ${r.total}`]];
     set('gameover-dl', rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join(''));
     if (els.app) els.app.hidden = true;
     gameover.hidden = false;
@@ -1479,7 +1480,7 @@ export function createUI(root, handlers = {}) {
     const set = (id, html) => { const el = doc.getElementById(id); if (el) el.innerHTML = html; };
     const letter = demoLetter(r);
     set('fimdemo-carta', `<p class="fimdemo-saudacao">${esc(letter.greeting)}</p>${letter.paragraphs.map((t) => `<p>${esc(t)}</p>`).join('')}<p class="fimdemo-assinatura">${esc(letter.signature)}</p>`);
-    const rows = [['Dias', r.day], ['Clientes', r.served], ['Receitas', `${r.found} de ${r.total}`], ['Moedas', r.coins], ['Fama', r.fame], ['Dias perfeitos', r.perfectDays]];
+    const rows = [[L('Dias', 'Days'), r.day], [L('Clientes', 'Customers'), r.served], [L('Receitas', 'Recipes'), `${r.found} ${L('de', 'of')} ${r.total}`], [L('Moedas', 'Coins'), r.coins], [L('Fama', 'Fame'), r.fame], [L('Dias perfeitos', 'Perfect days'), r.perfectDays]];
     set('fimdemo-dl', rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join(''));
     if (els.app) els.app.hidden = true;
     fimdemo.hidden = false;
