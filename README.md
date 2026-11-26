@@ -152,6 +152,7 @@ alquimia-de-bolso/
 ├─ musica/               # MIDIs da trilha, script de composição e guias de som
 ├─ previa/               # capturas de tela do menu e do balcão
 ├─ simulacoes/           # simulações de economia (ex.: aluguel)
+├─ originais/            # .rar com as artes originais de itens e personagens
 └─ README.md
 ```
 
