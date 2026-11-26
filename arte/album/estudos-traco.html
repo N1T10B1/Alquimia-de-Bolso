@@ -1,0 +1,229 @@
+<title>Estudos de Traço à Mão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Alegreya+SC:wght@700&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica+SC&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: uma prancha por técnica, sempre com as mesmas 4 peças, para comparar só o traço. */
+:root{
+  --bg:#e2ddd3; --fg:#2a221b; --muted:#5e5246; --line:#c2b7a4; --chip:#a8322a; --chip-fg:#fbf3e2; --panel:#d6cfc2;
+  --f-tit:"IM Fell English SC","Iowan Old Style",Georgia,serif; --f-txt:"Alegreya","Iowan Old Style",Georgia,serif;
+  --grao:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .1 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --fibra:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008 .25' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .1 0 0 0 .22 -.06'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#14100c; --fg:#ece3d2; --muted:#b1a48f; --line:#3a3026; --chip:#e0675b; --chip-fg:#1a120c; --panel:#1d1712; color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#14100c; --fg:#ece3d2; --muted:#b1a48f; --line:#3a3026; --chip:#e0675b; --chip-fg:#1a120c; --panel:#1d1712; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-txt);font-size:16px;line-height:1.5;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2{font-family:var(--f-tit);font-weight:400;margin:0;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.05}
+.eyebrow{font-family:var(--f-tit);letter-spacing:.08em;color:var(--muted);font-size:15px}
+.intro{max-width:70ch}
+.intro p{margin:.5em 0}
+.rec{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--chip);padding:14px 18px;margin:18px 0;max-width:80ch}
+.rec b{font-family:var(--f-tit);font-weight:400;font-size:18px;color:var(--chip)}
+.est{padding:34px 0 12px;border-bottom:1px solid var(--line)}
+.est-cab{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 16px;align-items:baseline}
+.est-l{font-family:var(--f-tit);font-size:54px;line-height:.9;color:var(--chip);grid-row:span 2}
+.est-cab h2{font-size:28px}
+.est-cab p{margin:0;color:var(--muted);max-width:75ch}
+.pros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 14px;font-size:15px}
+.pros div{background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:3px}
+.pros b{font-family:var(--f-tit);font-weight:400;display:block;color:var(--muted);letter-spacing:.04em}
+@media (max-width:760px){.pros{grid-template-columns:1fr}}
+.prancha{border:1px solid var(--line);border-radius:3px;padding:26px 20px;display:flex;flex-wrap:wrap;gap:26px 34px;align-items:center;justify-content:center;
+  color:#2b1e16;background-color:#efe2c4;background-image:var(--grao),var(--fibra),radial-gradient(120% 90% at 30% 10%,rgba(255,255,255,.25),transparent 60%),radial-gradient(80% 70% at 90% 100%,rgba(120,70,20,.16),transparent 70%)}
+.prancha.kraft{background-color:#c9ad80}
+.prancha.branco{background-color:#f3ead6}
+.obj{display:flex;flex-direction:column;align-items:center;gap:6px}
+.obj svg{overflow:visible}
+.rot{font-family:var(--f-tit);font-size:13px;letter-spacing:.06em;color:#5a4636}
+.kraft .rot{color:#3d2c18}
+.cald{width:220px;height:236px}
+.fr{width:118px;height:155px}
+.fo{width:134px;height:134px}
+.bt{position:relative;width:170px;height:56px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.bt svg{position:absolute;inset:0;width:100%;height:100%}
+.bt span{position:relative;font-size:20px;font-weight:700}
+.bt:focus-visible{outline:3px solid #2c4f9e;outline-offset:4px}
+.etq{font-size:22px;text-align:center;line-height:1.1}
+.etq small{display:block;font-size:14px;opacity:.8}
+.f-aq{font-family:"IM Fell English",Georgia,serif;font-style:italic}
+.f-gr{font-family:"IM Fell English SC",Georgia,serif}
+.f-lp{font-family:"Kalam","Comic Sans MS",cursive}
+.f-xi{font-family:"IM Fell DW Pica SC","IM Fell English SC",Georgia,serif}
+.f-rc{font-family:"Alegreya SC",Georgia,serif}
+.prompt{background:var(--panel);border:1px solid var(--line);padding:12px 14px;font-size:14px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;max-width:100%}
+.copiar{font:inherit;font-size:14px;min-height:40px;padding:6px 14px;background:var(--chip);color:var(--chip-fg);border:0;border-radius:3px;cursor:pointer;margin-top:8px}
+.copiar:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+a{color:inherit}
+.rodape{margin-top:26px;color:var(--muted);font-size:14px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <!-- tinta orgânica: borda irregular e espessura variável -->
+  <filter id="tinta" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="3" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="0.45" result="b"/><feComponentTransfer in="b"><feFuncA type="table" tableValues="0 0 .55 1 1"/></feComponentTransfer></filter>
+  <!-- aquarela: borda escura, granulação, bordas que escorrem -->
+  <filter id="aquarela" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="2" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="9" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feMorphology in="d" operator="erode" radius="1.6" result="er"/><feComposite in="d" in2="er" operator="out" result="borda"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="9" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.25" result="ga"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="21" result="manchas"/><feColorMatrix in="manchas" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.5" result="ma"/>
+    <feComposite in="d" in2="ga" operator="in" result="gr"/><feComposite in="gr" in2="ma" operator="in" result="gr2"/>
+    <feMerge><feMergeNode in="gr2"/><feMergeNode in="borda"/><feMergeNode in="borda"/></feMerge></filter>
+  <!-- lápis: grão do papel come o traço -->
+  <filter id="lapis" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="8" result="g"/><feDisplacementMap in="SourceGraphic" in2="g" scale="1.6" result="d"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.8 0 0 0 1.6" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>
+  <!-- papel recortado com tesoura -->
+  <filter id="recorte" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="5" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="1" seed="1" result="t2"/><feDisplacementMap in="d" in2="t2" scale="1.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <!-- impressão de xilogravura: falhas de tinta -->
+  <filter id="prensa" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="13" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.4 0 0 0 2.05" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="c"/><feTurbulence type="fractalNoise" baseFrequency="0.05" seed="6" result="w"/><feDisplacementMap in="c" in2="w" scale="2.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+
+  <pattern id="hach" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><line x1="0" y1="0" x2="0" y2="3.2" stroke="#2b1e16" stroke-width=".75"/></pattern>
+  <pattern id="hach2" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="3" stroke="#2b1e16" stroke-width=".7"/><line x1="0" y1="0" x2="3" y2="0" stroke="#2b1e16" stroke-width=".6"/></pattern>
+  <pattern id="talho" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><line x1="0" y1="0" x2="0" y2="4.5" stroke="#efe2c4" stroke-width="1.3"/></pattern>
+  <pattern id="retic" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(15)"><circle cx="2" cy="2" r=".95" fill="rgba(40,20,10,.38)"/></pattern>
+</defs><defs id="lp-defs"></defs></svg>
+
+<div class="wrap">
+  <div class="eyebrow">Alquimia de Bolso · Setor de artes · Estudos para o álbum nº 2</div>
+  <h1>Estudos de traço feito à mão</h1>
+  <div class="intro">
+    <p>O álbum nº 1 parecia sintético por três motivos: linhas de espessura perfeita, cores chapadas sem variação e formas simétricas demais. Cada estudo abaixo ataca isso de um jeito, com uma técnica tradicional diferente. As peças são sempre as mesmas (caldeirão, frasco, folha, etiqueta e botão), então só muda o traço.</p>
+    <p>Responda com a letra que mais te agrada, ou misture, por exemplo “A com a etiqueta do C”.</p>
+  </div>
+  <div class="rec"><b>Minha recomendação: A + F.</b> A tinta e aquarela (A) para tudo que é interface, e os objetos principais (caldeirão, frascos e ingredientes) pintados como imagem de verdade (F), no mesmo estilo dos retratos que você está gerando. Vetor nenhum chega ao nível de uma pintura real, e assim o jogo inteiro fica com uma mão só.</div>
+  <main id="estudos"></main>
+
+  <section class="est" id="F">
+    <div class="est-cab"><div class="est-l">F</div><h2>Pintura de verdade para os objetos</h2><p>Em vez de desenhar caldeirão, frascos e ingredientes em código, gerar cada um como imagem pintada em aquarela e tinta, com fundo transparente, na mesma conversa do ChatGPT dos retratos. A interface em volta continua em CSS/SVG no estilo A.</p></div>
+    <div class="pros"><div><b>Quanto parece feito à mão</b>O máximo: é pintura de verdade, com pincelada e textura.</div><div><b>No jogo</b>As imagens vão embutidas no jogar.html, que continua um arquivo só. Ele fica mais pesado: cerca de 1 a 2 MB a mais.</div><div><b>Trabalho</b>Você gera umas 21 imagens (8 ingredientes, 12 poções e o Lodo), e eu recorto, comprimo e encaixo cada uma.</div></div>
+    <p style="margin:6px 0">Prompt para testar com 1 frasco antes de decidir (cole na mesma conversa do ChatGPT dos retratos):</p>
+    <div class="prompt" id="prompt-f">Gere um ÍCONE de item para o jogo, no guia de estilo combinado.
+Formato: quadrado, 1024x1024, FUNDO TRANSPARENTE (PNG).
+Técnica: desenho a pena em tinta marrom-escura com espessura irregular, pintado em aquarela com manchas, borda mais escura onde a tinta secou e papel aparecendo nas luzes. Parece página de caderno de boticária, feito à mão. Nada de 3D, brilho plástico ou contorno perfeito.
+Objeto: um frasco de vidro redondo de colo longo (ampola), com rolha de cortiça, cheio até a metade de um líquido verde-esmeralda (#4f9a7c). Etiqueta de papel em branco amarrada no gargalo com barbante.
+Enquadramento: objeto inteiro, centralizado, de frente, ocupando 80% da altura. Sem sombra no chão, sem mesa, sem texto.</div>
+    <button class="copiar" id="copiar-f">Copiar prompt</button>
+  </section>
+  <p class="rodape">Referências das técnicas: gravuras coloridas à mão dos tratados de alquimia (como a Alchymia de Libavius, 1606), pranchas em aquarela de Maria Sibylla Merian, xilogravuras de herbários do século XVI e cadernos de campo a lápis. Nenhum estudo foi feito olhando outros jogos.</p>
+</div>
+
+<script>
+/* ---------- formas base (as mesmas em todos os estudos) ---------- */
+const OBJ={
+ cald:{vb:'0 -46 200 221',cls:'cald',rot:'Caldeirão · sucesso',
+  partes:[
+   {d:'M74,166 C68,158 76,152 76,144 C82,152 86,156 86,166 Z M92,166 C86,154 98,146 98,134 C106,146 110,154 106,166 Z M112,166 C108,158 116,152 118,146 C124,154 126,160 124,166 Z',c:'#d9462f',c2:'v'},
+   {d:'M28,62 C26,112 52,150 100,150 C148,150 174,112 172,62 Z',c:'#c87533',sh:'M172,62 C174,112 148,150 100,150 C138,140 156,108 152,64 Z',c2:'v'},
+   {d:'M23,62 A77,15 0 1,0 177,62 A77,15 0 1,0 23,62 Z',c:'#8a4a22',c2:'k'},
+   {d:'M35,61 A65,9.5 0 1,0 165,61 A65,9.5 0 1,0 35,61 Z',c:'#3fd0c9',c2:'a'},
+  ],
+  linhas:[{l:'M60,138 L50,166 M140,138 L150,166',w:4},{l:'M30,66 C8,64 6,98 30,100 M170,66 C192,64 194,98 170,100',w:3},{l:'M31,94 C60,106 140,106 169,94',w:1.4},{l:'M66,166 L134,166',w:3}],
+  cor:[{l:'M80,54 C68,36 94,26 82,6 C74,-6 86,-18 92,-26',c:'#3fd0c9',w:7,c2:'a'},{l:'M106,52 C118,34 94,22 108,2 C116,-10 104,-24 110,-38',c:'#a77be6',w:7,c2:'a'}]},
+ fr:{vb:'0 0 64 84',cls:'fr',rot:'Frasco · Elixir de Cura',
+  partes:[
+   {d:'M32,78 C16,78 10,68 10,58 C10,46 20,40 27,38 L27,16 L37,16 L37,38 C44,40 54,46 54,58 C54,68 48,78 32,78 Z',c:'#f4efe0',vidro:1},
+   {d:'M10.6,52 C20,49.5 44,54.5 53.4,52 C54,54 54,56 54,58 C54,68 48,78 32,78 C16,78 10,68 10,58 C10,56 10.2,54 10.6,52 Z',c:'#4f9a7c',sh:'M54,58 C54,68 48,78 32,78 C42,74 48,66 47,53 C50,53 53,52.4 53.4,52 C54,54 54,56 54,58 Z',c2:'a'},
+   {d:'M26,8 L38,8 L38.5,16 L25.5,16 Z',c:'#9b6b43',c2:'v'},
+  ],
+  linhas:[{l:'M25,16 L39,16',w:1.4}],
+  luz:'M16,62 C16,55 19,50 24,47'},
+ fo:{vb:'0 0 64 64',cls:'fo',rot:'Ingrediente · Folha Viva',
+  partes:[
+   {d:'M14,50 C14,27 33,11 55,10 C55,33 40,51 14,50 Z',c:'#6fae8a',sh:'M14,50 C27,39 40,26 55,10 C55,33 40,51 14,50 Z',c2:'a'},
+   {d:'M47,46 C49,42 53,41 56,42 C55,46 51,48 47,46 Z',c:'#9cc98a',c2:'a'},
+  ],
+  linhas:[{l:'M14,50 C27,39 40,26 55,10',w:1.4},{l:'M24,41 C24,34 25,30 27,27 M24,41 C30,41 35,40 39,38 M32,33 C32,27 34,23 36,20 M32,33 C38,33 43,31 46,28 M40,24 C41,20 43,17 45,15 M40,24 C44,23 48,22 50,20',w:.8},{l:'M14,50 C10,53 8,57 11,60 C13,61.5 15,60 14,58 M44,54 C45,50 46,48 48,46',w:1.3}]},
+ bt:{vb:'0 0 170 56',rot:'Botão',
+  partes:[{d:'M8,10 C40,6 128,7 162,9 C165,20 165,36 161,47 C120,50 46,50 9,47 C5,36 5,20 8,10 Z',c:'#a8322a',c2:'v'}],linhas:[]},
+};
+const escurece=(h,f=.62)=>{const n=parseInt(h.slice(1),16);const r=(n>>16)*f|0,g=((n>>8)&255)*f|0,b=(n&255)*f|0;return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);};
+const clareia=(h,f=.45)=>{const n=parseInt(h.slice(1),16);const m=x=>Math.round(x+(255-x)*f);return'#'+((1<<24)+(m(n>>16)<<16)+(m((n>>8)&255)<<8)+m(n&255)).toString(16).slice(1);};
+/* padrões de lápis de cor, um por cor */
+const lpDefs=document.getElementById('lp-defs');const lpFeitos=new Set();
+function lp(c,ang=35){const id='lp'+c.slice(1)+ang;if(!lpFeitos.has(id)){lpFeitos.add(id);
+  lpDefs.insertAdjacentHTML('beforeend',`<pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(${ang})"><line x1="0" y1="0" x2="0" y2="5" stroke="${c}" stroke-width="2.2" opacity=".9"/><line x1="2.8" y1="0" x2="2.8" y2="5" stroke="${c}" stroke-width=".9" opacity=".55"/></pattern>`);}
+  return `url(#${id})`;}
+
+/* ---------- técnicas ---------- */
+const TEC={
+ A:o=>{ // pena e aquarela
+  let s=`<g filter="url(#aquarela)" transform="translate(1.8 1.4)">`;
+  o.partes.forEach(p=>{s+=`<path d="${p.d}" fill="${p.c}" opacity="${p.vidro?.35:.82}"/>`;if(p.sh)s+=`<path d="${p.sh}" fill="${escurece(p.c,.7)}" opacity=".45"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="${c.c}" stroke-width="${c.w+3}" stroke-linecap="round" opacity=".7"/>`);
+  s+=`</g><g filter="url(#tinta)" fill="none" stroke="#2b1e16" stroke-linecap="round" stroke-linejoin="round">`;
+  o.partes.forEach(p=>{if(!p.semTraco)s+=`<path d="${p.d}" stroke-width="${o===OBJ.bt?2:1.7}"/>`;});
+  o.linhas.forEach(l=>s+=`<path d="${l.l}" stroke-width="${l.w}"/>`);
+  s+=`</g>`;if(o.luz)s+=`<path d="${o.luz}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2.2" stroke-linecap="round" filter="url(#tinta)"/>`;
+  return s;},
+ B:o=>{ // gravura colorida à mão
+  let s=`<g filter="url(#aquarela)" transform="translate(3 2)" opacity=".55">`;
+  o.partes.forEach(p=>{if(!p.vidro)s+=`<path d="${p.d}" fill="${clareia(p.c,.15)}"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="${c.c}" stroke-width="${c.w+5}" stroke-linecap="round"/>`);
+  s+=`</g><g>`;
+  o.partes.forEach(p=>{if(p.sh)s+=`<path d="${p.sh}" fill="url(#hach2)" opacity=".85"/>`;else if(!p.vidro&&o!==OBJ.bt)s+=`<path d="${p.d}" fill="url(#hach)" opacity=".35"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="#2b1e16" stroke-width="1" stroke-dasharray="5 3" stroke-linecap="round"/>`);
+  s+=`</g><g fill="none" stroke="#1f150f" stroke-linecap="round" stroke-linejoin="round" filter="url(#tinta)">`;
+  o.partes.forEach(p=>s+=`<path d="${p.d}" stroke-width="1.15"/>`);
+  o.linhas.forEach(l=>s+=`<path d="${l.l}" stroke-width="${Math.max(.8,l.w*.7)}"/>`);
+  return s+`</g>`;},
+ C:o=>{ // lápis de cor sobre papel pardo
+  let s=`<g filter="url(#lapis)">`;
+  o.partes.forEach((p,i)=>{if(p.vidro){s+=`<path d="${p.d}" fill="${lp('#f6f1e4',60)}" opacity=".7"/>`;return;}
+    s+=`<path d="${p.d}" fill="${lp(p.c,30+i*7)}"/>`;if(p.sh)s+=`<path d="${p.sh}" fill="${lp(escurece(p.c,.6),-40)}"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="${c.c}" stroke-width="${c.w}" stroke-linecap="round"/>`);
+  s+=`</g><g fill="none" stroke="#2e2924" stroke-linecap="round" stroke-linejoin="round" filter="url(#lapis)">`;
+  o.partes.forEach(p=>{s+=`<path d="${p.d}" stroke-width="1.2" opacity=".9"/><path d="${p.d}" stroke-width=".8" transform="translate(.9 -.6) rotate(.6)" opacity=".55"/>`;});
+  o.linhas.forEach(l=>s+=`<path d="${l.l}" stroke-width="${l.w*.9}"/>`);
+  s+=`</g>`;if(o.luz)s+=`<path d="${o.luz}" fill="none" stroke="#fffdf4" stroke-width="2.4" stroke-linecap="round" filter="url(#lapis)"/>`;
+  if(o===OBJ.cald)s+=`<path d="M48,80 C50,100 58,118 72,130" fill="none" stroke="#fffdf4" stroke-width="4" stroke-linecap="round" filter="url(#lapis)" opacity=".8"/>`;
+  return s;},
+ D:o=>{ // xilogravura em duas cores
+  const spot={v:'#b8392d',a:'#2f7f86',k:'#1b1410'};
+  let s=`<g filter="url(#prensa)" transform="translate(2.6 2.2)">`;
+  o.partes.forEach(p=>{if(!p.vidro)s+=`<path d="${p.d}" fill="${spot[p.c2]||spot.v}"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="${spot[c.c2]}" stroke-width="${c.w+2}" stroke-linecap="round"/>`);
+  s+=`</g><g filter="url(#prensa)">`;
+  o.partes.forEach(p=>{if(p.sh){s+=`<path d="${p.sh}" fill="#1b1410"/><path d="${p.sh}" fill="url(#talho)"/>`;}});
+  s+=`<g fill="none" stroke="#1b1410" stroke-linecap="round" stroke-linejoin="round">`;
+  o.partes.forEach(p=>s+=`<path d="${p.d}" stroke-width="${o===OBJ.bt?3:2.8}"/>`);
+  o.linhas.forEach(l=>s+=`<path d="${l.l}" stroke-width="${Math.max(1.6,l.w*1.4)}"/>`);
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" stroke-width="1.6"/>`);
+  return s+`</g></g>`;},
+ E:o=>{ // guache recortado e colado
+  let s=`<g filter="url(#recorte)">`;
+  o.partes.forEach(p=>{s+=`<path d="${p.d}" fill="rgba(60,35,15,.28)" transform="translate(1.6 2.4)"/>`;});
+  o.partes.forEach(p=>{s+=`<path d="${p.d}" fill="${p.vidro?'#fbf7ea':p.c}"/>`;if(p.sh)s+=`<path d="${p.sh}" fill="${escurece(p.c,.78)}"/><path d="${p.sh}" fill="url(#retic)"/>`;});
+  (o.cor||[]).forEach(c=>s+=`<path d="${c.l}" fill="none" stroke="rgba(60,35,15,.25)" stroke-width="${c.w+1}" stroke-linecap="round" transform="translate(1.5 2)"/><path d="${c.l}" fill="none" stroke="${c.c}" stroke-width="${c.w+1}" stroke-linecap="round"/>`);
+  o.linhas.forEach(l=>s+=`<path d="${l.l}" fill="none" stroke="#5b3a22" stroke-width="${Math.max(1.6,l.w*1.5)}" stroke-linecap="round"/>`);
+  s+=`</g>`;if(o.luz)s+=`<path d="${o.luz}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" filter="url(#recorte)"/>`;
+  if(o===OBJ.fr)s+=`<rect x="20" y="24" width="24" height="7" fill="rgba(233,222,190,.75)" transform="rotate(-8 32 27)"/>`;
+  return s;},
+};
+const EST=[
+ {L:'A',t:'Pena e aquarela',p:'Contorno de pena com espessura irregular, como tinta que escorre do bico, e cor de aquarela que passa do traço, com borda mais escura onde secou e grão de papel aparecendo.',
+  ref:'Pranchas de Merian e cadernos de campo pintados.',a:['O mais próximo de um caderno de verdade, sem perder a leitura.','Funciona igual no modo escuro (a aquarela vira luz de vela).','Os efeitos são filtros SVG e rodam leve no celular.'],f:'f-aq',bt:'#fbf3e2'},
+ {L:'B',t:'Gravura colorida à mão',p:'Linha fina e firme de gravura em cobre, sombras em hachura cruzada e uma aguada de cor aplicada por cima, sem respeitar muito o contorno, como nos livros antigos coloridos à mão.',
+  ref:'Gravuras de vasos e fornos dos tratados de alquimia, como a Alchymia de Libavius (1606).',a:['Muito “livro antigo de alquimista”.','A hachura fica fina demais em telas pequenas: precisa de traço mais grosso no celular.','Cores mais apagadas: o jogo fica mais sóbrio.'],f:'f-gr',bt:'#1f150f',pr:'branco'},
+ {L:'C',t:'Lápis de cor sobre papel pardo',p:'Contorno a grafite passado duas vezes, preenchimento em riscos de lápis de cor que deixam o papel pardo aparecer, e luz feita com lápis branco.',
+  ref:'Cadernos de campo e rascunhos de herbário.',a:['O mais “rascunho pessoal” e aconchegante.','Papel pardo escurece a tela: o texto precisa de cartões claros por cima.','Pode parecer inacabado nas telas de vitória.'],f:'f-lp',bt:'#fff6e6',pr:'kraft'},
+ {L:'D',t:'Xilogravura em duas cores',p:'Traço grosso de madeira entalhada, sombras pretas com sulcos brancos, e só duas cores de tinta impressas um pouco fora do registro, com falhas de prensa.',
+  ref:'Xilogravuras de herbários e almanaques do século XVI.',a:['A identidade mais forte e diferente de outros jogos de poção.','Ótima leitura em telas pequenas.','Limita a paleta: as 12 poções ficam menos distintas entre si.'],f:'f-xi',bt:'#fbf3e2'},
+ {L:'E',t:'Guache recortado e colado',p:'Cada parte é um pedaço de papel pintado a guache, cortado com tesoura e colado por cima do outro, com sombra de papel sobreposto e retícula de impressão nas sombras.',
+  ref:'Colagens de papel e etiquetas de botica recortadas.',a:['Muito tátil e alegre, combina com o humor das pistas.','Sem contorno de tinta: se afasta da ideia de caderno de pena.','Fica bem como “recortes” colados no caderno.'],f:'f-rc',bt:'#fbf3e2'},
+];
+const svg=(o,L)=>`<svg class="${o.cls||''}" viewBox="${o.vb}" aria-hidden="true">${TEC[L](o)}</svg>`;
+document.getElementById('estudos').innerHTML=EST.map(e=>`<section class="est" id="${e.L}">
+ <div class="est-cab"><div class="est-l">${e.L}</div><h2>${e.t}</h2><p>${e.p}</p></div>
+ <div class="pros"><div><b>De onde vem</b>${e.ref}</div><div><b>A favor</b>${e.a[0]}</div><div><b>Atenção</b>${e.a[1]} ${e.a[2]}</div></div>
+ <div class="prancha ${e.pr||''}">
+  <div class="obj">${svg(OBJ.cald,e.L)}<span class="rot">${OBJ.cald.rot}</span></div>
+  <div class="obj">${svg(OBJ.fr,e.L)}<span class="rot">${OBJ.fr.rot}</span></div>
+  <div class="obj">${svg(OBJ.fo,e.L)}<span class="rot">${OBJ.fo.rot}</span></div>
+  <div class="obj" style="gap:14px"><div class="etq ${e.f}">Elixir de Cura<small>Nº 02 · ampola · 10 moedas</small></div>
+   <button class="bt" type="button"><svg viewBox="0 0 170 56" aria-hidden="true">${TEC[e.L](OBJ.bt)}</svg><span class="${e.f}" style="color:${e.bt}">Misturar</span></button><span class="rot">Etiqueta e botão</span></div>
+ </div></section>`).join('');
+document.getElementById('copiar-f').addEventListener('click',async e=>{const t=document.getElementById('prompt-f').textContent;
+ try{await navigator.clipboard.writeText(t);e.target.textContent='Copiado';}catch(_){const r=document.createRange();r.selectNodeContents(document.getElementById('prompt-f'));const s=getSelection();s.removeAllRanges();s.addRange(r);e.target.textContent='Selecionado: use Ctrl+C';}
+ setTimeout(()=>e.target.textContent='Copiar prompt',2200);});
+</script>

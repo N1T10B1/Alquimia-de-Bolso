@@ -1,0 +1,247 @@
+<title>Fontes do menu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+French+Canon+SC&family=IM+Fell+Great+Primer+SC&family=UnifrakturMaguntia&family=Grenze+Gotisch:wght@500;700&family=Grenze:wght@500;600&family=Texturina:wght@500;700&family=Pirata+One&family=Fruktur&family=Almendra+SC&family=Uncial+Antiqua&family=MedievalSharp&family=Eagle+Lake&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya:ital@0;1&family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+/* Layout: prévia grande do menu (opção A) no fundo real com seletor de fonte; abaixo, cartela com as 12 fontes em fundo de parede, agrupadas por família histórica. */
+:root {
+  --page: #efe6d4; --sheet: #f8f1e2; --ink: #2b1e16; --muted: #6b5a4b; --line: #d6c6a6; --accent: #a32219;
+  --parede: #1a1d24; --creme: #ecd9ae; --chama: #f7c163; --fita: #a32219; --cobre: #b96f2c;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-title: "Grenze Gotisch", Georgia, serif; --f-btn: "Grenze", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --page: #14110e; --sheet: #1f1914; --ink: #efe2c4; --muted: #b9a68c; --line: #3d3025; --accent: #e0574a; color-scheme: dark } }
+:root[data-theme="dark"] { --page: #14110e; --sheet: #1f1914; --ink: #efe2c4; --muted: #b9a68c; --line: #3d3025; --accent: #e0574a; color-scheme: dark }
+body { background: var(--page); color: var(--ink); font-family: var(--font-body); font-size: 16.5px; line-height: 1.55; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 30px; }
+h1, h2 { font-family: "Grenze", Georgia, serif; font-weight: 600; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.6vw, 2.8rem); line-height: 1.05; }
+h2 { font-size: 1.5rem; }
+h3 { margin: 0; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); }
+.lead { color: var(--muted); font-size: 1.08rem; }
+.lead b { color: var(--ink); }
+
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.controls label { display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: .9rem; }
+select { font: 500 1rem var(--font-body); padding: 10px; min-height: 44px; border: 2px solid var(--ink); background: var(--sheet); color: var(--ink); }
+select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.presets button { font: 700 .9rem var(--font-body); padding: 8px 14px; min-height: 44px; border: 2px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+.presets button[aria-pressed="true"] { background: var(--ink); color: var(--page); }
+.presets button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.frame { position: relative; overflow: hidden; container-type: inline-size; aspect-ratio: 1672 / 941; background: #121011 url(pc.webp) center / cover; border: 2px solid var(--ink); }
+.menu { position: absolute; left: 6cqw; top: 4.5cqw; width: 38cqw; display: flex; flex-direction: column; gap: .6cqw; color: var(--creme); }
+.logo { font-family: var(--f-title); font-size: 5cqw; line-height: .95; color: var(--creme); text-shadow: 0 0 .5em rgba(247,193,99,.25); margin-bottom: 1.4cqw; }
+.logo small { display: block; font-family: var(--f-btn); font-size: 1.4cqw; color: var(--cobre); margin-top: .7cqw; letter-spacing: .03em; }
+.menu ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .7cqw; }
+.mb { all: unset; box-sizing: border-box; cursor: pointer; position: relative; font-family: var(--f-btn); font-size: 2cqw; line-height: 1.35; white-space: nowrap; color: var(--creme); padding: .2em .7em .2em .9em; transition: color .15s; }
+.mb::before { content: ""; position: absolute; left: -.45em; top: 50%; width: .5em; height: 1.4em; transform: translateY(-50%) scaleY(0); background: var(--fita); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%); transition: transform .18s; }
+.mb.is-on, .mb:hover, .mb:focus-visible { color: var(--chama); }
+.mb.is-on::before, .mb:hover::before, .mb:focus-visible::before { transform: translateY(-50%) scaleY(1); }
+.mb:focus-visible { outline: 2px dashed var(--chama); outline-offset: 2px; }
+.mb.primary { font-size: 2.3cqw; }
+@media (prefers-reduced-motion: reduce) { .mb, .mb::before { transition: none; } }
+
+.group { display: flex; flex-direction: column; gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.card { background: var(--sheet); border: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
+.card.pick { border: 2px solid var(--accent); }
+.spec { background: var(--parede); color: var(--creme); padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 6px; }
+.spec .t { font-size: 2.15rem; line-height: 1; }
+.spec .b { font-size: 1.15rem; color: var(--chama); }
+.spec .s { font-size: 1rem; color: #cbb98f; }
+.meta { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 6px; font-size: .93rem; }
+.meta .nm { font-weight: 700; font-size: 1rem; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; }
+.ok { color: #3f7f6a; } .mid { color: #b0741f; } .no { color: var(--accent); }
+.meta p { color: var(--muted); }
+.rec { border-left: 4px solid var(--accent); padding: 4px 0 4px 18px; display: flex; flex-direction: column; gap: 10px; }
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.note { font-size: .88rem; color: var(--muted); }
+.pages { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; --f-body: "Alegreya Sans", system-ui, sans-serif; }
+.pg { background: #efe2c4; color: #2b1e16; border: 2px solid #2b1e16; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  background-image: repeating-linear-gradient(transparent 0 27px, rgba(43,30,22,.08) 27px 28px); }
+.pg.dark { background-color: #1a1d24; color: #ecd9ae; border-color: #b96f2c; background-image: none; }
+.pg-h { font-family: "Grenze", Georgia, serif; font-weight: 600; font-size: .85rem; letter-spacing: .05em; color: #a32219; }
+.pg.dark .pg-h { color: #f7c163; }
+.pg-t { font-family: "Grenze Gotisch", Georgia, serif; font-weight: 500; font-size: 2rem; line-height: 1.05; margin: 0; color: inherit; text-transform: none; letter-spacing: 0; }
+.pg-lab { font-family: "Grenze", Georgia, serif; font-weight: 500; font-size: 1rem; color: #6b3d1c; font-variant-numeric: tabular-nums; }
+.pg.dark .pg-lab { color: #b96f2c; }
+.pg-p { font-family: var(--f-body); font-size: 1.05rem; line-height: 1.6; }
+.pg-n { font-family: var(--f-body); font-style: italic; font-size: .95rem; color: #6b5a4b; }
+.pg.dark .pg-n { color: #b9a68c; }
+@media (max-width: 640px) { .controls { grid-template-columns: 1fr; } .pages { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Fontes para o menu</h1>
+    <p class="lead">Testei 12 fontes gratuitas, de três famílias históricas, no menu da opção A sobre o seu fundo. <b>Minha recomendação é a dupla Grenze Gotisch no título e Grenze nos botões</b>: a gótica casa com a época das xilogravuras, e a irmã romana mantém os botões fáceis de ler.</p>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:14px" aria-label="Testar fontes no menu">
+    <div class="presets" role="group" aria-label="Combinações prontas">
+      <button type="button" id="p-rec" data-t="Grenze Gotisch" data-b="Grenze" aria-pressed="true">Recomendada: Grenze Gotisch + Grenze</button>
+      <button type="button" id="p-fell" data-t="IM Fell French Canon SC" data-b="IM Fell English SC" aria-pressed="false">Só Fell (atual, refinada)</button>
+      <button type="button" id="p-unif" data-t="UnifrakturMaguntia" data-b="IM Fell English SC" aria-pressed="false">Fraktur + Fell</button>
+      <button type="button" id="p-tex" data-t="Texturina" data-b="Texturina" aria-pressed="false">Só Texturina</button>
+    </div>
+    <div class="controls">
+      <label for="sel-t">Fonte do título<select id="sel-t"></select></label>
+      <label for="sel-b">Fonte dos botões<select id="sel-b"></select></label>
+    </div>
+    <div class="frame" id="frame">
+      <div class="menu">
+        <div class="logo">Alquimia<br>de Bolso<small>o caderno da boticária</small></div>
+        <ul>
+          <li><button class="mb primary is-on" type="button" id="b-0">Continuar</button></li>
+          <li><button class="mb" type="button" id="b-1">Novo jogo</button></li>
+          <li><button class="mb" type="button" id="b-2">Livro de receitas</button></li>
+          <li><button class="mb" type="button" id="b-3">Opções</button></li>
+          <li><button class="mb" type="button" id="b-4">Créditos</button></li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Passe o mouse ou use Tab e as setas nos botões. "Opções" e "Créditos" estão aí de propósito, para conferir os acentos.</p>
+  </section>
+
+  <section class="rec">
+    <h2>Por que Grenze Gotisch + Grenze</h2>
+    <ul class="plain">
+      <li><b>Época certa.</b> Os livros de herbário e alquimia impressos com xilogravura, entre 1450 e 1550, usavam letra gótica, a blackletter (<a href="https://en.wikipedia.org/wiki/Blackletter">Wikipedia</a>). Um título gótico conversa direto com o fundo.</li>
+      <li><b>Gótica sem perder a leitura.</b> A Grenze Gotisch é a versão gótica da Grenze, com detalhes dramáticos só em algumas letras (<a href="https://fontsource.org/fonts/grenze-gotisch/about">Fontsource</a>). Lê-se bem mais fácil que uma Fraktur pura, como a UnifrakturMaguntia.</li>
+      <li><b>Família única.</b> Grenze e Grenze Gotisch têm o mesmo desenho por baixo, então título e botões combinam sem esforço, coisa que juntar duas fontes de autores diferentes nem sempre garante.</li>
+      <li><b>Pesos variáveis.</b> As duas vão do fino ao preto, o que dá para usar no jogo inteiro: título, botões, preços e números.</li>
+      <li><b>Liberada para jogo.</b> Licença OFL, gratuita e embutível no <code>jogar.html</code> para funcionar offline.</li>
+    </ul>
+    <p class="note">Se quiser algo mais calmo e "livro de biblioteca", a segunda escolha é a dupla Fell (IM Fell French Canon no título, IM Fell English nos botões). As Fell são tipos de Oxford do século XVII, legados pelo bispo John Fell em 1686 e digitalizados por Igino Marini em 2000 (<a href="https://www.fontsinuse.com/typefaces/47225/fell-types">Fonts In Use</a>, <a href="https://sessions.edu/notes-on-design/type-in-history-the-fell-types">Sessions</a>). São um século depois das xilogravuras, mas têm a mesma tinta irregular.</p>
+  </section>
+
+  <section id="corrido" style="display:flex;flex-direction:column;gap:14px">
+    <h2>Texto corrido: Alegreya Sans</h2>
+    <p>É a fonte das frases longas do jogo: pedidos dos clientes, descrições do livro de receitas, dicas e avisos. Os títulos continuam em Grenze Gotisch e os rótulos em Grenze. Troque abaixo para comparar com outras opções de texto.</p>
+    <div class="presets" role="group" aria-label="Fonte do texto corrido">
+      <button type="button" id="c-als" data-c="Alegreya Sans" aria-pressed="true">Alegreya Sans (recomendada)</button>
+      <button type="button" id="c-al" data-c="Alegreya" aria-pressed="false">Alegreya (com serifa)</button>
+      <button type="button" id="c-gr" data-c="Grenze" aria-pressed="false">Grenze em tudo</button>
+      <button type="button" id="c-fell" data-c="IM Fell English" aria-pressed="false">IM Fell English</button>
+    </div>
+    <div class="pages">
+      <article class="pg">
+        <div class="pg-h">Livro de receitas · Nº 02</div>
+        <h3 class="pg-t">Elixir de Cura</h3>
+        <p class="pg-lab">Gota Lunar + Folha Viva · comum · 10 moedas</p>
+        <p class="pg-p">Um verde-claro que cheira a chuva no mato. Fecha arranhões em poucos minutos e, segundo a Vovó Quitéria, também cura saudade, mas isso ninguém conseguiu provar.</p>
+        <p class="pg-n">Anotação: não ferver. Se borbulhar, já era lodo.</p>
+      </article>
+      <article class="pg dark">
+        <div class="pg-h">Pedido · Cavaleiro Tadeu</div>
+        <h3 class="pg-t">"Preciso de algo para a dor"</h3>
+        <p class="pg-p">Caí do cavalo de novo. A armadura amassou para dentro e o joelho reclama a cada passo. Não precisa ser bonito, só precisa funcionar antes do treino de amanhã.</p>
+        <p class="pg-lab">Recompensa: 14 moedas · 6 XP</p>
+        <p class="pg-n">Dica da vela: algo que cura costuma levar água e alguma coisa viva.</p>
+      </article>
+    </div>
+    <p class="note">Por que Alegreya Sans: ela foi desenhada para textos longos, tem traço levemente caligráfico que combina com a Grenze, e continua nítida em 15 px no celular. A versão com serifa (Alegreya) fica mais "livro", mas compete com os títulos góticos.</p>
+  </section>
+
+  <div id="cards" style="display:flex;flex-direction:column;gap:26px"></div>
+
+  <section style="display:flex;flex-direction:column;gap:8px">
+    <h2>Regras para usar a fonte escolhida</h2>
+    <ul class="plain">
+      <li>Gótica só em título e chamadas grandes (acima de 28 px). Nunca em texto corrido, pedidos ou preços.</li>
+      <li>Botões, abas e números na fonte romana da dupla. Texto longo do jogo continua em Alegreya Sans.</li>
+      <li>Nunca escrever títulos góticos em CAIXA ALTA: maiúsculas góticas juntas ficam quase ilegíveis.</li>
+      <li>Embutir só os caracteres usados (subset latino com acentos) para o arquivo do jogo continuar leve.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const FONTS = [
+  { g: 'Gótica (blackletter), época das xilogravuras, séc. XV–XVI', items: [
+    { f: 'Grenze Gotisch', w: 600, lv: 'ok', l: 'boa', d: 'Versão gótica da Grenze, de Omnibus-Type. Drama em poucas letras, peso variável.', pick: true },
+    { f: 'UnifrakturMaguntia', w: 400, lv: 'no', l: 'difícil', d: 'Fraktur clássica, a mais autêntica para livros alemães. Só serve para o título, e mesmo assim cansa.' },
+    { f: 'Texturina', w: 600, lv: 'mid', l: 'média', d: 'Textura moderna, a letra da Bíblia de Gutenberg redesenhada para tela. Elegante, um pouco rígida.' },
+    { f: 'Pirata One', w: 400, lv: 'mid', l: 'média', d: 'Gótica condensada e simplificada. Boa de ler, mas tem cara de rótulo de cerveja e pirata.' },
+    { f: 'Fruktur', w: 400, lv: 'no', l: 'difícil', d: 'Fraktur pesada e arredondada. Forte, mas pesa demais na parede escura.' }
+  ]},
+  { g: 'Fell, tipos de Oxford, séc. XVII', items: [
+    { f: 'IM Fell English SC', w: 400, lv: 'ok', l: 'boa', d: 'A fonte que o guia de arte usa hoje. Tinta irregular de impressão antiga, ótima para botões.' },
+    { f: 'IM Fell French Canon SC', w: 400, lv: 'ok', l: 'boa', d: 'Corte grande das Fell, feito para títulos. Mais contraste e serifas mais marcadas.' },
+    { f: 'IM Fell Great Primer SC', w: 400, lv: 'ok', l: 'boa', d: 'Corte médio, entre a English e a French Canon. Bom meio-termo para subtítulos.' }
+  ]},
+  { g: 'Fantasia medieval (inspiradas, não históricas)', items: [
+    { f: 'Almendra SC', w: 400, lv: 'ok', l: 'boa', d: 'Caligrafia renascentista suave. Bonita, mas mais "conto de fadas" que alquimia.' },
+    { f: 'Uncial Antiqua', w: 400, lv: 'mid', l: 'média', d: 'Uncial, letra de manuscrito irlandês dos séculos V a VIII. Muito celta para o nosso tema.' },
+    { f: 'MedievalSharp', w: 400, lv: 'mid', l: 'média', d: 'Fantasia medieval genérica, muito usada em jogos amadores. Tira a personalidade.' },
+    { f: 'Eagle Lake', w: 400, lv: 'mid', l: 'média', d: 'Caligráfica com floreios. Charmosa no título, cansativa nos botões.' }
+  ]}
+];
+const all = FONTS.flatMap(g => g.items);
+const selT = document.getElementById('sel-t'), selB = document.getElementById('sel-b');
+const romanBtn = ['Grenze'];
+for (const s of [selT, selB]) {
+  for (const it of all) { const o = document.createElement('option'); o.value = it.f; o.textContent = it.f; s.append(o); }
+}
+{ const o = document.createElement('option'); o.value = 'Grenze'; o.textContent = 'Grenze (romana)'; selB.prepend(o); selT.prepend(o.cloneNode(true)); }
+const root = document.documentElement;
+function apply(t, b) {
+  root.style.setProperty('--f-title', `"${t}", Georgia, serif`);
+  root.style.setProperty('--f-btn', `"${b}", Georgia, serif`);
+  selT.value = t; selB.value = b;
+  document.querySelectorAll('.presets button[data-t]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.t === t && x.dataset.b === b)));
+}
+document.querySelectorAll('.presets button[data-t]').forEach(x => x.addEventListener('click', () => apply(x.dataset.t, x.dataset.b)));
+selT.addEventListener('change', () => apply(selT.value, selB.value));
+selB.addEventListener('change', () => apply(selT.value, selB.value));
+apply('Grenze Gotisch', 'Grenze');
+
+const btns = [...document.querySelectorAll('.mb')];
+btns.forEach((b, k) => {
+  const on = () => { btns.forEach(x => x.classList.remove('is-on')); b.classList.add('is-on'); };
+  b.addEventListener('mouseenter', on); b.addEventListener('focus', on);
+  b.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); btns[(k + 1) % btns.length].focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); btns[(k - 1 + btns.length) % btns.length].focus(); }
+  });
+});
+
+const pagesEl = document.querySelector('.pages');
+document.querySelectorAll('#corrido .presets button').forEach(x => x.addEventListener('click', () => {
+  pagesEl.style.setProperty('--f-body', `"${x.dataset.c}", system-ui, sans-serif`);
+  document.querySelectorAll('#corrido .presets button').forEach(y => y.setAttribute('aria-pressed', String(y === x)));
+}));
+const cards = document.getElementById('cards');
+for (const g of FONTS) {
+  const sec = document.createElement('section'); sec.className = 'group';
+  const h = document.createElement('h2'); h.textContent = g.g; sec.append(h);
+  const grid = document.createElement('div'); grid.className = 'grid';
+  for (const it of g.items) {
+    const c = document.createElement('div'); c.className = 'card' + (it.pick ? ' pick' : '');
+    c.innerHTML = `<div class="spec"><span class="t"></span><span class="b"></span><span class="s"></span></div><div class="meta"><div class="nm"><span></span><span class="tag"></span></div><p></p></div>`;
+    for (const k of ['.t', '.b', '.s']) { c.querySelector(k).style.fontFamily = `"${it.f}", Georgia, serif`; c.querySelector(k).style.fontWeight = it.w; }
+    c.querySelector('.t').textContent = 'Alquimia de Bolso';
+    c.querySelector('.b').textContent = 'Continuar · Opções · Créditos';
+    c.querySelector('.s').textContent = 'Poção, Ação, Lodo Instável 1234';
+    c.querySelector('.nm span').textContent = it.f + (it.pick ? ' (recomendada)' : '');
+    const tg = c.querySelector('.tag'); tg.textContent = 'Leitura ' + it.l; tg.classList.add(it.lv);
+    c.querySelector('.meta p').textContent = it.d;
+    c.style.cursor = 'pointer';
+    c.tabIndex = 0;
+    c.setAttribute('role', 'button');
+    c.setAttribute('aria-label', 'Testar ' + it.f + ' no título');
+    const use = () => { apply(it.f, selB.value); document.getElementById('frame').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+    c.addEventListener('click', use);
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); use(); } });
+    grid.append(c);
+  }
+  sec.append(grid); cards.append(sec);
+}
+</script>

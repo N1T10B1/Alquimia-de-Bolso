@@ -1,0 +1,131 @@
+<title>Prompts de molduras e botões</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;600&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: coluna única; guia de estilo no topo, dicas, depois um grupo por tipo de peça com uma linha por peça e o botão de copiar à direita. */
+:root {
+  --bg: #efe2c4; --sheet: #f8f0dc; --ink: #2b1e16; --muted: #6b5a4b; --line: #d4c19c;
+  --red: #a8322a; --red-ink: #fff6ea; --done: #3f7f6a; --done-bg: #dfeee6;
+  --font-display: "Grenze Gotisch", "Iowan Old Style", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px; }
+h1, h2 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.card { background: var(--sheet); border: 2px solid var(--ink); padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.card pre { margin: 0; white-space: pre-wrap; font-family: var(--font-body); font-size: .92rem; color: var(--muted); max-height: 9.5em; overflow: auto; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.item { background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-columns: 2.4rem 1fr auto; gap: 4px 14px; align-items: start; padding: 12px 14px; }
+.item.done { background: var(--done-bg); border-color: var(--done); }
+.num { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.2; color: var(--red); font-variant-numeric: tabular-nums; }
+.item.done .num { color: var(--done); }
+.info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 1.05rem; }
+.file { font-size: .82rem; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.desc { font-size: .93rem; color: var(--muted); }
+.actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+button { font: 700 .92rem var(--font-body); cursor: pointer; border: 2px solid var(--ink); padding: 8px 14px; min-height: 44px; }
+.copy { background: var(--red); color: var(--red-ink); border-color: var(--red); }
+.copy.ok { background: var(--done); border-color: var(--done); color: var(--red-ink); }
+.mark { background: transparent; color: var(--ink); font-weight: 500; font-size: .82rem; padding: 4px 10px; min-height: 36px; border-width: 1px; }
+button:focus-visible { outline: 3px solid var(--done); outline-offset: 2px; }
+.fallback { width: 100%; min-height: 8em; font: .85rem var(--font-body); }
+.count { font-size: .9rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .item { grid-template-columns: 2rem 1fr; }
+  .actions { grid-column: 1 / -1; flex-direction: row; }
+  .actions .copy { flex: 1; }
+}
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
+.gdesc { color: var(--muted); font-size: .95rem; }
+.tips { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: .95rem; }
+.tag { font-size: .82rem; color: var(--red); font-weight: 700; }
+</style>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Prompts de molduras e botões</h1>
+    <p class="lead">Cada botão copia o prompt completo daquela peça, com tamanho, forma e cores. É só colar no ChatGPT.</p>
+    <ol class="steps">
+      <li>Abra uma conversa nova no ChatGPT e cole o guia de estilo (botão abaixo).</li>
+      <li>Depois, na mesma conversa, copie e cole uma peça por vez, na ordem. Assim o traço fica igual entre elas.</li>
+      <li>Salve a imagem com o nome de arquivo mostrado na peça e marque como feita.</li>
+    </ol>
+  </header>
+  <section class="card">
+    <h2 style="border:0;padding:0">Passo 1: guia de estilo</h2>
+    <pre id="style-text"></pre>
+    <div><button class="copy" id="copy-style" type="button">Copiar guia de estilo</button></div>
+  </section>
+  <section class="card">
+    <h2 style="border:0;padding:0">Se algo sair errado</h2>
+    <ul class="tips">
+      <li>Se vier com texto ou letras, peça: "refaça sem nenhum texto".</li>
+      <li>Se o fundo vier branco ou com xadrez desenhado, peça "fundo transparente de verdade". Se não der, salve assim mesmo que eu recorto.</li>
+      <li>Se a moldura vier torta ou em perspectiva, peça "vista totalmente frontal e simétrica".</li>
+      <li>Se as bordas vierem cheias de desenho, peça "bordas só com o filete duplo, enfeite só nos cantos". Isso é o que deixa a moldura esticar sem deformar.</li>
+    </ul>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div id="groups" style="display:flex;flex-direction:column;gap:28px"></div>
+  <textarea id="fallback" class="fallback" hidden readonly aria-label="Prompt para copiar manualmente"></textarea>
+</div>
+<script>
+const DATA = {"style":"Vou te pedir várias peças de interface (molduras e botões) para o jogo de navegador \"Alquimia de Bolso\", uma loja de poções aconchegante de fantasia medieval. Elas precisam combinar com as ilustrações de itens em xilogravura que já fizemos. Todas as imagens desta conversa devem seguir EXATAMENTE este guia de estilo. Não gere nada ainda, só confirme que entendeu.\n\nGUIA DE ESTILO: ORNAMENTOS DE LIVRO IMPRESSO EM XILOGRAVURA\n- Referência: bordas de folha de rosto, cantoneiras e vinhetas dos livros impressos do século XVI (herbários e livros de alquimia, como as bordas de Anton Woensam impressas em Colônia em 1529). Matriz de madeira entalhada: linhas grossas e firmes em tinta preta-amarronzada (#2b1e16), marca da goiva visível, traços em cunha, pequenas falhas de impressão e leve veio de madeira. Nada de hachura fina de gravura em metal, nada de degradê digital, nada de metal brilhante ou dourado de RPG.\n- Motivos: folhagem, ervas medicinais (arruda, alecrim, sálvia), ramos com bagas, pequenas estrelas de quatro pontas. Sem anjos, caveiras, rostos, animais ou símbolos religiosos.\n- Cor: a tinta preta da matriz + no máximo 2 cores aplicadas à mão em manchas chapadas, um pouco desencontradas do contorno: vermelhão (#a8322a) e ocre-ouro (#b88a2e). Quando a peça tiver papel, o papel é creme (#efe2c4) e liso.\n- Construção: as peças serão fatiadas em 9 partes e esticadas pelo código (técnica 9-slice). Por isso: cantos ricos e decorados; bordas retas, simples e contínuas (filete duplo ou um padrão pequeno que se repete sempre igual); centro liso e vazio. Peças perfeitamente simétricas, alinhadas na horizontal e na vertical, vista totalmente frontal, sem perspectiva e sem inclinação.\n- Formato: PNG com FUNDO TRANSPARENTE fora da peça. Sem sombra projetada, sem mesa, sem cenário, sem mãos segurando.\n- Proibido: texto, letras, números, iniciais, logotipos e marcas d'água. Todo texto do jogo é escrito pelo código por cima da imagem.\n- Clima: charmoso e artesanal, nada sombrio ou assustador.","groups":[{"name":"Molduras da caixa de diálogo","desc":"Direção A da pesquisa: folha de rosto em xilogravura. A caixa onde o cliente faz o pedido, o nome dele e a moldura do retrato.","items":[{"id":"moldura-dialogo","name":"Moldura da caixa de diálogo (PC)","size":"1536 x 512 px (proporção 3:1)","desc":"Retângulo horizontal de papel com cantoneiras de ervas e filete duplo.","peca":"retângulo horizontal de papel creme liso com borda de xilogravura. Nos quatro cantos, cantoneiras quadradas de cerca de 160 px com ramos de arruda e alecrim entrelaçados e uma pequena estrela de quatro pontas no meio. Entre os cantos, só um filete duplo reto em tinta preta (linha de fora grossa, linha de dentro fina), com um pontinho repetido a intervalos iguais. O meio da borda de cima fica livre, sem enfeite. Centro: papel creme liso, sem desenho e sem textura forte.","cores":"tinta preta nos traços, vermelhão nas bagas e nos pontinhos do filete, ocre-ouro nas estrelas dos cantos, papel creme.","n":1},{"id":"moldura-dialogo-celular","name":"Moldura da caixa de diálogo (celular)","size":"1024 x 768 px (proporção 4:3)","desc":"Versão compacta da anterior, com cantos menores para telas pequenas.","peca":"versão compacta da moldura anterior, com o mesmo desenho e o mesmo filete. Cantoneiras menores (cerca de 100 px) e mais simples, com um único ramo e a estrela. Filete duplo um pouco mais fino. Centro: papel creme liso e vazio.","cores":"as mesmas da moldura de PC: tinta preta, vermelhão nas bagas, ocre-ouro nas estrelas, papel creme.","n":2},{"id":"vinheta-nome","name":"Vinheta do nome do cliente","size":"1024 x 256 px (proporção 4:1)","desc":"Cartela horizontal que fica no topo da caixa, onde o código escreve o nome.","peca":"cartela horizontal de livro impresso (cartucho), como um pergaminho com as duas pontas enroladas para trás, presa no centro e simétrica. Um raminho pequeno de alecrim sai de cada ponta enrolada. O miolo da cartela é papel creme liso e vazio, comprido e reto, para o nome entrar por cima.","cores":"tinta preta nos traços, vermelhão nas dobras enroladas, ocre-ouro no raminho, papel creme no miolo.","n":3},{"id":"moldura-retrato","name":"Moldura do retrato","size":"1024 x 1536 px (proporção 2:3)","desc":"Moldura de frontispício com arco no topo; o centro vazado mostra o cliente.","peca":"moldura vertical de frontispício de livro: arco semicircular no topo, duas colunas finas nas laterais com ramos de ervas subindo em espiral, e na base um pequeno pedestal com uma faixa vazia. A moldura tem cerca de 90 px de espessura. A janela dentro do arco é TOTALMENTE TRANSPARENTE (vazada), para o retrato do cliente aparecer por trás.","cores":"tinta preta nos traços, ocre-ouro nas colunas, vermelhão nas bagas e na faixa da base.","n":4},{"id":"divisoria","name":"Divisória","size":"1024 x 128 px (proporção 8:1)","desc":"Ornamento fino entre a fala do cliente e o pedido.","peca":"ornamento divisor horizontal, como as vinhetas de fim de capítulo: um filete que afina nas duas pontas, com um pequeno ramo de arruda e uma estrela de quatro pontas no centro. Bem fino e leve, simétrico.","cores":"tinta preta, um toque de vermelhão no centro.","n":5},{"id":"cantoneira","name":"Cantoneira avulsa (reserva)","size":"512 x 512 px (quadrado)","desc":"Só o canto superior esquerdo. O código espelha para os outros três se a moldura inteira não fatiar bem.","peca":"uma única cantoneira, a do canto superior esquerdo da moldura de diálogo, isolada: ramos de arruda e alecrim entrelaçados e a estrela de quatro pontas, com o começo do filete duplo saindo reto para a direita e para baixo até a borda da imagem. Nada mais na imagem.","cores":"as mesmas da moldura de PC: tinta preta, vermelhão nas bagas, ocre-ouro na estrela.","n":6}]},{"name":"Botões da interface","desc":"Seguem o botão aprovado do menu (fita marcadora, opção A). O texto dos botões continua no código em Grenze; as imagens são só a forma do botão.","items":[{"id":"fita-marcadora","name":"Fita marcadora (selecionado)","size":"1536 x 192 px (proporção 8:1)","desc":"A fita vermelha com ponta em V que aparece atrás do botão selecionado, igual à do menu.","peca":"fita de tecido horizontal, ponta em V (rabo de andorinha) na extremidade esquerda e extremidade direita cortada reta. A trama do tecido é sugerida por linhas entalhadas finas e paralelas, com borda escura de tinta em cima e embaixo. A parte do meio é uniforme, sem dobras, para poder esticar.","cores":"vermelho da fita #a32219 chapado, traços em tinta preta, um leve brilho em ocre-ouro na borda de cima.","n":7},{"id":"botao-principal","name":"Botão principal","size":"1024 x 256 px (proporção 4:1)","desc":"Etiqueta de botica vermelha para a ação principal (Entregar, Continuar).","peca":"etiqueta de botica retangular com os quatro cantos chanfrados (cortados em diagonal), contorno duplo em tinta preta e uma folhinha pequena em cada canto. Miolo reto e liso, sem desenho, para o texto creme entrar por cima.","cores":"miolo em vermelhão chapado (#a8322a), contorno em tinta preta, folhinhas em ocre-ouro.","n":8},{"id":"botao-principal-pressionado","name":"Botão principal pressionado","size":"1024 x 256 px (proporção 4:1)","desc":"O mesmo botão, mais escuro, para quando é tocado.","peca":"exatamente a mesma etiqueta do botão principal, no mesmo tamanho e na mesma posição, mas como se estivesse afundada no papel: o filete interno de cima fica mais grosso e o de baixo mais fino.","cores":"miolo em vermelhão mais escuro (#7f241e), contorno em tinta preta, folhinhas em ocre-ouro apagado.","n":9},{"id":"botao-secundario","name":"Botão secundário","size":"1024 x 256 px (proporção 4:1)","desc":"A mesma etiqueta em papel, para ações secundárias (Recusar, Voltar).","peca":"a mesma forma de etiqueta com cantos chanfrados e contorno duplo, mas sem cor no miolo: papel creme liso. Folhinhas pequenas nos cantos só em tinta.","cores":"papel creme (#efe2c4), tinta preta. Nenhuma outra cor.","n":10},{"id":"botao-desativado","name":"Botão desativado","size":"1024 x 256 px (proporção 4:1)","desc":"A etiqueta apagada, como impressão gasta.","peca":"a mesma forma de etiqueta, mas como uma impressão gasta e falhada: contorno com falhas e partes faltando, sem folhinhas nos cantos.","cores":"papel acinzentado (#d9cfbd), tinta marrom clara (#8c7a66). Nenhuma outra cor.","n":11},{"id":"botao-redondo","name":"Botão redondo de ícone","size":"512 x 512 px (quadrado)","desc":"Medalhão para os botões pequenos (fechar, som, dica). O ícone vai por cima, pelo código.","peca":"medalhão redondo: anel duplo de xilogravura com uma coroa fina de folhinhas em volta. Centro redondo de papel creme, liso e vazio.","cores":"tinta preta, folhinhas em ocre-ouro, centro creme.","n":12},{"id":"aba-fita-vermelha","name":"Aba Bancada (fita vermelha)","size":"256 x 768 px (proporção 1:3)","desc":"Fita vertical pendurada no topo do caderno, uma cor por aba.","peca":"fita de tecido vertical pendurada, topo cortado reto e ponta em V (rabo de andorinha) embaixo, trama sugerida por linhas entalhadas finas na vertical, borda de tinta dos dois lados. Meio uniforme, sem dobras.","cores":"vermelhão (#a8322a) chapado, traços em tinta preta.","n":13},{"id":"aba-fita-azul","name":"Aba Livro (fita azul)","size":"256 x 768 px (proporção 1:3)","desc":"A mesma fita, em azul-ultramar.","peca":"exatamente a mesma fita vertical da aba anterior, mesmo tamanho, forma e trama.","cores":"azul-ultramar (#2c4f9e) chapado, traços em tinta preta.","n":14},{"id":"aba-fita-verde","name":"Aba Loja (fita verde)","size":"256 x 768 px (proporção 1:3)","desc":"A mesma fita, em verdete.","peca":"exatamente a mesma fita vertical das abas anteriores, mesmo tamanho, forma e trama.","cores":"verdete (#3f7f6a) chapado, traços em tinta preta.","n":15}]}]};
+const KEY = 'molduras-feitos';
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify([...done])); } catch (e) {} };
+const prompt = it => `Gere a peça "${it.name}", no guia de estilo de ornamentos em xilogravura combinado.\nTamanho: ${it.size}\nPeça: ${it.peca}\nCores: ${it.cores}\nFundo transparente fora da peça, vista frontal, simétrica, mesmo traço das peças anteriores, sem texto.`;
+const fb = document.getElementById('fallback');
+async function copy(text, btn, label) {
+  try { await navigator.clipboard.writeText(text); fb.hidden = true; }
+  catch (e) { fb.hidden = false; fb.value = text; fb.focus(); fb.select(); btn.textContent = 'Selecionado abaixo, use Ctrl+C'; return; }
+  btn.classList.add('ok'); btn.textContent = 'Copiado';
+  setTimeout(() => { btn.classList.remove('ok'); btn.textContent = label; }, 1600);
+}
+document.getElementById('style-text').textContent = DATA.style;
+const sb = document.getElementById('copy-style');
+sb.addEventListener('click', () => copy(DATA.style, sb, 'Copiar guia de estilo'));
+const total = DATA.groups.reduce((a, g) => a + g.items.length, 0);
+const countEl = document.getElementById('count');
+const updateCount = () => { countEl.textContent = `${done.size} de ${total} peças feitas`; };
+const root = document.getElementById('groups');
+for (const g of DATA.groups) {
+  const sec = document.createElement('section'); sec.className = 'group';
+  const h = document.createElement('h2'); h.textContent = `${g.name} (${g.items.length})`; sec.append(h);
+  const gd = document.createElement('p'); gd.className = 'gdesc'; gd.textContent = g.desc; sec.append(gd);
+  for (const it of g.items) {
+    const row = document.createElement('div'); row.className = 'item';
+    row.innerHTML = `<div class="num"></div><div class="info"><span class="name"></span><span class="file"></span><span class="desc"></span></div><div class="actions"><button class="copy" type="button">Copiar prompt</button><button class="mark" type="button"></button></div>`;
+    row.querySelector('.num').textContent = String(it.n).padStart(2, '0');
+    row.querySelector('.name').textContent = it.name;
+    row.querySelector('.file').textContent = `${it.id}.png · ${it.size}`;
+    row.querySelector('.desc').textContent = it.desc;
+    const cb = row.querySelector('.copy');
+    cb.id = 'copy-' + it.id;
+    cb.setAttribute('aria-label', 'Copiar prompt de ' + it.name);
+    cb.addEventListener('click', () => copy(prompt(it), cb, 'Copiar prompt'));
+    const mk = row.querySelector('.mark');
+    mk.id = 'mark-' + it.id;
+    const setMark = () => { mk.textContent = done.has(it.id) ? 'Feita ✓' : 'Marcar feita'; row.classList.toggle('done', done.has(it.id)); };
+    mk.addEventListener('click', () => { done.has(it.id) ? done.delete(it.id) : done.add(it.id); save(); setMark(); updateCount(); });
+    setMark();
+    sec.append(row);
+  }
+  root.append(sec);
+}
+updateCount();
+</script>

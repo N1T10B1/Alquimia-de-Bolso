@@ -1,0 +1,200 @@
+<meta charset="utf-8">
+<title>Botica fechada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Grenze:wght@400;600&family=Alegreya+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: duas telas do jogo (PC 16:9 e celular 9:16) lado a lado sobre a mesa escura; texto do jogo em cima da arte */
+:root {
+  --mesa: #17110c;
+  --creme: #ecd9ae;
+  --cobre: #b96f2c;
+  --cobre-claro: #d38a45;
+  --chama: #f7c163;
+  --fita: #a32219;
+  --cinza: #8c8478;
+  --tinta: #2b1e16;
+  --papel: #efe2c4;
+  --papel-sombra: #d9c49a;
+  --vermelhao: #a8322a;
+  --ultramar: #2c4f9e;
+  --gotica: "Grenze Gotisch", Georgia, serif;
+  --rotulo: "Grenze", Georgia, serif;
+  --texto: "Alegreya Sans", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--mesa); color: var(--creme); }
+body { font-family: var(--texto); }
+.pagina {
+  max-width: 1280px; margin: 0 auto;
+  padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px;
+}
+.cabeca h1 { font-family: var(--gotica); font-weight: 700; font-size: clamp(28px, 4vw, 40px); margin: 0; text-wrap: balance; }
+.cabeca p { margin: 6px 0 0; color: var(--cinza); max-width: 62ch; line-height: 1.5; }
+.telas { display: grid; grid-template-columns: minmax(0, 3.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 760px) { .telas { grid-template-columns: minmax(0, 1fr); } .tela.cel { max-width: 360px; margin: 0 auto; width: 100%; } }
+figure { margin: 0; display: grid; gap: 8px; }
+figcaption { font-family: var(--rotulo); color: var(--cinza); font-size: 15px; letter-spacing: .04em; }
+
+.tela {
+  position: relative; width: 100%; max-width: 100%;
+  container-type: inline-size; overflow: hidden;
+  border-radius: 6px; box-shadow: 0 10px 40px rgb(0 0 0 / .55);
+  background: #241a12 center / cover no-repeat;
+}
+.tela.pc { aspect-ratio: 1672 / 941; background-image: url(__PC__); }
+.tela.cel { aspect-ratio: 941 / 1672; background-image: url(__CEL__); }
+
+.conteudo { position: absolute; display: flex; flex-direction: column; animation: entra 1s ease-out both; }
+.pc .conteudo { left: 3.5cqw; top: 2.6cqw; width: 36cqw; min-height: 36cqw; gap: 1.1cqw; padding: 4.6cqw 3.6cqw 3.2cqw; }
+.cel .conteudo { left: 5cqw; right: 5cqw; top: 4cqw; gap: 2.6cqw; padding: 12cqw 9cqw 8cqw; }
+@keyframes entra { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .conteudo, .btn::before { animation: none !important; transition: none !important; } }
+
+.titulo { font-family: var(--gotica); font-weight: 700; line-height: .98; margin: 0; color: var(--creme);
+  text-shadow: 0 0 .5em rgb(247 193 99 / .18), 0 2px 0 rgb(0 0 0 / .5); text-wrap: balance; }
+.pc .titulo { font-size: 3.6cqw; }
+.cel .titulo { font-size: 10.5cqw; }
+.sub { font-family: var(--rotulo); color: var(--cobre-claro); margin: 0; line-height: 1.3; }
+.pc .sub { font-size: 1.3cqw; margin-top: -.5cqw; }
+.cel .sub { font-size: 4cqw; margin-top: -1.6cqw; }
+
+.caixa { border-top: 1px solid rgb(236 217 174 / .28); border-bottom: 1px solid rgb(236 217 174 / .28); }
+.pc .caixa { padding-block: .8cqw; }
+.cel .caixa { padding-block: 2.4cqw; }
+.caixa h2 { font-family: var(--rotulo); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--cinza); margin: 0; }
+.pc .caixa h2 { font-size: .95cqw; margin-bottom: .6cqw; }
+.cel .caixa h2 { font-size: 3cqw; margin-bottom: 1.6cqw; }
+.caixa dl { margin: 0; display: grid; grid-template-columns: 1fr auto; }
+.pc .caixa dl { row-gap: .25cqw; font-size: 1.15cqw; }
+.cel .caixa dl { row-gap: 1.2cqw; column-gap: 5cqw; font-size: 3.8cqw; grid-template-columns: 1fr auto 1fr auto; }
+.caixa dt { color: var(--creme); opacity: .85; display: flex; align-items: baseline; gap: .4em; min-width: 0; }
+.caixa dt::after { content: ""; flex: 1; border-bottom: 1px dotted rgb(236 217 174 / .3); transform: translateY(-.25em); }
+.caixa dd { margin: 0 0 0 .4em; font-family: var(--rotulo); font-weight: 600; color: var(--creme); font-variant-numeric: tabular-nums; text-align: right; }
+.caixa dd.divida { color: #e0614f; }
+
+.botoes { display: flex; flex-direction: column; list-style: none; margin: 0; padding: 0; }
+.pc .botoes { gap: .2cqw; }
+.cel .botoes { gap: .5cqw; }
+.btn {
+  position: relative; display: flex; align-items: center; width: 100%;
+  background: none; border: 0; cursor: pointer; text-align: left;
+  font-family: var(--rotulo); color: var(--creme);
+  transition: color .16s ease;
+}
+.pc .btn { font-size: 1.7cqw; padding: .3cqw 0 .3cqw 2.4cqw; }
+.cel .btn { font-size: 5.6cqw; padding: 1.2cqw 0 1.2cqw 7cqw; min-height: 44px; }
+.pc .btn.principal { font-size: 2cqw; }
+.cel .btn.principal { font-size: 6.4cqw; }
+.btn::before {
+  content: ""; position: absolute; left: 0; top: 50%; translate: 0 -50%;
+  height: 62%; background: var(--fita);
+  clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+  width: 0; transition: width .17s ease;
+}
+.pc .btn.sel::before, .pc .btn:hover::before, .pc .btn:focus-visible::before { width: 1.7cqw; }
+.cel .btn.sel::before, .cel .btn:hover::before, .cel .btn:focus-visible::before { width: 5cqw; }
+.btn.sel, .btn:hover, .btn:focus-visible { color: var(--chama); }
+.btn:focus-visible { outline: 2px dashed var(--chama); outline-offset: 2px; }
+.versao { position: absolute; color: var(--cinza); font-family: var(--rotulo); }
+.pc .versao { left: 5cqw; bottom: 2.4cqw; font-size: .9cqw; }
+.cel .versao { left: 8cqw; bottom: 3cqw; font-size: 2.8cqw; color: #c9b894; }
+
+/* Carta do senhorio (game-over-carta.png) por trás do texto */
+.conteudo {
+  box-sizing: border-box; color: var(--tinta);
+  background: url(__CARTA__) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 .5cqw .9cqw rgb(0 0 0 / .6));
+  rotate: -.6deg;
+}
+.conteudo .titulo { color: var(--vermelhao); text-shadow: none; }
+.conteudo .sub { color: var(--tinta); }
+.conteudo .caixa { border-color: rgb(43 30 22 / .3); }
+.conteudo .caixa h2 { color: #6b5a48; }
+.conteudo .caixa dt { color: var(--tinta); opacity: 1; }
+.conteudo .caixa dt::after { border-bottom-color: rgb(43 30 22 / .35); }
+.conteudo .caixa dd { color: var(--tinta); }
+.conteudo .btn { color: var(--tinta); }
+.conteudo .btn.sel, .conteudo .btn:hover, .conteudo .btn:focus-visible { color: var(--vermelhao); }
+.conteudo .btn:focus-visible { outline-color: var(--ultramar); }
+
+.notas { display: grid; gap: 6px; color: var(--cinza); line-height: 1.55; max-width: 72ch; font-size: 15px; }
+.notas strong { color: var(--creme); font-weight: 500; }
+.notas p { margin: 0; }
+</style>
+
+<main class="pagina">
+  <header class="cabeca">
+    <h1>A botica fechou as portas</h1>
+    <p>Prévia da tela de fim de jogo por dívida. O texto fica numa carta de cobrança do senhorio pregada na parede; a carta é a imagem que você gerou. Os números são de exemplo. Passe o mouse (ou o dedo) nos botões para ver a fita.</p>
+  </header>
+
+  <section class="telas">
+    <figure>
+      <div class="tela pc" role="img" aria-label="Tela de fim de jogo no computador">
+        <div class="conteudo">
+          <h2 class="titulo">A botica fechou as portas</h2>
+          <p class="sub">O senhorio levou a chave. Ficaram 46 moedas de aluguel atrasado.</p>
+          <div class="caixa">
+            <h2>Livro-caixa da botica</h2>
+            <dl>
+              <dt>Dias de loja aberta</dt><dd>9</dd>
+              <dt>Clientes atendidos</dt><dd>31</dd>
+              <dt>Poções preparadas</dt><dd>44</dd>
+              <dt>Receitas descobertas</dt><dd>13 de 24</dd>
+            </dl>
+          </div>
+          <ul class="botoes">
+            <li><button class="btn principal sel" id="pc-recomecar" type="button">Recomeçar a botica</button></li>
+            <li><button class="btn" id="pc-menu" type="button">Menu inicial</button></li>
+          </ul>
+        </div>
+      </div>
+      <figcaption>Computador · 1672 × 941</figcaption>
+    </figure>
+
+    <figure>
+      <div class="tela cel" role="img" aria-label="Tela de fim de jogo no celular">
+        <div class="conteudo">
+          <h2 class="titulo">A botica fechou as portas</h2>
+          <p class="sub">O senhorio levou a chave. Ficaram 46 moedas de aluguel atrasado.</p>
+          <div class="caixa">
+            <h2>Livro-caixa da botica</h2>
+            <dl>
+              <dt>Dias</dt><dd>9</dd>
+              <dt>Clientes</dt><dd>31</dd>
+              <dt>Poções</dt><dd>44</dd>
+              <dt>Receitas</dt><dd>13 de 24</dd>
+            </dl>
+          </div>
+          <ul class="botoes">
+            <li><button class="btn principal sel" id="cel-recomecar" type="button">Recomeçar a botica</button></li>
+            <li><button class="btn" id="cel-menu" type="button">Menu inicial</button></li>
+          </ul>
+        </div>
+      </div>
+      <figcaption>Celular · 941 × 1672</figcaption>
+    </figure>
+  </section>
+
+  <section class="notas">
+    <p><strong>Recomeçar a botica</strong> começa um jogo novo no dia 1 e mantém as receitas já descobertas no livro. <strong>Menu inicial</strong> volta para o menu. Nos dois casos o save da partida perdida é apagado.</p>
+    <p>A tela entra com um fade de 1 segundo, depois da cena em que o senhorio cobra no balcão. Com "menos animação" ligado, ela aparece direto.</p>
+  </section>
+</main>
+
+<script>
+  // Só um botão fica com a fita por vez em cada tela (como no menu inicial).
+  document.querySelectorAll('.tela').forEach(function (tela) {
+    var botoes = tela.querySelectorAll('.btn');
+    botoes.forEach(function (b) {
+      function marcar() { botoes.forEach(function (o) { o.classList.toggle('sel', o === b); }); }
+      b.addEventListener('mouseenter', marcar);
+      b.addEventListener('focus', marcar);
+      b.addEventListener('click', marcar);
+    });
+  });
+</script>

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Alquimia de Bolso, o caderno da boticária: misture ingredientes, descubra 12 poções e atenda os bilhetes dos clientes. Jogo de navegador offline.">
+  <meta name="color-scheme" content="dark">
+  <title>Alquimia de Bolso</title>
+  <!-- v1.28: edição do jogo. 'demo' = 12 receitas e fim no dia 5; apague esta linha para a edição completa. -->
+  <script>globalThis.ALQUIMIA_EDICAO = 'demo';</script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%97%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ===== Menu principal (tela inicial) ===== -->
+  <div id="menu-screen" class="menu-screen">
+    <div class="menu-panel">
+      <h1 class="menu-logo">Alquimia<br>de Bolso <small>o caderno da boticária</small></h1>
+      <nav aria-label="Menu principal">
+        <ul id="menu-list" class="menu-list">
+          <li id="menu-item-continue"><button type="button" class="mb primary" data-menu="continue">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3"/><path d="M7.5 14h9"/></svg>Continuar</button></li>
+          <li><button type="button" class="mb" data-menu="new">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4C13 5 8 10 6 18l-2 2"/><path d="M20 4c-1 6-5 10-11 11"/><path d="M9 15l-2-2"/></svg>Novo jogo</button></li>
+          <li><button type="button" class="mb" data-menu="book">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 3v8l2-1.5L13 11V3"/></svg>Livro de receitas</button></li>
+          <li><button type="button" class="mb" data-menu="options">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Opções</button></li>
+          <li><button type="button" class="mb" data-menu="credits">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a2 2 0 0 1 2 2v13a3 3 0 0 1-3 3H7"/><path d="M6 3a2 2 0 0 0-2 2v1h4V5a2 2 0 0 0-2-2zM8 6v12a3 3 0 0 1-3 3"/><path d="M11 9h5M11 13h5"/></svg>Créditos</button></li>
+        </ul>
+      </nav>
+      <p id="menu-note" class="menu-note" role="status" aria-live="polite"></p>
+    </div>
+    <p class="menu-version">versão 1.28 · demo</p>
+  </div>
+
+  <!-- ===== Fim de jogo: a botica fechou por dívida (v1.27) ===== -->
+  <section id="gameover" class="gameover" hidden aria-labelledby="gameover-title" role="dialog" aria-modal="true">
+    <div class="gameover-carta">
+      <h2 id="gameover-title" class="gameover-titulo">A botica fechou as portas</h2>
+      <p id="gameover-sub" class="gameover-sub"></p>
+      <div class="gameover-caixa">
+        <h3>Livro-caixa da botica</h3>
+        <dl id="gameover-dl"></dl>
+      </div>
+      <ul class="gameover-botoes">
+        <li><button type="button" class="gameover-btn is-principal" data-action="restart-botica">Recomeçar a botica</button></li>
+        <li><button type="button" class="gameover-btn" data-action="gameover-menu">Menu inicial</button></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Fim da demo: carta da Mestra Benvinda e resumo da partida (v1.28) ===== -->
+  <section id="fimdemo" class="gameover fimdemo" hidden aria-labelledby="fimdemo-title" role="dialog" aria-modal="true">
+    <div class="gameover-carta fimdemo-papel">
+      <p class="fimdemo-kicker">Uma carta que veio do mar</p>
+      <h2 id="fimdemo-title" class="gameover-titulo fimdemo-titulo">Notícias da Mestra</h2>
+      <div id="fimdemo-carta" class="fimdemo-carta"></div>
+      <div class="gameover-caixa">
+        <h3>Livro-caixa da demo</h3>
+        <dl id="fimdemo-dl"></dl>
+      </div>
+      <p class="fimdemo-obrigado">Fim da demo. Obrigado por jogar! Na versão completa, o caderno ganha mais doze receitas e a botica segue aberta.</p>
+      <ul class="gameover-botoes">
+        <li><button type="button" class="gameover-btn is-principal" data-action="demo-restart">Começar de novo</button></li>
+        <li><button type="button" class="gameover-btn" data-action="demo-menu">Menu inicial</button></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Loja (jogo): fundo do entardecer, cliente no balcão, cartas ===== -->
+  <div id="app" class="app shop" hidden>
+    <div id="scene" class="scene">
+      <div class="stage">
+        <div class="stage-bg" aria-hidden="true"></div>
+        <div id="customer" class="customer" aria-hidden="true"></div>
+        <div class="stage-counter" aria-hidden="true"></div>
+        <div id="estoque" class="estoque" aria-hidden="true"></div>
+      </div>
+
+      <div class="balcao">
+        <div class="balcao-tampo" aria-hidden="true"></div>
+        <div id="balcao-vela" class="balcao-vela"></div>
+        <span class="pot-sombra" aria-hidden="true"></span>
+        <button type="button" class="pot-hotspot" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão" title="Clique no caldeirão para misturar"><span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><span class="pot-hotspot-tag">Caldeirão</span></button>
+      </div>
+
+      <header class="shop-top">
+        <div class="hud-wrap">
+          <div id="hud-clock" class="hud-clock" role="img" aria-label="Relógio do dia">
+            <span class="clock-disc"></span><span class="clock-frame"></span>
+          </div>
+          <div id="hud" class="hud" aria-label="Situação da botica"></div>
+        </div>
+        <div class="shop-actions">
+          <button type="button" class="icon-btn" data-action="open-sheet" data-id="prateleira" aria-label="Abrir a prateleira de poções">
+            <img src="" data-art="cura" alt=""><span class="icon-btn-label">Prateleira</span><span id="shelf-count" class="icon-btn-badge" hidden></span></button>
+          <button type="button" class="icon-btn" data-action="open-sheet" data-id="utensilios" aria-label="Abrir utensílios e dicas">
+            <img src="" data-art="up-lupa" alt=""><span class="icon-btn-label">Utensílios</span></button>
+          <button type="button" id="sound-toggle" class="icon-btn" data-action="sound" aria-pressed="false" aria-label="Efeitos sonoros">
+            <img src="" data-art="sino" alt=""><span class="icon-btn-label sound-label">Som</span></button>
+          <button type="button" class="icon-btn" data-action="menu" aria-label="Voltar ao menu principal">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="icon-btn-label">Menu</span></button>
+        </div>
+      </header>
+
+      <button type="button" id="book-ribbon" class="book-ribbon" data-action="open-sheet" data-id="livro"
+              aria-label="Abrir o livro de receitas (ou arraste a tela para baixo)">
+        <span class="book-ribbon-text">Livro</span><span class="book-ribbon-arrow" aria-hidden="true">⌄</span>
+      </button>
+      <p class="drag-hint" aria-hidden="true">arraste para baixo para abrir o livro</p>
+
+      <aside class="queue-wrap" aria-labelledby="queue-title">
+        <h2 id="queue-title" class="queue-title">Na fila</h2>
+        <ul id="queue" class="queue"></ul>
+      </aside>
+
+      <button type="button" class="pot-counter" data-action="open-sheet" data-id="caldeirao" aria-label="Abrir o caldeirão">
+        <span class="pot-raios" aria-hidden="true"></span><span class="pot-manicula" aria-hidden="true"></span><img src="" data-art="caldeirao-bancada" alt=""><span>Caldeirão</span>
+      </button>
+
+      <section id="talk" class="talk" aria-live="polite" aria-labelledby="talk-name"></section>
+    </div>
+
+    <div id="live-region" class="toast" popover="manual" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Livro de receitas: desce do topo (arrastar para baixo) -->
+    <dialog id="sheet-livro" class="sheet sheet-top" aria-labelledby="h-book">
+      <div class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="h-book" class="sheet-title book-title" tabindex="-1">Livro de receitas</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet" aria-label="Fechar o livro">Fechar ⌃</button>
+        </header>
+        <div class="book-tabs" role="tablist" aria-label="Partes do caderno">
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="receitas" aria-selected="true">Receitas</button>
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="ingredientes" aria-selected="false" tabindex="-1">Ingredientes</button>
+          <button type="button" role="tab" class="book-tab" data-action="book-tab" data-id="anotacoes" aria-selected="false" tabindex="-1">Anotações</button>
+        </div>
+        <div id="book" class="book" role="tabpanel" aria-labelledby="h-book"></div>
+      </div>
+    </dialog>
+
+    <!-- Caldeirão: ingredientes em cartas -->
+    <dialog id="sheet-caldeirao" class="sheet sheet-bottom" aria-labelledby="h-cauldron">
+      <div class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="h-cauldron" class="sheet-title" tabindex="-1">Caldeirão</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+        </header>
+        <div class="brew-layout">
+          <div class="brew-col">
+            <div id="cauldron" class="cauldron"></div>
+            <div id="result" class="result" aria-live="polite"></div>
+          </div>
+          <div class="hand-col">
+            <h3 class="hand-title">Ingredientes <small id="hand-tip" class="tip-inline" hidden>toque numa carta para pôr no caldeirão; vale repetir a mesma</small></h3>
+            <button type="button" class="btn btn-small btn-quiet hand-info" data-action="open-sheet" data-id="livro" data-tab="ingredientes">O que cada ingrediente faz?</button>
+            <ul id="hand" class="hand"></ul>
+            <div id="quick" class="quick"></div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Prateleira: poções em cartas, para entregar ou vender -->
+    <dialog id="sheet-prateleira" class="sheet sheet-bottom" aria-labelledby="h-shelf">
+      <div class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="h-shelf" class="sheet-title" tabindex="-1">Prateleira</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+        </header>
+        <div id="shelf" class="shelf"></div>
+      </div>
+    </dialog>
+
+    <!-- Utensílios e dicas -->
+    <dialog id="sheet-utensilios" class="sheet sheet-bottom" aria-labelledby="h-tools">
+      <div class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="h-tools" class="sheet-title" tabindex="-1">Utensílios e dicas</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+        </header>
+        <div id="tools" class="tools"></div>
+      </div>
+    </dialog>
+
+    <!-- Banca da mercadora: só no fim do dia -->
+    <dialog id="sheet-mercador" class="sheet sheet-bottom" aria-labelledby="h-merchant">
+      <div class="sheet-body">
+        <header class="sheet-head">
+          <h2 id="h-merchant" class="sheet-title" tabindex="-1">Banca da mercadora</h2>
+          <button type="button" class="btn btn-small" data-action="close-sheet">Voltar ao balcão</button>
+        </header>
+        <div id="merchant" class="merchant"></div>
+      </div>
+    </dialog>
+
+    <!-- Livro-caixa: relatório do fim do dia -->
+    <dialog id="sheet-caixa" class="sheet sheet-ledger" aria-labelledby="h-ledger">
+      <div class="sheet-body ledger-body">
+        <h2 id="h-ledger" class="sheet-title ledger-title" tabindex="-1">Livro-caixa</h2>
+        <div id="ledger" class="ledger"></div>
+      </div>
+    </dialog>
+
+    <dialog id="victory-dialog" class="dialog paper" aria-labelledby="victory-title" aria-describedby="victory-desc">
+      <div class="dialog-body">
+        <h2 id="victory-title" class="dialog-title">O caderno está completo!</h2>
+        <p id="victory-desc">Todas as receitas estão no caderno. A loja continua aberta: atenda a freguesia, venda poções e tente bater o seu recorde de moedas.</p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-primary" data-action="close-dialog" autofocus>Voltar ao balcão</button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- ===== Páginas de papel do menu ===== -->
+  <dialog id="confirm-dialog" class="dialog paper" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
+    <div class="dialog-body">
+      <h2 id="confirm-title" class="dialog-title">Arrancar as páginas?</h2>
+      <p id="confirm-desc">Começar de novo apaga o caderno atual: moedas, receitas descobertas, utensílios e bilhetes. Não dá para desfazer.</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn" data-dialog="close" autofocus>Guardar o caderno</button>
+        <button type="button" class="btn btn-danger" data-dialog="confirm-new">Começar do zero</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="options-dialog" class="dialog paper" aria-labelledby="options-title">
+    <form class="dialog-body options-form" method="dialog">
+      <h2 id="options-title" class="dialog-title">Opções</h2>
+      <label class="opt-row"><input type="checkbox" id="opt-sound"> Efeitos sonoros</label>
+      <label class="opt-row opt-range" for="opt-volume">Volume <output id="opt-volume-out" for="opt-volume">50</output>
+        <input type="range" id="opt-volume" min="0" max="100" step="5" value="50"></label>
+      <label class="opt-row"><input type="checkbox" id="opt-motion"> Menos animação</label>
+      <label class="opt-row" title="Os clientes não perdem a paciência (sem vela e sem gorjeta)."><input type="checkbox" id="opt-relaxed"> Freguesia sem pressa</label>
+      <fieldset class="opt-row opt-size">
+        <legend>Tamanho do texto</legend>
+        <label><input type="radio" name="opt-size" value="normal" checked> Normal</label>
+        <label><input type="radio" name="opt-size" value="grande"> Grande</label>
+        <label><input type="radio" name="opt-size" value="maior"> Maior</label>
+      </fieldset>
+      <fieldset class="opt-row opt-size opt-quality">
+        <legend>Qualidade dos efeitos</legend>
+        <label title="Noite desenhada em hachura pelo navegador (shader)."><input type="radio" name="opt-quality" value="alta" checked> Alta</label>
+        <label title="Para celulares e computadores mais fracos: a noite usa uma imagem pronta."><input type="radio" name="opt-quality" value="leve"> Leve</label>
+      </fieldset>
+      <div class="dialog-actions">
+        <button type="submit" class="btn btn-primary" autofocus>Pronto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="credits-dialog" class="dialog paper" aria-labelledby="credits-title">
+    <div class="dialog-body credits">
+      <h2 id="credits-title" class="dialog-title">Créditos</h2>
+      <p><strong>Alquimia de Bolso</strong>: ideia, game design e direção de arte de Rafael.</p>
+      <p>Programação feita com o Claude, assistente de IA da Anthropic.</p>
+      <p>Artes dos clientes, dos ingredientes, das poções e da loja ao entardecer: Rafael.</p>
+      <p>Fundo do menu em estilo xilogravura, gerado sob direção de Rafael.</p>
+      <p>Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), sob a licença SIL Open Font License 1.1.</p>
+      <p>Sons sintetizados no próprio navegador.</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-primary" data-dialog="close" autofocus>Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="book-dialog" class="dialog dialog-book paper" aria-labelledby="book-dialog-title">
+    <div class="dialog-body">
+      <h2 id="book-dialog-title" class="dialog-title book-title">Livro de receitas</h2>
+      <div id="book-dialog-content" class="book"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-primary" data-dialog="close" autofocus>Fechar o livro</button>
+      </div>
+    </div>
+  </dialog>
+
+  <noscript><p class="noscript">O caderno da boticária precisa de JavaScript ativado para abrir.</p></noscript>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

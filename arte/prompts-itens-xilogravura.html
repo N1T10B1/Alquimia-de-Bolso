@@ -1,0 +1,117 @@
+<title>Prompts de xilogravura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: coluna única; guia de estilo no topo, depois um grupo por tipo com uma linha por item e o botão de copiar à direita. */
+:root {
+  --bg: #efe2c4; --sheet: #f8f0dc; --ink: #2b1e16; --muted: #6b5a4b; --line: #d4c19c;
+  --red: #a8322a; --red-ink: #fff6ea; --done: #3f7f6a; --done-bg: #dfeee6;
+  --font-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px; }
+h1, h2 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.card { background: var(--sheet); border: 2px solid var(--ink); padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.card pre { margin: 0; white-space: pre-wrap; font-family: var(--font-body); font-size: .92rem; color: var(--muted); max-height: 9.5em; overflow: auto; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.item { background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-columns: 2.4rem 1fr auto; gap: 4px 14px; align-items: start; padding: 12px 14px; }
+.item.done { background: var(--done-bg); border-color: var(--done); }
+.num { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.2; color: var(--red); font-variant-numeric: tabular-nums; }
+.item.done .num { color: var(--done); }
+.info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 1.05rem; }
+.file { font-size: .82rem; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.desc { font-size: .93rem; color: var(--muted); }
+.actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+button { font: 700 .92rem var(--font-body); cursor: pointer; border: 2px solid var(--ink); padding: 8px 14px; min-height: 44px; }
+.copy { background: var(--red); color: var(--red-ink); border-color: var(--red); }
+.copy.ok { background: var(--done); border-color: var(--done); color: var(--red-ink); }
+.mark { background: transparent; color: var(--ink); font-weight: 500; font-size: .82rem; padding: 4px 10px; min-height: 36px; border-width: 1px; }
+button:focus-visible { outline: 3px solid var(--done); outline-offset: 2px; }
+.fallback { width: 100%; min-height: 8em; font: .85rem var(--font-body); }
+.count { font-size: .9rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .item { grid-template-columns: 2rem 1fr; }
+  .actions { grid-column: 1 / -1; flex-direction: row; }
+  .actions .copy { flex: 1; }
+}
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
+</style>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Prompts de xilogravura</h1>
+    <p class="lead">Cada botão copia o prompt completo daquele item, já com nome, tipo, objeto e cores. É só colar no ChatGPT.</p>
+    <ol class="steps">
+      <li>Abra uma conversa nova no ChatGPT e cole o guia de estilo (botão abaixo).</li>
+      <li>Depois, na mesma conversa, copie e cole um item por vez.</li>
+      <li>Salve a imagem com o nome de arquivo mostrado no item e marque como feito.</li>
+    </ol>
+  </header>
+  <section class="card">
+    <h2 style="border:0;padding:0">Passo 1: guia de estilo</h2>
+    <pre id="style-text"></pre>
+    <div><button class="copy" id="copy-style" type="button">Copiar guia de estilo</button></div>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div id="groups" style="display:flex;flex-direction:column;gap:28px"></div>
+  <textarea id="fallback" class="fallback" hidden readonly aria-label="Prompt para copiar manualmente"></textarea>
+</div>
+<script>
+const DATA = {"style": "Vou te pedir várias ilustrações de objetos para um jogo de navegador chamado \"Alquimia de Bolso\", uma loja de poções aconchegante de fantasia medieval. Todas as imagens desta conversa devem seguir EXATAMENTE este guia de estilo. Não gere nada ainda, só confirme que entendeu.\n\nGUIA DE ESTILO: XILOGRAVURA COLORIDA À MÃO\n- Técnica: xilogravura antiga, impressão de matriz de madeira entalhada, como nos herbários e livros de alquimia impressos do século XV e XVI. Linhas grossas e firmes em tinta preta-amarronzada (#2b1e16), com a marca da goiva visível: traços entalhados em cunha, sombras feitas com linhas paralelas grossas e áreas chapadas de preto. Leve textura de veio de madeira e pequenas falhas de impressão. Nada de hachura fina de gravura em metal, nada de degradê digital.\n- Cor: no máximo 3 cores por item, aplicadas à mão em manchas chapadas por cima da impressão, um pouco desencontradas do contorno, como nas xilogravuras coloridas antigas. O preto da matriz continua por cima de tudo.\n- Formas: simplificadas e expressivas, contornos fechados e grossos, poucos detalhes, legíveis mesmo em tamanho pequeno (64 px).\n- Paleta de pigmentos: vermelhão (#a8322a), azul-ultramar (#2c4f9e), verdete (#3f7f6a), ocre-ouro (#b88a2e), cobre (#c87533). Turquesa (#3fd0c9) e violeta (#a77be6) só nos líquidos e brilhos mágicos.\n- Luz: sempre vindo do alto à esquerda, linhas de sombra entalhadas à direita.\n- Composição: um único objeto, centralizado, em vista de três quartos levemente de cima, ocupando cerca de 75% da altura da imagem, com margem vazia em volta. Todos os objetos na mesma escala visual, como se fossem pranchas da mesma coleção.\n- Formato: quadrado 1024x1024, FUNDO TRANSPARENTE (PNG). Sem sombra no chão, sem mesa, sem cenário.\n- Clima: charmoso e um pouco bem-humorado, nada sombrio ou assustador.\n- Proibido: texto, letras, números, rótulos escritos, logotipos, marcas d'água, molduras e bordas.", "groups": [{"name": "Ingredientes", "items": [{"n": 1, "name": "Gota Lunar", "id": "agua", "tipo": "ingrediente", "obj": "uma gota de água grande e perfeita, flutuando, com um pequeno crescente de lua refletido dentro dela e três gotinhas menores caindo ao lado.", "cores": "azul-ultramar claro na gota, reflexo prateado da lua, linhas de sombra entalhadas em azul-escuro."}, {"n": 2, "name": "Brasa Rubra", "id": "fogo", "tipo": "ingrediente", "obj": "um pedaço de carvão em brasa, rachado, com chamas pequenas saindo das rachaduras e duas faíscas soltas.", "cores": "vermelhão nas rachaduras e chamas, ocre-ouro no centro das chamas, carvão em preto chapado."}, {"n": 3, "name": "Folha Viva", "id": "planta", "tipo": "ingrediente", "obj": "um ramo com três folhas largas de nervuras bem desenhadas, como numa prancha de herbário, com a ponta de uma folha levemente enrolada como se estivesse se mexendo.", "cores": "verdete nas folhas, nervuras em tinta marrom, caule ocre."}, {"n": 4, "name": "Pó de Cristal", "id": "cristal", "tipo": "ingrediente", "obj": "um pequeno saquinho de pano amarrado com barbante, aberto, com um monte de pó brilhante e dois cristais facetados saindo dele.", "cores": "pano em pergaminho, cristais em azul-claro e branco com reflexos, pó cintilante."}, {"n": 5, "name": "Sombra Engarrafada", "id": "sombra", "tipo": "ingrediente", "obj": "um frasco pequeno e arredondado com rolha de cortiça e lacre, cheio de uma fumaça escura que se mexe lá dentro, com dois pontinhos de luz como olhos curiosos.", "cores": "vidro levemente esverdeado, fumaça em violeta muito escuro quase preto, lacre vermelhão."}, {"n": 6, "name": "Orvalho Solar", "id": "luz", "tipo": "ingrediente", "obj": "uma flor aberta tipo calêndula com uma gota dourada de orvalho no centro, soltando pequenos raios de luz desenhados como num sol de xilogravura.", "cores": "pétalas em ocre-ouro e laranja, gota em amarelo luminoso, raios em ocre."}, {"n": 7, "name": "Cogumelo Azul", "id": "cogumelo", "tipo": "ingrediente", "obj": "dois cogumelos de chapéu redondo, um grande e um pequeno, nascendo de um pedacinho de musgo, com pintinhas no chapéu e um brilho suave em volta.", "cores": "chapéus em azul-ultramar com pintas brancas, pés em pergaminho, musgo verdete, brilho turquesa bem leve."}, {"n": 8, "name": "Pena do Vento", "id": "vento", "tipo": "ingrediente", "obj": "uma pena longa e leve, levemente curvada, flutuando, com três linhas de vento em espiral desenhadas em volta como nos mapas antigos.", "cores": "pena em branco-acinzentado com ponta azul-clara, linhas de vento em tinta marrom."}]}, {"name": "Poções", "items": [{"n": 9, "name": "Névoa Fumegante", "id": "vapor", "tipo": "poção", "obj": "um alambique de cobre pequeno, com a cúpula e o bico longo, soltando uma névoa espessa que sobe em caracol.", "cores": "cobre no alambique, névoa em cinza-perolado com toque turquesa."}, {"n": 10, "name": "Elixir de Cura", "id": "cura", "tipo": "poção", "obj": "uma ampola de vidro de colo longo e fino, com rolha de cortiça e um raminho de erva amarrado no pescoço com barbante.", "cores": "líquido verde-esmeralda claro, vidro transparente, erva verdete."}, {"n": 11, "name": "Tônico de Vigor", "id": "vigor", "tipo": "poção", "obj": "um albarelo, pote de farmácia de cerâmica com cintura, decorado com faixas pintadas, com a tampa de pano amarrada e bolhinhas saindo.", "cores": "cerâmica branca com faixas ultramar, líquido laranja vivo aparecendo nas bolhas."}, {"n": 12, "name": "Essência Cintilante", "id": "brilho", "tipo": "poção", "obj": "um frasco de vidro facetado como uma pedra preciosa, com tampa em forma de estrela, e pequenas estrelas de xilogravura saindo do vidro.", "cores": "líquido dourado brilhante, reflexos brancos nas facetas."}, {"n": 13, "name": "Véu Invisível", "id": "invisibilidade", "tipo": "poção", "obj": "uma fiala esguia e alta, com a metade de baixo desaparecendo, desenhada só com contorno pontilhado, como se estivesse ficando invisível.", "cores": "líquido lavanda-pálido quase transparente, contorno pontilhado em tinta marrom."}, {"n": 14, "name": "Chá do Sono", "id": "sono", "tipo": "poção", "obj": "uma cabaça seca usada como garrafa, com tampa de cortiça e uma touca de dormir minúscula pendurada no gargalo, com três \"z\" desenhados como fumacinhas (formas, não letras).", "cores": "cabaça em ocre, líquido azul-noite visível na boca, touca vermelhão."}, {"n": 15, "name": "Chama Azul", "id": "chamaazul", "tipo": "poção", "obj": "uma retorta de vidro, o frasco redondo com o pescoço longo dobrado para o lado, com uma pequena chama azul dançando dentro do líquido.", "cores": "líquido e chama em azul-ultramar e turquesa, vidro transparente."}, {"n": 16, "name": "Pele de Raiz", "id": "raiz", "tipo": "poção", "obj": "um matraz cônico de vidro com raízes finas crescendo de dentro para fora, enroladas em volta do vidro.", "cores": "líquido verde-musgo, raízes em marrom e ocre, pequenas folhas verdete."}, {"n": 17, "name": "Gotas do Amanhecer", "id": "amanhecer", "tipo": "poção", "obj": "um frasco em forma de gota com tampa de vidro, e dentro dele o líquido em camadas como um céu nascendo, com um pequeno sol no topo.", "cores": "camadas de rosa, laranja e ouro, sol em ocre-ouro."}, {"n": 18, "name": "Eclipse Líquido", "id": "eclipse", "tipo": "poção rara", "obj": "um pelicano alquímico, vaso de vidro com dois braços curvos que saem do pescoço e voltam para o corpo, com o líquido metade escuro e metade brilhante, formando um eclipse dentro do vaso.", "cores": "metade violeta-escuro, metade dourada, anel de luz turquesa no encontro das duas."}, {"n": 19, "name": "Nuvem de Esporos", "id": "esporos", "tipo": "poção", "obj": "um aludel, vasos de cerâmica empilhados uns sobre os outros como uma pequena torre, com esporos redondos flutuando para fora pelo topo.", "cores": "cerâmica pergaminho, esporos em verde-claro e azul."}, {"n": 20, "name": "Faísca da Tempestade", "id": "tempestade", "tipo": "poção", "obj": "uma garrafa de ombro largo com rolha amarrada, com uma nuvenzinha de tempestade dentro e um pequeno raio em zigue-zague.", "cores": "líquido cinza-azulado, raio em ocre-ouro, vidro levemente esverdeado."}]}, {"name": "Falha", "items": [{"n": 21, "name": "Lodo Instável", "id": "lodo", "tipo": "mistura que deu errado", "obj": "um pote de barro rachado, com uma gosma escura transbordando pela borda e escorrendo pela lateral, e uma bolha engraçada estourando no topo.", "cores": "barro ocre-escuro, gosma marrom-esverdeada quase preta."}]}, {"name": "Melhorias", "items": [{"n": 22, "name": "Caldeirão Eficiente", "id": "caldeirao", "tipo": "melhoria", "obj": "um caldeirão de cobre pequeno e reforçado, com rebites e um fole de couro preso ao lado.", "cores": "cobre polido, fole em couro marrom, borda ocre."}, {"n": 23, "name": "Marca do Mercador", "id": "mercador", "tipo": "melhoria", "obj": "um sinete de mercador, o carimbo de metal com cabo de madeira, ao lado de um selo de cera recém-carimbado com o desenho de uma balança.", "cores": "metal em ocre-ouro, cabo em madeira, cera vermelhão."}, {"n": 24, "name": "Lupa Arcana", "id": "lupa", "tipo": "melhoria", "obj": "uma lupa antiga com aro de latão gravado e cabo de osso, com um pequeno brilho de magia na lente.", "cores": "aro em ocre-ouro, cabo pergaminho, lente com reflexo turquesa."}]}, {"name": "Objetos da interface", "items": [{"n": 25, "name": "Caldeirão da bancada", "id": "caldeirao-bancada", "tipo": "objeto principal da tela", "obj": "um caldeirão grande de cobre sobre um tripé de ferro, com brasas embaixo e a boca vazia vista um pouco de cima, para o jogo colocar o líquido por cima.", "cores": "cobre, ferro em preto chapado, brasas vermelhão."}, {"n": 26, "name": "Moeda", "id": "moeda", "tipo": "ícone", "obj": "uma moeda antiga grossa, de borda irregular, com um frasco gravado no centro.", "cores": "ocre-ouro com linhas entalhadas."}, {"n": 27, "name": "Vela da dica", "id": "vela", "tipo": "ícone", "obj": "um toco de vela num castiçal de latão com alça, chama acesa e cera escorrida.", "cores": "cera pergaminho, chama ocre-ouro, castiçal cobre."}, {"n": 28, "name": "Sino do balcão", "id": "sino", "tipo": "ícone de som", "obj": "um sino de balcão de loja antigo, de latão, com base de madeira.", "cores": "latão ocre-ouro, base em madeira marrom."}, {"n": 29, "name": "Selo de cera", "id": "selo", "tipo": "ícone de nível e de pedido entregue", "obj": "um selo de cera redondo, com bordas irregulares e o desenho de um frasco no centro, sem letras.", "cores": "cera vermelhão com brilho."}]}]};
+const KEY = 'xilo-feitos';
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify([...done])); } catch (e) {} };
+const prompt = it => `Gere a ilustração do item ${it.name}, no guia de estilo de xilogravura combinado.\nTipo: ${it.tipo}\nObjeto: ${it.obj}\nCores: ${it.cores}\nFundo transparente, objeto centralizado, mesma escala dos itens anteriores, sem texto.`;
+const fb = document.getElementById('fallback');
+async function copy(text, btn, label) {
+  try { await navigator.clipboard.writeText(text); fb.hidden = true; }
+  catch (e) { fb.hidden = false; fb.value = text; fb.focus(); fb.select(); btn.textContent = 'Selecionado abaixo, use Ctrl+C'; return; }
+  btn.classList.add('ok'); btn.textContent = 'Copiado';
+  setTimeout(() => { btn.classList.remove('ok'); btn.textContent = label; }, 1600);
+}
+document.getElementById('style-text').textContent = DATA.style;
+const sb = document.getElementById('copy-style');
+sb.addEventListener('click', () => copy(DATA.style, sb, 'Copiar guia de estilo'));
+const total = DATA.groups.reduce((a, g) => a + g.items.length, 0);
+const countEl = document.getElementById('count');
+const updateCount = () => { countEl.textContent = `${done.size} de ${total} itens feitos`; };
+const root = document.getElementById('groups');
+for (const g of DATA.groups) {
+  const sec = document.createElement('section'); sec.className = 'group';
+  const h = document.createElement('h2'); h.textContent = `${g.name} (${g.items.length})`; sec.append(h);
+  for (const it of g.items) {
+    const row = document.createElement('div'); row.className = 'item' + (done.has(it.id) ? ' done' : '');
+    row.innerHTML = `<div class="num"></div><div class="info"><span class="name"></span><span class="file"></span><span class="desc"></span></div><div class="actions"><button class="copy" type="button">Copiar prompt</button><button class="mark" type="button"></button></div>`;
+    row.querySelector('.num').textContent = String(it.n).padStart(2, '0');
+    row.querySelector('.name').textContent = it.name;
+    row.querySelector('.file').textContent = `item-${it.id}.png`;
+    row.querySelector('.desc').textContent = it.obj;
+    const cb = row.querySelector('.copy');
+    cb.id = 'copy-' + it.id;
+    cb.setAttribute('aria-label', 'Copiar prompt de ' + it.name);
+    cb.addEventListener('click', () => copy(prompt(it), cb, 'Copiar prompt'));
+    const mk = row.querySelector('.mark');
+    const setMark = () => { mk.textContent = done.has(it.id) ? 'Feito ✓' : 'Marcar feito'; row.classList.toggle('done', done.has(it.id)); };
+    mk.addEventListener('click', () => { done.has(it.id) ? done.delete(it.id) : done.add(it.id); save(); setMark(); updateCount(); });
+    setMark();
+    sec.append(row);
+  }
+  root.append(sec);
+}
+updateCount();
+</script>

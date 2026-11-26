@@ -1,0 +1,117 @@
+<title>Poções novas em xilogravura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: coluna única; guia de estilo no topo, depois um grupo por tipo com uma linha por item e o botão de copiar à direita. */
+:root {
+  --bg: #efe2c4; --sheet: #f8f0dc; --ink: #2b1e16; --muted: #6b5a4b; --line: #d4c19c;
+  --red: #a8322a; --red-ink: #fff6ea; --done: #3f7f6a; --done-bg: #dfeee6;
+  --font-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px; }
+h1, h2 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.card { background: var(--sheet); border: 2px solid var(--ink); padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.card pre { margin: 0; white-space: pre-wrap; font-family: var(--font-body); font-size: .92rem; color: var(--muted); max-height: 9.5em; overflow: auto; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.item { background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-columns: 2.4rem 1fr auto; gap: 4px 14px; align-items: start; padding: 12px 14px; }
+.item.done { background: var(--done-bg); border-color: var(--done); }
+.num { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.2; color: var(--red); font-variant-numeric: tabular-nums; }
+.item.done .num { color: var(--done); }
+.info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 1.05rem; }
+.file { font-size: .82rem; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.desc { font-size: .93rem; color: var(--muted); }
+.actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+button { font: 700 .92rem var(--font-body); cursor: pointer; border: 2px solid var(--ink); padding: 8px 14px; min-height: 44px; }
+.copy { background: var(--red); color: var(--red-ink); border-color: var(--red); }
+.copy.ok { background: var(--done); border-color: var(--done); color: var(--red-ink); }
+.mark { background: transparent; color: var(--ink); font-weight: 500; font-size: .82rem; padding: 4px 10px; min-height: 36px; border-width: 1px; }
+button:focus-visible { outline: 3px solid var(--done); outline-offset: 2px; }
+.fallback { width: 100%; min-height: 8em; font: .85rem var(--font-body); }
+.count { font-size: .9rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .item { grid-template-columns: 2rem 1fr; }
+  .actions { grid-column: 1 / -1; flex-direction: row; }
+  .actions .copy { flex: 1; }
+}
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
+</style>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Poções novas em xilogravura</h1>
+    <p class="lead">As 12 poções novas, no mesmo guia de estilo dos 29 itens que você já fez. As cinco de dose dupla usam um vaso de dois bojos, para o jogador reconhecer de longe que nasceram de um ingrediente só. Cada botão copia o prompt completo.</p>
+    <ol class="steps">
+      <li>Abra uma conversa nova no ChatGPT e cole o guia de estilo (botão abaixo). Se puder, anexe junto duas ou três poções que você já fez, para o traço ficar igual.</li>
+      <li>Depois, na mesma conversa, copie e cole um item por vez.</li>
+      <li>Salve a imagem com o nome de arquivo mostrado no item e marque como feito.</li>
+    </ol>
+  </header>
+  <section class="card">
+    <h2 style="border:0;padding:0">Passo 1: guia de estilo</h2>
+    <pre id="style-text"></pre>
+    <div><button class="copy" id="copy-style" type="button">Copiar guia de estilo</button></div>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div id="groups" style="display:flex;flex-direction:column;gap:28px"></div>
+  <textarea id="fallback" class="fallback" hidden readonly aria-label="Prompt para copiar manualmente"></textarea>
+</div>
+<script>
+const DATA = {"style":"Vou te pedir várias ilustrações de objetos para um jogo de navegador chamado \"Alquimia de Bolso\", uma loja de poções aconchegante de fantasia medieval. Todas as imagens desta conversa devem seguir EXATAMENTE este guia de estilo. Não gere nada ainda, só confirme que entendeu.\n\nGUIA DE ESTILO: XILOGRAVURA COLORIDA À MÃO\n- Técnica: xilogravura antiga, impressão de matriz de madeira entalhada, como nos herbários e livros de alquimia impressos do século XV e XVI. Linhas grossas e firmes em tinta preta-amarronzada (#2b1e16), com a marca da goiva visível: traços entalhados em cunha, sombras feitas com linhas paralelas grossas e áreas chapadas de preto. Leve textura de veio de madeira e pequenas falhas de impressão. Nada de hachura fina de gravura em metal, nada de degradê digital.\n- Cor: no máximo 3 cores por item, aplicadas à mão em manchas chapadas por cima da impressão, um pouco desencontradas do contorno, como nas xilogravuras coloridas antigas. O preto da matriz continua por cima de tudo.\n- Formas: simplificadas e expressivas, contornos fechados e grossos, poucos detalhes, legíveis mesmo em tamanho pequeno (64 px).\n- Paleta de pigmentos: vermelhão (#a8322a), azul-ultramar (#2c4f9e), verdete (#3f7f6a), ocre-ouro (#b88a2e), cobre (#c87533). Turquesa (#3fd0c9) e violeta (#a77be6) só nos líquidos e brilhos mágicos.\n- Luz: sempre vindo do alto à esquerda, linhas de sombra entalhadas à direita.\n- Composição: um único objeto, centralizado, em vista de três quartos levemente de cima, ocupando cerca de 75% da altura da imagem, com margem vazia em volta. Todos os objetos na mesma escala visual, como se fossem pranchas da mesma coleção.\n- Formato: quadrado 1024x1024, FUNDO TRANSPARENTE (PNG). Sem sombra no chão, sem mesa, sem cenário.\n- Clima: charmoso e um pouco bem-humorado, nada sombrio ou assustador.\n- Proibido: texto, letras, números, rótulos escritos, logotipos, marcas d'água, molduras e bordas.","groups":[{"name":"Poções de dose dupla (mesmo ingrediente duas vezes)","items":[{"n":1,"name":"Chuva Engarrafada","id":"chuva","tipo":"poção (Gota Lunar + Gota Lunar)","obj":"dois bojos redondos de vidro, com uma nuvenzinha gorda presa dentro do bojo de cima chovendo gotas de xilogravura no bojo de baixo, onde a água já se acumula. Dose dupla: vaso de DOIS BOJOS (dois corpos de vidro unidos por um gargalo só), a marca visual das poções feitas com o mesmo ingrediente duas vezes.","cores":"líquido e gotas em azul-ultramar claro, nuvem em branco-acinzentado, rolha de cortiça."},{"n":2,"name":"Coração de Dragão","id":"coracao","tipo":"poção (Brasa Rubra + Brasa Rubra)","obj":"dois bojos com o de baixo em forma de coração, líquido em brasa com uma chaminha dançando no centro e uma pequena escama de dragão pendurada no gargalo por um barbante. Dose dupla: vaso de DOIS BOJOS (dois corpos de vidro unidos por um gargalo só), a marca visual das poções feitas com o mesmo ingrediente duas vezes.","cores":"líquido vermelhão com centro ocre-ouro, escama em cobre, vidro levemente esverdeado."},{"n":3,"name":"Broto Desenfreado","id":"broto","tipo":"poção (Folha Viva + Folha Viva)","obj":"dois bojos de vidro com um broto de feijão saindo pelo gargalo, já tão comprido que dá uma volta inteira em espiral em volta do frasco, com folhas novas brotando no caminho. Dose dupla: vaso de DOIS BOJOS (dois corpos de vidro unidos por um gargalo só), a marca visual das poções feitas com o mesmo ingrediente duas vezes.","cores":"líquido verde-claro, broto e folhas em verdete, rolha empurrada para fora em ocre."},{"n":4,"name":"Pés de Pluma","id":"pluma","tipo":"poção (Pena do Vento + Pena do Vento)","obj":"dois bojos de vidro bem leves, flutuando um palmo acima do nada, com duas penas pequenas presas dos lados como asinhas e linhas de vento em espiral embaixo. Dose dupla: vaso de DOIS BOJOS (dois corpos de vidro unidos por um gargalo só), a marca visual das poções feitas com o mesmo ingrediente duas vezes.","cores":"líquido azul-claro quase branco, penas em branco-acinzentado com ponta azul, linhas de vento em tinta marrom."},{"n":5,"name":"Sono de Urso","id":"urso","tipo":"poção (Cogumelo Azul + Cogumelo Azul)","obj":"dois bojos de vidro grossos, com o bojo de cima enfeitado com duas orelhinhas redondas de urso feitas de feltro e um pequeno cogumelo azul no lugar da rolha; dentro, o líquido dorme em camadas. Dose dupla: vaso de DOIS BOJOS (dois corpos de vidro unidos por um gargalo só), a marca visual das poções feitas com o mesmo ingrediente duas vezes.","cores":"líquido azul-noite, orelhas em marrom-ocre, cogumelo em azul-ultramar com pintas brancas."}]},{"name":"Poções de dupla nova","items":[{"n":6,"name":"Brisa Marinha","id":"brisa","tipo":"poção (Gota Lunar + Pena do Vento)","obj":"uma concha grande de búzio usada como frasco, com rolha de cortiça e uma pequena onda saindo da boca em caracol, como nos mapas antigos.","cores":"concha em pergaminho e rosa-cobre, onda em azul-ultramar e turquesa."},{"n":7,"name":"Gelo Eterno","id":"gelo","tipo":"poção (Gota Lunar + Pó de Cristal)","obj":"uma garrafa quadrada de boticário com cristais de gelo crescendo por fora do vidro e pingentes de gelo pendurados na borda, e um floco de neve entalhado no centro.","cores":"líquido azul-claro, gelo branco com reflexos azul-ultramar, rolha ocre."},{"n":8,"name":"Fogo-Fátuo","id":"fogofatuo","tipo":"poção (Brasa Rubra + Sombra Engarrafada)","obj":"uma lanterninha de vidro com alça de ferro, com três chamas pequenas e fantasminhas soltas dentro, uma delas escapando pela tampa com cara travessa (só dois pontinhos de olho).","cores":"chamas em turquesa e verde-claro, vidro escurecido em violeta, ferro em preto chapado."},{"n":9,"name":"Eco de Cristal","id":"eco","tipo":"poção (Pó de Cristal + Pena do Vento)","obj":"um frasco com a boca aberta em forma de corneta, como a campânula de uma trombeta, com ondas de som em arcos concêntricos saindo dela e pequenos cristais no fundo.","cores":"corneta em ocre-ouro, líquido azul-claro cintilante, ondas de som em tinta marrom."},{"n":10,"name":"Seiva Dourada","id":"seiva","tipo":"poção (Folha Viva + Orvalho Solar)","obj":"uma garrafinha em forma de gota de seiva, com uma rosa aberta brotando da rolha e pequenos raios de sol de xilogravura atrás da flor.","cores":"líquido âmbar dourado, rosa em vermelhão, folhas verdete, raios em ocre-ouro."},{"n":11,"name":"Arco-Íris de Bolso","id":"arcoiris","tipo":"poção (Orvalho Solar + Pena do Vento)","obj":"um frasco baixo e redondo como um pequeno cantil, com um arco-íris saindo da boca e fazendo uma curva até pousar de volta no vidro.","cores":"arco em faixas de vermelhão, ocre-ouro, verdete e azul-ultramar, líquido claro com reflexo dourado."}]},{"name":"Poção rara","items":[{"n":12,"name":"Espelho Negro","id":"espelho","tipo":"poção rara (Pó de Cristal + Sombra Engarrafada)","obj":"um frasco chato e redondo como um espelho de mão, com moldura de metal trabalhada e cabo curto, com o líquido escuro e liso refletindo um único olho aberto no centro.","cores":"líquido violeta-escuro quase preto com reflexo turquesa, moldura em ocre-ouro."}]}]};
+const KEY = 'xilo-pocoes-novas-feitos';
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify([...done])); } catch (e) {} };
+const prompt = it => `Gere a ilustração do item ${it.name}, no guia de estilo de xilogravura combinado.\nTipo: ${it.tipo}\nObjeto: ${it.obj}\nCores: ${it.cores}\nFundo transparente, objeto centralizado, mesma escala dos itens anteriores, sem texto.`;
+const fb = document.getElementById('fallback');
+async function copy(text, btn, label) {
+  try { await navigator.clipboard.writeText(text); fb.hidden = true; }
+  catch (e) { fb.hidden = false; fb.value = text; fb.focus(); fb.select(); btn.textContent = 'Selecionado abaixo, use Ctrl+C'; return; }
+  btn.classList.add('ok'); btn.textContent = 'Copiado';
+  setTimeout(() => { btn.classList.remove('ok'); btn.textContent = label; }, 1600);
+}
+document.getElementById('style-text').textContent = DATA.style;
+const sb = document.getElementById('copy-style');
+sb.addEventListener('click', () => copy(DATA.style, sb, 'Copiar guia de estilo'));
+const total = DATA.groups.reduce((a, g) => a + g.items.length, 0);
+const countEl = document.getElementById('count');
+const updateCount = () => { countEl.textContent = `${done.size} de ${total} itens feitos`; };
+const root = document.getElementById('groups');
+for (const g of DATA.groups) {
+  const sec = document.createElement('section'); sec.className = 'group';
+  const h = document.createElement('h2'); h.textContent = `${g.name} (${g.items.length})`; sec.append(h);
+  for (const it of g.items) {
+    const row = document.createElement('div'); row.className = 'item' + (done.has(it.id) ? ' done' : '');
+    row.innerHTML = `<div class="num"></div><div class="info"><span class="name"></span><span class="file"></span><span class="desc"></span></div><div class="actions"><button class="copy" type="button">Copiar prompt</button><button class="mark" type="button"></button></div>`;
+    row.querySelector('.num').textContent = String(it.n).padStart(2, '0');
+    row.querySelector('.name').textContent = it.name;
+    row.querySelector('.file').textContent = `item-${it.id}.png`;
+    row.querySelector('.desc').textContent = it.obj;
+    const cb = row.querySelector('.copy');
+    cb.id = 'copy-' + it.id;
+    cb.setAttribute('aria-label', 'Copiar prompt de ' + it.name);
+    cb.addEventListener('click', () => copy(prompt(it), cb, 'Copiar prompt'));
+    const mk = row.querySelector('.mark');
+    const setMark = () => { mk.textContent = done.has(it.id) ? 'Feito ✓' : 'Marcar feito'; row.classList.toggle('done', done.has(it.id)); };
+    mk.addEventListener('click', () => { done.has(it.id) ? done.delete(it.id) : done.add(it.id); save(); setMark(); updateCount(); });
+    setMark();
+    sec.append(row);
+  }
+  root.append(sec);
+}
+updateCount();
+</script>

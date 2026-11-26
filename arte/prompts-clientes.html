@@ -1,0 +1,133 @@
+<title>Prompts dos clientes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: coluna única; guia de estilo no topo, depois um grupo por tipo com uma linha por item e o botão de copiar à direita. */
+:root {
+  --bg: #efe2c4; --sheet: #f8f0dc; --ink: #2b1e16; --muted: #6b5a4b; --line: #d4c19c;
+  --red: #a8322a; --red-ink: #fff6ea; --done: #3f7f6a; --done-bg: #dfeee6;
+  --font-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1b140f; --sheet: #261c15; --ink: #efe2c4; --muted: #bba78c; --line: #44352a;
+  --red: #d9584a; --red-ink: #1b140f; --done: #6fc6a6; --done-bg: #1d3329; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px; }
+h1, h2 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.card { background: var(--sheet); border: 2px solid var(--ink); padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.card pre { margin: 0; white-space: pre-wrap; font-family: var(--font-body); font-size: .92rem; color: var(--muted); max-height: 9.5em; overflow: auto; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.item { background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-columns: 2.4rem 1fr auto; gap: 4px 14px; align-items: start; padding: 12px 14px; }
+.item.done { background: var(--done-bg); border-color: var(--done); }
+.num { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.2; color: var(--red); font-variant-numeric: tabular-nums; }
+.item.done .num { color: var(--done); }
+.info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 1.05rem; }
+.file { font-size: .82rem; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.desc { font-size: .93rem; color: var(--muted); }
+.actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+button { font: 700 .92rem var(--font-body); cursor: pointer; border: 2px solid var(--ink); padding: 8px 14px; min-height: 44px; }
+.copy { background: var(--red); color: var(--red-ink); border-color: var(--red); }
+.copy.ok { background: var(--done); border-color: var(--done); color: var(--red-ink); }
+.mark { background: transparent; color: var(--ink); font-weight: 500; font-size: .82rem; padding: 4px 10px; min-height: 36px; border-width: 1px; }
+button:focus-visible { outline: 3px solid var(--done); outline-offset: 2px; }
+.fallback { width: 100%; min-height: 8em; font: .85rem var(--font-body); }
+.sw { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.sw span { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; color: var(--muted); }
+.sw i { width: 14px; height: 14px; border: 1px solid var(--ink); display: inline-block; }
+.count { font-size: .9rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .item { grid-template-columns: 2rem 1fr; }
+  .actions { grid-column: 1 / -1; flex-direction: row; }
+  .actions .copy { flex: 1; }
+}
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
+</style>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Prompts dos clientes</h1>
+    <p class="lead">Cada botão copia o prompt completo, já com nome, descrição e paleta do cliente. É só colar no ChatGPT.</p>
+    <ol class="steps">
+      <li>Abra uma conversa nova no ChatGPT e cole o guia de estilo.</li>
+      <li>Na mesma conversa, cole o prompt do fundo da loja.</li>
+      <li>Para cada cliente, cole o retrato neutro. Quando ele estiver bom, cole as expressões.</li>
+      <li>Salve as imagens com os nomes mostrados e marque o cliente como feito.</li>
+    </ol>
+  </header>
+  <section class="card">
+    <h2 style="border:0;padding:0">Passo 1: guia de estilo</h2>
+    <pre id="style-text"></pre>
+    <div><button class="copy" id="copy-style" type="button">Copiar guia de estilo</button></div>
+  </section>
+  <section class="card">
+    <h2 style="border:0;padding:0">Passo 2: fundo da loja</h2>
+    <p class="file">fundo-loja.png</p>
+    <pre id="fundo-text"></pre>
+    <div><button class="copy" id="copy-fundo" type="button">Copiar prompt do fundo</button></div>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div id="groups" style="display:flex;flex-direction:column;gap:28px"></div>
+  <textarea id="fallback" class="fallback" hidden readonly aria-label="Prompt para copiar manualmente"></textarea>
+</div>
+<script>
+const DATA = {"style": "Vou te pedir várias imagens para um jogo de navegador chamado \"Alquimia de Bolso\", uma loja de poções aconchegante de fantasia medieval. Todas as imagens desta conversa devem seguir EXATAMENTE este guia de estilo. Não gere nada ainda, só confirme que entendeu.\n\nGUIA DE ESTILO\n- Técnica: ilustração 2D estilo visual novel, traço de tinta marrom-escuro fino e levemente irregular, como desenho em caderno de alquimista, com pintura em aquarela suave por cima. Nada de 3D, nada de fotorrealismo, nada de anime brilhante.\n- Paleta: tons quentes de cobre (#c87533), marrom de madeira (#3a2618), pergaminho (#e2cda2) e dourado (#f2c14e). Acentos de turquesa (#3fd0c9) e violeta (#a77be6) só em detalhes mágicos (líquidos, brilhos, joias).\n- Luz: quente, de vela e de janela no fim da tarde. Sombras macias, sem preto puro.\n- Clima: acolhedor, gentil, um pouco excêntrico e bem-humorado. Nada assustador, sangrento ou sensual.\n- Personagens: proporção realista estilizada (cerca de 6 cabeças de altura), rostos expressivos e simpáticos, roupas medievais de fantasia com muitos detalhes artesanais.\n- Proibido: texto, letras, logotipos, marcas d'água, molduras e bordas na imagem.\n\nREGRA DE CORES DOS PERSONAGENS\n- Cada cliente tem uma paleta própria de 3 cores: a cor dominante cobre cerca de 60% da roupa, a secundária cerca de 30% e o acento só 10% (um detalhe, uma joia, um bordado).\n- Todos os personagens compartilham os mesmos neutros: pergaminho (#e2cda2) para tecidos claros, tinta marrom-escura (#2b1e16) para contornos e sombras, e couro (#4a2c1a) para cintos e sapatos.\n- As cores imitam pigmentos de manuscrito antigo: saturação média, levemente terrosas, nunca neon.\n- A cor dominante do personagem nunca pode ser cobre ou marrom de madeira, porque essas são as cores do fundo da loja e o personagem sumiria.\n- Turquesa e violeta brilhantes são reservados para magia; nos personagens aparecem só como acento.", "fundo": "Gere o FUNDO do jogo, no guia de estilo combinado.\nFormato: horizontal, 1536x1024.\nCena: interior de uma pequena loja de poções vista de frente, do ponto de vista de quem está atrás do balcão. Balcão de madeira gasta na parte de baixo da imagem, vazio no centro (é onde o cliente vai aparecer, então deixe o centro livre e um pouco desfocado). Prateleiras com frascos coloridos, ervas secas penduradas, um caldeirão de cobre no canto direito com vapor turquesa, uma janela redonda à esquerda com luz dourada de fim de tarde, velas acesas. Sem pessoas.", "modelo": "Gere o retrato do cliente [NOME], no guia de estilo combinado.\nFormato: vertical, 1024x1536, FUNDO TRANSPARENTE (PNG).\nEnquadramento: da cintura para cima, de frente, olhando para o espectador, corpo centralizado, cabeça no terço superior. Mesmo enquadramento e mesmo tamanho de cabeça que os outros clientes.\nExpressão: neutra e simpática.\nPersonagem: [DESCRIÇÃO]\nPaleta: [PALETA]", "expr": "Agora gere o MESMO personagem, com a mesma roupa, o mesmo enquadramento, as mesmas cores e o fundo transparente, mudando só a expressão e a pose das mãos. Gere duas imagens separadas:\n1. Feliz: sorriso aberto, olhos brilhando, segurando um frasco de poção com as duas mãos.\n2. Decepcionado: sobrancelhas caídas, boca torta, ombros um pouco encolhidos, sem raiva.", "chars": [{"n": 1, "name": "Bruxa Ofélia", "id": "bruxa-ofelia", "desc": "Bruxa de uns 60 anos, alta e magra, chapéu pontudo violeta gasto com remendos, cabelo grisalho preso em trança, óculos redondos na ponta do nariz, xale de tricô cheio de bolsos com ervas aparecendo.", "pal": "dominante violeta-ameixa #5e3c94 no chapéu e no vestido; secundária cinza-lã #8c8478 no xale; acento verde-erva #6b8f3a nas ervas dos bolsos.", "sw": [["violeta-ameixa", "#5e3c94"], ["cinza-lã", "#8c8478"], ["verde-erva", "#6b8f3a"]]}, {"n": 2, "name": "Cavaleiro Tadeu", "id": "cavaleiro-tadeu", "desc": "Cavaleiro jovem e um pouco desajeitado, armadura de aço amassada e grande demais para ele, túnica por cima da armadura, elmo debaixo do braço, cabelo castanho bagunçado, curativo na bochecha, olhar sincero.", "pal": "dominante azul-ultramar #2c4f9e na túnica e na capa; secundária aço claro #b9c0c8 na armadura; acento vermelhão #a8322a num laço ou brasão pequeno no peito.", "sw": [["azul-ultramar", "#2c4f9e"], ["aço claro", "#b9c0c8"], ["vermelhão", "#a8322a"]]}, {"n": 3, "name": "Fada Lumi", "id": "fada-lumi", "desc": "Fada do tamanho de uma criança, pele levemente azulada, asas translúcidas com brilho suave, cabelo branco curto e espetado, vestido feito de pétalas, segurando uma gota de orvalho.", "pal": "dominante turquesa-água #3fb8b0 no vestido de pétalas e nas asas; secundária lavanda clara #c9b6e8 nas bordas das pétalas e no brilho; acento ouro-pólen #f2c14e na gota de orvalho e nas sardas brilhantes.", "sw": [["turquesa-água", "#3fb8b0"], ["lavanda clara", "#c9b6e8"], ["ouro-pólen", "#f2c14e"]]}, {"n": 4, "name": "Anão Baltazar", "id": "anao-baltazar", "desc": "Anão minerador robusto, barba ruiva enorme com tranças e argolas de metal, capacete com uma vela presa, avental de couro sujo de pó de cristal, mãos grandes e calejadas.", "pal": "dominante cinza-ardósia #5d6b78 na camisa, no capacete e nas calças; secundária ruivo-ferrugem #a8432a na barba; acento azul-cristal #7fb8d9 no pó de cristal e nas argolas da barba.", "sw": [["cinza-ardósia", "#5d6b78"], ["ruivo-ferrugem", "#a8432a"], ["azul-cristal", "#7fb8d9"]]}, {"n": 5, "name": "Bardo Cirilo", "id": "bardo-cirilo", "desc": "Bardo magro e dramático, chapéu com pena longa, colete bordado, bigode fino enrolado, alaúde pendurado nas costas, pose teatral com uma mão no peito.", "pal": "dominante verde-verdete #3f7f6a no colete e no chapéu; secundária ouro velho #b88a2e nos bordados e no alaúde; acento vinho #7a2238 na pena do chapéu.", "sw": [["verde-verdete", "#3f7f6a"], ["ouro velho", "#b88a2e"], ["vinho", "#7a2238"]]}, {"n": 6, "name": "Vovó Quitéria", "id": "vovo-quiteria", "desc": "Avó baixinha e redonda, lenço florido na cabeça, avental bordado, bochechas rosadas, cesta de vime com pães e cogumelos azuis no braço, sorriso de quem vai oferecer bolo.", "pal": "dominante rosa-ruge #d9776f no vestido e nas flores do lenço; secundária creme #efe2c4 no avental; acento azul-cogumelo #4f7fc4 nos cogumelos da cesta.", "sw": [["rosa-ruge", "#d9776f"], ["creme", "#efe2c4"], ["azul-cogumelo", "#4f7fc4"]]}, {"n": 7, "name": "Mercadora Zuleica", "id": "mercadora-zuleica", "desc": "Mercadora viajante de pele morena, turbante com uma joia, colete cheio de bolsinhas e moedas penduradas, mochila enorme carregada de rolos de tecido, olhar esperto.", "pal": "dominante açafrão #d99a2b no turbante e nos rolos de tecido; secundária ameixa escura #4a2a4f no colete; acento violeta-joia #a77be6 na joia do turbante.", "sw": [["açafrão", "#d99a2b"], ["ameixa escura", "#4a2a4f"], ["violeta-joia", "#a77be6"]]}, {"n": 8, "name": "Elfo Anselmo", "id": "elfo-anselmo", "desc": "Elfo erudito de aparência jovem mas olhar antigo, orelhas longas, cabelo prateado liso até os ombros, manto com bordados de estrelas, livro grosso preso ao cinto, monóculo.", "pal": "dominante azul-noite #1f2f5c no manto; secundária prata #c8ccd4 no cabelo e nas estrelas bordadas; acento verde-musgo #5b7a3a na capa do livro.", "sw": [["azul-noite", "#1f2f5c"], ["prata", "#c8ccd4"], ["verde-musgo", "#5b7a3a"]]}, {"n": 9, "name": "Pirata Dorotéia", "id": "pirata-dorotea", "desc": "Pirata de meia-idade, chapéu tricorne com uma pena, tapa-olho bordado, casaco desbotado, papagaio pequeno no ombro, sorriso de canto com um dente de ouro.", "pal": "dominante vermelhão #a8322a no casaco; secundária azul-marinho desbotado #3b4a63 no chapéu e nas calças; acento turquesa #3fd0c9 na pena do chapéu e no papagaio.", "sw": [["vermelhão", "#a8322a"], ["azul-marinho desbotado", "#3b4a63"], ["turquesa", "#3fd0c9"]]}, {"n": 10, "name": "Gato Falante Bartolomeu", "id": "gato-falante", "desc": "Gato preto gordo e elegante, sentado em pé sobre o balcão, colete de veludo, gravata-borboleta, olhos amarelos semicerrados de ar superior. Enquadramento de corpo inteiro neste caso, ocupando a mesma altura dos outros retratos.", "pal": "dominante preto-tinta #1d1a1f no pelo; secundária violeta-veludo #6b3fa0 no colete; acento ouro #e0b13e na gravata-borboleta e nos olhos.", "sw": [["preto-tinta", "#1d1a1f"], ["violeta-veludo", "#6b3fa0"], ["ouro", "#e0b13e"]]}]};
+const KEY = 'clientes-feitos';
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify([...done])); } catch (e) {} };
+const retrato = c => DATA.modelo.replace('[NOME]', c.name).replace('[DESCRIÇÃO]', c.desc).replace('[PALETA]', c.pal);
+const expr = c => `Cliente: ${c.name}.\n` + DATA.expr;
+const fb = document.getElementById('fallback');
+async function copy(text, btn, label) {
+  try { await navigator.clipboard.writeText(text); fb.hidden = true; }
+  catch (e) { fb.hidden = false; fb.value = text; fb.focus(); fb.select(); btn.textContent = 'Selecionado abaixo, use Ctrl+C'; return; }
+  btn.classList.add('ok'); btn.textContent = 'Copiado';
+  setTimeout(() => { btn.classList.remove('ok'); btn.textContent = label; }, 1600);
+}
+document.getElementById('style-text').textContent = DATA.style;
+document.getElementById('fundo-text').textContent = DATA.fundo;
+const sb = document.getElementById('copy-style');
+sb.addEventListener('click', () => copy(DATA.style, sb, 'Copiar guia de estilo'));
+const fbtn = document.getElementById('copy-fundo');
+fbtn.addEventListener('click', () => copy(DATA.fundo, fbtn, 'Copiar prompt do fundo'));
+const total = DATA.chars.length;
+const countEl = document.getElementById('count');
+const updateCount = () => { countEl.textContent = `${done.size} de ${total} clientes feitos`; };
+const root = document.getElementById('groups');
+const sec = document.createElement('section'); sec.className = 'group';
+const h = document.createElement('h2'); h.textContent = `Passo 3: clientes (${total})`; sec.append(h);
+for (const c of DATA.chars) {
+  const row = document.createElement('div'); row.className = 'item';
+  row.innerHTML = `<div class="num"></div><div class="info"><span class="name"></span><span class="file"></span><span class="desc"></span><div class="sw"></div></div><div class="actions"><button class="copy r" type="button">Copiar retrato</button><button class="copy e" type="button">Copiar expressões</button><button class="mark" type="button"></button></div>`;
+  row.querySelector('.num').textContent = String(c.n).padStart(2, '0');
+  row.querySelector('.name').textContent = c.name;
+  row.querySelector('.file').textContent = `${c.id}-neutro.png · ${c.id}-feliz.png · ${c.id}-triste.png`;
+  row.querySelector('.desc').textContent = c.desc;
+  const sw = row.querySelector('.sw');
+  ['dominante', 'secundária', 'acento'].forEach((lab, i) => {
+    const sp = document.createElement('span'); const ic = document.createElement('i');
+    ic.style.background = c.sw[i][1]; sp.append(ic, `${c.sw[i][0]} (${lab})`); sw.append(sp);
+  });
+  const rb = row.querySelector('.r'); rb.id = 'retrato-' + c.id;
+  rb.addEventListener('click', () => copy(retrato(c), rb, 'Copiar retrato'));
+  const eb = row.querySelector('.e'); eb.id = 'expr-' + c.id;
+  eb.addEventListener('click', () => copy(expr(c), eb, 'Copiar expressões'));
+  const mk = row.querySelector('.mark');
+  const setMark = () => { mk.textContent = done.has(c.id) ? 'Feito ✓' : 'Marcar feito'; row.classList.toggle('done', done.has(c.id)); };
+  mk.addEventListener('click', () => { done.has(c.id) ? done.delete(c.id) : done.add(c.id); save(); setMark(); updateCount(); });
+  setMark(); sec.append(row);
+}
+root.append(sec);
+updateCount();
+</script>
