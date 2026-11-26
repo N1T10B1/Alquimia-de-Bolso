@@ -7,17 +7,14 @@
   src: url("fonts/grenze-gotisch-latin-wght-normal.woff2") format("woff2");
   font-weight: 100 900; font-style: normal; font-display: block;
 }
-html, body { background: #12131b; margin: 0; }
+html, body { background: #2a2440; margin: 0; }
 .carga {
   position: fixed; inset: 0; z-index: 9999;
   display: grid; place-items: center;
-  background: #12131b url("assets/carregamento/fundo-pc.webp") center / cover no-repeat;
+  background: #2a2440 url("assets/carregamento/fundo-pc.webp") center / cover no-repeat;
   color: #efe2c4;
   font-family: "Grenze Gotisch Carga", Georgia, serif;
   transition: opacity 0.5s ease, visibility 0s linear 0.5s;
-}
-@media (orientation: portrait), (max-aspect-ratio: 4/5) {
-  .carga { background-image: url("assets/carregamento/fundo-celular.webp"); }
 }
 .carga.is-saindo { opacity: 0; visibility: hidden; pointer-events: none; }
 .carga-miolo {
@@ -27,24 +24,26 @@ html, body { background: #12131b; margin: 0; }
 .carga-titulo {
   margin: 0; font-weight: 600; line-height: 0.92;
   font-size: clamp(40px, 6.4vmin, 84px);
-  text-shadow: 0 0 0.5em rgba(247, 193, 99, 0.25), 0 3px 0 rgba(0, 0, 0, 0.6);
+  text-shadow: 0 0 0.6em rgba(20, 14, 32, 0.9), 0 3px 0 rgba(0, 0, 0, 0.6);
 }
-/* O frasco enche de baixo para cima: o cheio fica por cima do vazio, recortado pela variável --p. */
+/* O frasco enche de baixo para cima: o cheio fica por cima do vazio, recortado por --corte
+   (o script mapeia o progresso para a faixa do líquido, 57% a 93% da altura da imagem). */
 .carga-frasco {
-  --p: 0;
+  --corte: 100%;
   position: relative; width: clamp(96px, 17vmin, 168px); aspect-ratio: 1;
   background: url("assets/carregamento/frasco-vazio.webp") center / contain no-repeat;
 }
 .carga-frasco::after {
   content: ""; position: absolute; inset: 0;
   background: url("assets/carregamento/frasco-cheio.webp") center / contain no-repeat;
-  clip-path: inset(calc((1 - var(--p)) * 100%) 0 0 0);
+  clip-path: inset(var(--corte) 0 0 0);
   transition: clip-path 0.35s ease-out;
 }
 .carga-frase {
   margin: 0; min-height: 1.3em;
   font-family: Georgia, "Times New Roman", serif; font-style: italic;
-  font-size: clamp(15px, 2.2vmin, 20px); color: #d9c9a3; opacity: 0.9;
+  font-size: clamp(15px, 2.2vmin, 20px); color: #efe2c4; opacity: 0.95;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
   transition: opacity 0.3s ease;
 }
 .carga-frase.is-trocando { opacity: 0; }
@@ -52,3 +51,9 @@ html, body { background: #12131b; margin: 0; }
   .carga, .carga-frasco::after, .carga-frase { transition: none; }
 }
 html.reduce-motion .carga, html.reduce-motion .carga-frasco::after, html.reduce-motion .carga-frase { transition: none; }
+@media (orientation: portrait), (max-aspect-ratio: 4/5) {
+  /* No celular a porta fica embaixo: o título e o frasco sobem para a parede lisa do meio. */
+  .carga { background-image: url("assets/carregamento/fundo-celular.webp"); background-position: center bottom; place-items: start center; }
+  .carga-miolo { margin-top: 24vh; gap: clamp(6px, 1.4vh, 14px); }
+  .carga-frasco { width: clamp(72px, 12vh, 120px); }
+}

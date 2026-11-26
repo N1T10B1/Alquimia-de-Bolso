@@ -24,7 +24,8 @@
     }
     function pinta() {
       if (!frasco) return;
-      frasco.style.setProperty('--p', atual.toFixed(3));
+      // Só o líquido sobe (57% a 93% da altura do frasco); no fim o frasco inteiro ganha cor.
+      frasco.style.setProperty('--corte', (atual >= 1 ? 0 : 57 + (1 - atual) * 36).toFixed(1) + '%');
       frasco.setAttribute('aria-valuenow', String(Math.round(atual * 100)));
     }
     // Entre uma etapa e outra o frasco continua subindo devagar, sem passar da próxima etapa.
