@@ -2091,7 +2091,16 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   transform: translateX(50%); border-radius: 0; pointer-events: auto;
   background: var(--caldeirao-balcao) center bottom / contain no-repeat;
 }
-.balcao .pot-hotspot .pot-raios { top: 42%; width: 190%; height: 120%; }
+/* v1.29: os raios ficam ATRÁS do caldeirão (pedido do Rafael). A arte do caldeirão passa para um
+   ::before acima dos raios, e os raios mantêm a proporção do quadro (300 x 310) em vez de esticar
+   na largura, que era o que deixava a coroa achatada. */
+.balcao .pot-hotspot { isolation: isolate; background: none; }
+.balcao .pot-hotspot::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: var(--caldeirao-balcao) center bottom / contain no-repeat;
+}
+.balcao .pot-hotspot .pot-raios { z-index: 0; top: 44%; width: 172%; height: auto; aspect-ratio: 300 / 310; }
+.balcao .pot-hotspot .pot-hotspot-tag, .balcao .pot-hotspot .pot-manicula { z-index: 2; }
 .balcao .pot-hotspot .pot-hotspot-tag { bottom: -4%; }
 .balcao-vela { position: absolute; left: calc(var(--bh) * 0.75); bottom: calc(var(--bh) * 0.84); pointer-events: auto; }
 .balcao-vela .patience.patience-mesa { --vw: calc(var(--bh) * 0.17); display: block; position: relative; margin: 0; vertical-align: 0; }

@@ -154,3 +154,7 @@ Feito: 12 receitas novas (24 no total, 8 por categoria), com as artes do Rafael 
 - Fim de jogo: tela `#gameover` (arte `assets/gameover/`: fundo PC/celular e carta do senhorio). Botões: Recomeçar a botica (`restartAfterEviction`: dia 1, sem tutorial, mantém receitas, grimório, dicas e anotações) e Menu inicial. O save é apagado ao perder.
 - Livro-caixa: linha "Aluguel do dia" e "Ficou na conta do senhorio"; aviso de dívida na noite; lembrete do aluguel na banca da mercadora.
 - Testes: 7 novos em tests/economy.test.mjs (116 no total).
+
+## v1.29 (26/11/2026) — raios atrás do caldeirão
+
+- No hover/foco do caldeirão do balcão, os raios de tinta agora ficam atrás da arte do caldeirão (a arte foi para `.pot-hotspot::before`, acima dos raios) e mantêm a proporção do quadro (300 x 310). Antes eles ficavam por cima e esticados na largura, o que deformava a coroa.
