@@ -9,9 +9,96 @@
   <!-- v1.28: edição do jogo. 'demo' = 12 receitas e fim no dia 5; apague esta linha para a edição completa. -->
   <script>globalThis.ALQUIMIA_EDICAO = 'demo';</script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%97%EF%B8%8F%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css">
+  <!-- v1.29: tela de carregamento. CSS pequeno no <head>; o styles.css grande vem depois dela, no <body>. -->
+  <link rel="stylesheet" href="carregamento.css">
+  <script>
+  // Tela de carregamento: o frasco enche por etapas (estilos lidos, código lido, fontes e fundo do menu
+  // prontos) e some quando tudo está pronto, com um tempo mínimo para não piscar.
+  (function () {
+    var FRASES = ['Acendendo a vela…', 'Moendo as ervas…', 'Tirando o pó dos frascos…', 'Abrindo o caderno…'];
+    var MINIMO = 1400, LIMITE = 9000;
+    var inicio = Date.now(), alvo = 0.08, atual = 0, fim = false, el, frasco, frase, i = 0;
+    function semAnimacao() {
+      try { if (JSON.parse(localStorage.getItem('alquimia-de-bolso-opcoes-v1') || '{}').reduceMotion) return true; } catch (e) {}
+      return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+    function pinta() {
+      if (!frasco) return;
+      frasco.style.setProperty('--p', atual.toFixed(3));
+      frasco.setAttribute('aria-valuenow', String(Math.round(atual * 100)));
+    }
+    // Entre uma etapa e outra o frasco continua subindo devagar, sem passar da próxima etapa.
+    function anda() {
+      if (fim) return;
+      atual += Math.max(0, alvo - atual) * 0.12 + (atual < alvo + 0.1 ? 0.0015 : 0);
+      if (atual > 0.97) atual = 0.97;
+      pinta();
+      setTimeout(anda, 120);
+    }
+    function trocaFrase() {
+      if (fim || !frase) return;
+      if (semAnimacao()) { frase.textContent = FRASES[i = (i + 1) % FRASES.length]; }
+      else {
+        frase.classList.add('is-trocando');
+        setTimeout(function () { frase.textContent = FRASES[i = (i + 1) % FRASES.length]; frase.classList.remove('is-trocando'); }, 300);
+      }
+      setTimeout(trocaFrase, 1600);
+    }
+    function bloqueiaTeclas(ev) { if (!fim) { ev.preventDefault(); ev.stopImmediatePropagation(); } }
+    window.__carga = {
+      monta: function () {
+        el = document.getElementById('carga'); if (!el) return;
+        frasco = el.querySelector('.carga-frasco'); frase = el.querySelector('.carga-frase');
+        frase.textContent = FRASES[0];
+        anda(); setTimeout(trocaFrase, 1600);
+      },
+      etapa: function (p) { if (p > alvo) alvo = p; },
+      pronto: function () {
+        if (fim) return; fim = true;
+        atual = 1; pinta();
+        var resto = Math.max(semAnimacao() ? 0 : 250, MINIMO - (Date.now() - inicio));
+        setTimeout(function () {
+          if (!el) return;
+          el.classList.add('is-saindo');
+          el.setAttribute('aria-busy', 'false');
+          window.removeEventListener('keydown', bloqueiaTeclas, true);
+          setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, semAnimacao() ? 0 : 600);
+        }, resto);
+      },
+    };
+    window.addEventListener('keydown', bloqueiaTeclas, true);
+    // Espera o código do jogo, as fontes e o fundo do menu já decodificado (sem tranco na primeira tela).
+    function quandoTudoPronto() {
+      window.__carga.etapa(0.85);
+      var esperas = [];
+      if (document.fonts && document.fonts.ready) esperas.push(document.fonts.ready);
+      var menu = document.getElementById('menu-screen');
+      var m = menu && /url\(["']?(.*?)["']?\)/.exec(getComputedStyle(menu).backgroundImage);
+      if (m && window.Promise) {
+        var img = new Image(); img.src = m[1];
+        esperas.push(img.decode ? img.decode().catch(function () {}) : new Promise(function (ok) { img.onload = img.onerror = ok; }));
+      }
+      var tudo = window.Promise ? Promise.all(esperas) : null;
+      var corte = new Promise(function (ok) { setTimeout(ok, LIMITE); });
+      (tudo ? Promise.race([tudo, corte]) : corte).then(window.__carga.pronto, window.__carga.pronto);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', quandoTudoPronto);
+    else quandoTudoPronto();
+  })();
+  </script>
 </head>
 <body>
+  <!-- ===== Tela de carregamento (v1.29): aparece antes do menu e some sozinha ===== -->
+  <div id="carga" class="carga" role="progressbar" aria-label="Carregando o caderno da boticária" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-busy="true">
+    <div class="carga-miolo">
+      <p class="carga-titulo">Alquimia<br>de Bolso</p>
+      <div class="carga-frasco" aria-hidden="true"></div>
+      <p class="carga-frase" aria-hidden="true"></p>
+    </div>
+  </div>
+  <script>window.__carga && __carga.monta(); window.__carga && __carga.etapa(0.2);</script>
+  <link rel="stylesheet" href="styles.css">
+
   <!-- ===== Menu principal (tela inicial) ===== -->
   <div id="menu-screen" class="menu-screen">
     <div class="menu-panel">

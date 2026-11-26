@@ -154,3 +154,9 @@ Feito: 12 receitas novas (24 no total, 8 por categoria), com as artes do Rafael 
 - Fim de jogo: tela `#gameover` (arte `assets/gameover/`: fundo PC/celular e carta do senhorio). Botões: Recomeçar a botica (`restartAfterEviction`: dia 1, sem tutorial, mantém receitas, grimório, dicas e anotações) e Menu inicial. O save é apagado ao perder.
 - Livro-caixa: linha "Aluguel do dia" e "Ficou na conta do senhorio"; aviso de dívida na noite; lembrete do aluguel na banca da mercadora.
 - Testes: 7 novos em tests/economy.test.mjs (116 no total).
+
+## Tela de carregamento (26/11/2026)
+
+- Tela antes do menu: título, frasco que enche e frases ("Acendendo a vela…"). CSS em `carregamento.css` (no `<head>`) e imagens em `assets/carregamento/` (provisórias: fundo do menu desfocado e frasco da Cura). Prompt da arte definitiva: `arte/prompt-tela-carregamento.md`.
+- `tools/build-standalone.mjs` agora põe a tela no começo do `jogar.html` e corta o `styles.css` e os módulos em pedaços, com `__carga.etapa(x)` entre eles: o frasco enche conforme o arquivo chega pela rede. Some depois das fontes e do fundo do menu decodificados (mínimo 1,4 s, limite 9 s).
+- Verificado no Chromium a ~1,3 MB/s (aparece em menos de 1 s, menu em ~9,6 s) e por file:// (~2,2 s), PC 1280×800 e celular 390×844, sem erros. 120 testes passando.
