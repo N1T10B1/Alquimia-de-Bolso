@@ -68,3 +68,78 @@ jobs:
             - alquimia-de-bolso-web.zip: versão de navegador para o itch.io
           files: saida/*
           make_latest: true
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri
+
+      - name: Instalar o Tauri
+        working-directory: desktop
+        run: npm ci
+
+      - name: Gerar o APK
+        working-directory: desktop
+        env:
+          NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
+        run: |
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          node preparar.mjs
+          npx tauri android init --ci
+          npx tauri icon icone.png
+          npx tauri android build --apk --target aarch64 --target armv7 --ci
+
+      # Assina o APK para poder instalar no celular. Se existir o segredo ANDROID_KEYSTORE
+      # (keystore em base64, com ANDROID_KEYSTORE_SENHA), usa ele e as atualizações instalam
+      # por cima. Sem ele, cria uma chave nova a cada build (precisa desinstalar antes de atualizar).
+      - name: Assinar o APK
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_SENHA }}
+        run: |
+          set -e
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          APK=$(find desktop/src-tauri/gen/android/app/build/outputs/apk -name '*release*.apk' | head -1)
+          echo "APK gerado: $APK"
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > chave.jks
+          else
+            KS_PASS=alquimia-temporaria
+            keytool -genkeypair -v -keystore chave.jks -alias alquimia -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=Alquimia de Bolso"
+          fi
+          "$BT/zipalign" -f -p 4 "$APK" alinhado.apk
+          mkdir -p saida
+          "$BT/apksigner" sign --ks chave.jks --ks-pass "pass:$KS_PASS" --out saida/alquimia-de-bolso-android.apk alinhado.apk
+          "$BT/apksigner" verify saida/alquimia-de-bolso-android.apk
+          rm -f chave.jks
+          ls -la saida
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alquimia-de-bolso-android
+          path: saida/
+          retention-days: 30
+
+      - name: Publicar no Releases do GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: demo-v1.28
+          files: saida/alquimia-de-bolso-android.apk
