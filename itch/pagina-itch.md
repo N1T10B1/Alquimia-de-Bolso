@@ -142,6 +142,7 @@ Agora a freguesia está no balcão, e cada receita você vai ter que descobrir s
 
 - **No navegador**: clique em "Run game" aqui em cima. Funciona no computador e no celular.
 - **No Windows**: baixe o `.zip`, extraia e abra **Alquimia de Bolso.exe**. Se o Windows mostrar "O Windows protegeu o computador", clique em "Mais informações" e depois em "Executar assim mesmo": é só porque o jogo é novo e independente.
+- **No Android**: baixe o `.apk` e toque nele para instalar. O celular vai pedir para permitir apps desta fonte.
 - **Controles**: mouse ou toque. Arraste para baixo para abrir o caderno. No menu, as setas e o Enter também funcionam.
 - **Idioma**: português do Brasil.
 
