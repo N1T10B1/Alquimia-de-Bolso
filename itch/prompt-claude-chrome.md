@@ -3,7 +3,7 @@
 Como usar:
 
 1. No Chrome, entre no itch.io já logado na sua conta e abra a extensão do Claude.
-2. Anexe na conversa da extensão 8 imagens: as 3 da pasta `itch/provisorio/` (`capa-630x500.png`, `banner-960x300.png`, `fundo-1920x1080.jpg`) e as 5 figurinhas da pasta `itch/figurinhas/` (`fig-divisoria.png`, `fig-passos.png`, `fig-ingredientes.png`, `fig-pocoes.png`, `fig-clientes.png`).
+2. Anexe na conversa da extensão 15 imagens: as 3 da pasta `itch/provisorio/` (`capa-630x500.png`, `banner-960x300.png`, `fundo-1920x1080.jpg`), as 5 figurinhas da pasta `itch/figurinhas/` (`fig-divisoria.png`, `fig-passos.png`, `fig-ingredientes.png`, `fig-pocoes.png`, `fig-clientes.png`) e os 7 arquivos da pasta `itch/capturas/` (`captura-1.jpg` a `captura-6.jpg` e `mistura.gif`). Se a extensão não aceitar tantas de uma vez, mande em duas mensagens antes do prompt.
 3. Deixe numa pasta fácil do PC (ex.: Downloads) os arquivos do jogo, baixados de https://github.com/N1T10B1/Alquimia-de-Bolso/releases/tag/demo-v1.28: `alquimia-de-bolso-web.zip`, `alquimia-de-bolso-windows.zip` e `alquimia-de-bolso-android.apk`. A extensão não consegue escolher esses arquivos sozinha: quando chegar a hora, ela vai pedir para você clicar em "Upload files" e escolher.
 4. Copie tudo o que está dentro do bloco abaixo e cole na extensão.
 
@@ -42,14 +42,15 @@ Em Embed options (aparece depois do zip do navegador):
 - Deixe DESMARCADO: Automatically start on page load
 
 PARTE 3: DESCRIÇÃO (campo Details/Description)
-O editor tem um botão para editar em HTML (ícone "<>" ou "HTML"/"Source"). Use-o e cole o HTML abaixo inteiro. Ele tem marcadores como [[fig-passos]] no lugar das figurinhas.
-Depois, volte para o modo visual e troque CADA marcador pela imagem de mesmo nome que anexei nesta conversa (fig-divisoria.png, fig-passos.png, fig-ingredientes.png, fig-pocoes.png, fig-clientes.png): clique no marcador, apague o texto dele e use o botão de inserir imagem do editor para subir a imagem certa. Alguns marcadores aparecem duas vezes (parte em português e parte em inglês): insira a imagem nos dois lugares. Ao final não pode sobrar nenhum [[...]] no texto. Centralize as imagens se o editor deixar.
+O editor tem um botão para editar em HTML (ícone "<>" ou "HTML"/"Source"). Use-o e cole o HTML abaixo inteiro. Ele tem marcadores como [[fig-passos]] e [[mistura]] no lugar das imagens.
+Depois, volte para o modo visual e troque CADA marcador pela imagem de mesmo nome que anexei nesta conversa ([[mistura]] = mistura.gif; [[fig-divisoria]] = fig-divisoria.png; [[fig-passos]] = fig-passos.png; [[fig-ingredientes]] = fig-ingredientes.png; [[fig-pocoes]] = fig-pocoes.png; [[fig-clientes]] = fig-clientes.png): clique no marcador, apague o texto dele e use o botão de inserir imagem do editor para subir a imagem certa. Os marcadores aparecem duas vezes (parte em português e parte em inglês): insira a imagem nos dois lugares. Ao final não pode sobrar nenhum [[...]] no texto. Centralize as imagens se o editor deixar.
 Se o editor não tiver modo HTML, digite o texto e use os botões do editor para formatar os títulos (h2), negritos, itálicos e listas.
 
-<p><em>English version below.</em></p>
+<p><em>Jogue no navegador, no Windows ou no Android. English version below.</em></p>
 <p><strong>Uma botica pequena, um caderno em branco e clientes com pedidos estranhos.</strong></p>
 <p>A Mestra Benvinda foi ver o mar e deixou para você a <strong>Alquimia de Bolso</strong>, a botica mais estreita de Ladeira Torta, espremida entre a padaria e o muro. Com ela vieram um caldeirão de cobre, alguns frascos e um caderno de receitas... com todas as páginas em branco. Ela nunca escreveu nada: sabia tudo de cabeça.</p>
 <p>Agora a freguesia está no balcão, e cada receita você vai ter que descobrir sozinha.</p>
+[[mistura]]
 [[fig-divisoria]]
 <h2>Como se joga</h2>
 [[fig-passos]]
@@ -89,7 +90,7 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 <li><strong>No Windows</strong>: baixe o .zip, extraia e abra <strong>Alquimia de Bolso.exe</strong>. Se aparecer "O Windows protegeu o computador", clique em "Mais informações" e depois em "Executar assim mesmo": é só porque o jogo é novo e independente.</li>
 <li><strong>No Android</strong>: baixe o .apk e toque nele para instalar. O celular vai pedir para permitir apps desta fonte.</li>
 <li><strong>Controles</strong>: mouse ou toque. Arraste para baixo para abrir o caderno.</li>
-<li><strong>Idioma</strong>: português do Brasil. A versão em inglês está a caminho.</li>
+<li><strong>Idiomas</strong>: português do Brasil e inglês (o botão fica no menu).</li>
 </ul>
 <h2>Ainda em desenvolvimento</h2>
 <p>Esta é a demo de um jogo feito por uma pessoa só. Se você jogou, conta nos comentários: qual receita mais te deu trabalho? Algum cliente ficou sem resposta? Cada comentário vira uma anotação no caderno da próxima versão.</p>
@@ -98,8 +99,9 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 [[fig-divisoria]]
 <h2>English</h2>
 <p><strong>A tiny apothecary, a blank recipe book and customers with very strange requests.</strong></p>
-<p>Mistress Benvinda has gone to see the sea and left you <strong>Alquimia de Bolso</strong> ("Pocket Alchemy"), the narrowest shop in the village of Ladeira Torta, squeezed between the bakery and the wall. With it came a copper cauldron, a few flasks and a recipe book... with every single page blank. She never wrote anything down: she knew it all by heart.</p>
+<p>Mistress Benvinda has gone to see the sea and left you <strong>Alquimia de Bolso</strong> ("Pocket Alchemy"), the narrowest shop in the village of Crooked Hill (Ladeira Torta), squeezed between the bakery and the wall. With it came a copper cauldron, a few flasks and a recipe book... with every single page blank. She never wrote anything down: she knew it all by heart.</p>
 <p>Now the customers are lining up at the counter, and every recipe is yours to discover.</p>
+[[mistura]]
 <h2>How to play</h2>
 [[fig-passos]]
 <p><strong>Listen to the customer.</strong> Nobody asks for "a Healing Elixir". They say things like "I cut my hand peeling potatoes for a hundred guests" or "I want a pocket thunderclap to wake up my brother, who sleeps way too much". The clues are in what they tell you.</p>
@@ -107,11 +109,11 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 <p><strong>Fill the book.</strong> Every discovery becomes a page. Sell, save coins, buy better tools and don't forget: Mr. Leopoldo's rent is due at the end of every day.</p>
 <h2>Eight ingredients, twelve recipes</h2>
 [[fig-ingredientes]]
-<p>Moon Drop, Red Ember, Living Leaf, Crystal Dust, Bottled Shadow, Sun Dew, Blue Mushroom and Wind Feather. Each one has a quality (wet, hot, alive, hard, dark, bright, earthy, light), and the herbarium your master left at the back of the book tells you what each one does. The rest is up to you.</p>
+<p>Moon Drop, Ruby Ember, Living Leaf, Crystal Dust, Bottled Shadow, Sun Dew, Blue Mushroom and Wind Feather. Each one has a quality (wet, hot, alive, hard, dark, bright, earthy, light), and the herbarium your master left at the back of the book tells you what each one does. The rest is up to you.</p>
 [[fig-pocoes]]
 <h2>Who comes to the counter</h2>
 [[fig-clientes]]
-<p>Granny Quitéria, who has all the time in the world. Sir Tadeu, always on an urgent quest. Lumi the fairy, who can't keep still. Baltazar the dwarf, stubborn but patient. Cirilo the bard, who has a show in a few minutes. Anselmo the elf, who lives for centuries. Dorotéia the pirate, because the tide waits for no one. Bartolomeu, a talking cat who knocks your flasks over to get attention. And Ofélia the witch, who waits as long as a spell takes. At night, Zuleica the merchant rolls by with her cart full of ingredients.</p>
+<p>Granny Quitéria, who has all the time in the world. Sir Tadeu the Knight, always on an urgent quest. Lumi the Fairy, who can't keep still. Baltazar the Dwarf, stubborn but patient. Cirilo the Bard, who has a show in a few minutes. Anselmo the Elf, who lives for centuries. Dorotéia the Pirate, because the tide waits for no one. Bartolomeu the Talking Cat, who knocks your flasks over to get attention. And Ofélia the Witch, who waits as long as a spell takes. At night, Zuleica the Merchant rolls by with her cart full of ingredients.</p>
 <h2>In this demo</h2>
 <ul>
 <li>5 days running the shop, from the first customer to a letter from the sea</li>
@@ -127,7 +129,7 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 <li><strong>Windows</strong>: download the .zip, extract it and open <strong>Alquimia de Bolso.exe</strong>. If Windows shows "Windows protected your PC", click "More info" and then "Run anyway": it only happens because the game is new and independent.</li>
 <li><strong>Android</strong>: download the .apk and tap it to install. Your phone will ask you to allow apps from this source.</li>
 <li><strong>Controls</strong>: mouse or touch. Swipe down to open the book.</li>
-<li><strong>Language</strong>: the game is currently in Brazilian Portuguese. <strong>An English version is on the way.</strong></li>
+<li><strong>Languages</strong>: English and Brazilian Portuguese (switch in the menu).</li>
 </ul>
 <h2>Still brewing</h2>
 <p>This is the demo of a game made by one person. If you played it, tell me in the comments: which recipe gave you the hardest time? Did any customer leave without an answer? Every comment becomes a note in the book for the next version.</p>
@@ -137,13 +139,15 @@ PARTE 4: METADADOS (mesma página de edição, mais abaixo)
 - Genre: Simulation
 - Tags (uma de cada vez): alchemy, potions, cozy, crafting, management, shopkeeper, fantasy, medieval, casual, short
 - AI generation disclosure: marque que o projeto USA IA generativa, e marque Graphics, Code e Text/Dialogue. NÃO marque Sound.
-- Se aparecerem (em "Metadata" ou "Optional"): Average session = About a half-hour; Languages = Portuguese (Brazil); Inputs = Mouse, Touchscreen, Keyboard; Accessibility = Adjustable text size (e Reduced motion, se existir).
+- Se aparecerem (em "Metadata" ou "Optional"): Average session = About a half-hour; Languages = English e Portuguese (Brazil); Inputs = Mouse, Touchscreen, Keyboard; Accessibility = Adjustable text size (e Reduced motion, se existir).
 - Community: Comments
 - Visibility & access: Draft
 Clique em Save.
 
-PARTE 5: CAPA
-Em "Cover image", suba a imagem capa-630x500.png que anexei nesta conversa. Clique em Save.
+PARTE 5: CAPA E CAPTURAS
+Em "Cover image", suba a imagem capa-630x500.png que anexei nesta conversa.
+Em "Screenshots", suba nesta ordem: captura-1.jpg, captura-2.jpg, captura-3.jpg, captura-4.jpg, captura-5.jpg, captura-6.jpg e por último mistura.gif.
+Clique em Save.
 
 PARTE 6: TEMA
 Abra a página do jogo (botão "View page") e clique em "Edit theme" no topo. Configure:
