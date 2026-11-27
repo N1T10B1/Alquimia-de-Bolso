@@ -2,6 +2,7 @@
 // Funções puras: nunca modificam o estado recebido; sem DOM.
 import { IS_DEMO, CONFIG, RECIPES, INGREDIENTS, UPGRADES, CUSTOMERS, CATEGORIES, getRecipe, getIngredient, upkeepForDay, patienceForDay, fameTier } from './data.js';
 import { orderReward, addCoins, buyIngredient, newDayPlan, sellPrice } from './engine.js';
+import { L } from './idioma.js';
 
 // ---------- utilitários internos ----------
 
@@ -205,7 +206,7 @@ export function tickPatience(state, dtMs, counterId = null) {
 // O cliente cansou de esperar e foi embora: −2 de fama (mais do que mandar embora, que custa 1).
 export function walkOutOrder(state, orderId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const next = structuredClone(state);
   ensurePlan(next);
   const order = finishOrder(next, index);
@@ -287,15 +288,15 @@ function finishOrder(next, index) {
 // Acertou: o cliente paga (com bônus se o pedido era inédito) e vai embora.
 export function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const order = state.orders[index];
   const recipe = getRecipe(order.potionId);
-  if (!recipe) return fail(state, 'INVALID_ORDER', 'Esse pedido está confuso.');
+  if (!recipe) return fail(state, 'INVALID_ORDER', L('Esse pedido está confuso.', 'That order is confusing.'));
   if (givenPotionId !== undefined && givenPotionId !== order.potionId) {
     const given = getRecipe(givenPotionId);
-    if (!given) return fail(state, 'INVALID_ID', 'Essa poção não consta no caderno.');
+    if (!given) return fail(state, 'INVALID_ID', L('Essa poção não consta no caderno.', 'That potion is not in the notebook.'));
     if (!((state.inventory?.[givenPotionId] ?? 0) >= 1)) {
-      return fail(state, 'NOT_IN_INVENTORY', `Não há ${given.name} na prateleira.`);
+      return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${given.name} na prateleira.`, `There is no ${given.name} on the shelf.`));
     }
     const next = structuredClone(state);
     const o = next.orders[index];
@@ -309,7 +310,7 @@ export function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
   }
   const have = state.inventory?.[order.potionId] ?? 0;
   if (!(have >= 1)) {
-    return fail(state, 'NOT_IN_INVENTORY', `Não há ${recipe.name} na prateleira. Prepare uma no caldeirão primeiro.`);
+    return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${recipe.name} na prateleira. Prepare uma no caldeirão primeiro.`, `There is no ${recipe.name} on the shelf. Brew one in the cauldron first.`));
   }
 
   const bonus = order.novel ? (CONFIG.NOVEL_BONUS ?? 0) : 0;
@@ -338,7 +339,7 @@ export function deliverOrder(state, orderId, rng = Math.random, givenPotionId) {
 // Sem ingredientes (ou sem paciência): o cliente vai embora sem poção. Custa 1 de fama.
 export function dismissOrder(state, orderId) {
   const index = findOrderIndex(state, orderId);
-  if (index < 0) return fail(state, 'INVALID_ORDER', 'Esse cliente já foi embora.');
+  if (index < 0) return fail(state, 'INVALID_ORDER', L('Esse cliente já foi embora.', 'That customer has already left.'));
   const next = structuredClone(state);
   ensurePlan(next);
   const order = finishOrder(next, index);
@@ -373,7 +374,7 @@ export function isDayOver(state) {
 // Fecha a loja: resumo do dia e a mercadora chega. Se a botica ficou sem como trabalhar
 // (quase sem ingredientes e sem moedas), a mercadora deixa um punhado fiado.
 export function closeDay(state) {
-  if (!isDayOver(state)) return fail(state, 'DAY_NOT_OVER', 'Ainda há clientes para atender hoje.');
+  if (!isDayOver(state)) return fail(state, 'DAY_NOT_OVER', L('Ainda há clientes para atender hoje.', 'There are still customers to serve today.'));
   const next = structuredClone(state);
   next.phase = 'closed';
   next.merchantWait = 0;
@@ -439,9 +440,9 @@ export function shelfValue(state) {
 
 // Paga a dívida inteira ao senhorio; ele vai embora e a mercadora chega.
 export function payLandlord(state) {
-  if (!(state.debt > 0)) return fail(state, 'NO_DEBT', 'Não há aluguel atrasado.');
+  if (!(state.debt > 0)) return fail(state, 'NO_DEBT', L('Não há aluguel atrasado.', 'There is no overdue rent.'));
   if ((state.coins || 0) < state.debt) {
-    return fail(state, 'NOT_ENOUGH_COINS', `Faltam ${state.debt - (state.coins || 0)} moedas para quitar o aluguel.`);
+    return fail(state, 'NOT_ENOUGH_COINS', L(`Faltam ${state.debt - (state.coins || 0)} moedas para quitar o aluguel.`, `You need ${state.debt - (state.coins || 0)} more coins to pay off the rent.`));
   }
   const next = structuredClone(state);
   const paid = next.debt;
@@ -457,7 +458,7 @@ export function payLandlord(state) {
 
 // Sem como pagar: o senhorio leva a chave e a botica fecha (fim de jogo).
 export function evict(state) {
-  if (!state.landlord) return fail(state, 'NO_LANDLORD', 'O senhorio não está cobrando agora.');
+  if (!state.landlord) return fail(state, 'NO_LANDLORD', L('O senhorio não está cobrando agora.', 'The landlord isn’t collecting right now.'));
   const next = structuredClone(state);
   next.evicted = true;
   const stats = next.stats || {};
@@ -544,10 +545,10 @@ export function tickMerchant(state, dtMs) {
 // A mercadora só vende no fim do dia (e enquanto não for embora).
 export function buyFromMerchant(state, ingredientId, qty = 1) {
   if (state.phase === 'closed' && state.merchantGone) {
-    return fail(state, 'MERCHANT_GONE', 'A mercadora já seguiu viagem. Ela volta amanhã à noite.');
+    return fail(state, 'MERCHANT_GONE', L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.'));
   }
   if (!isMerchantHere(state)) {
-    return fail(state, 'MERCHANT_AWAY', 'A mercadora só abre a banca no fim do dia.');
+    return fail(state, 'MERCHANT_AWAY', L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.'));
   }
   return buyIngredient(state, ingredientId, qty);
 }
@@ -562,11 +563,11 @@ export function merchantSludgeLeft(state) {
 
 export function sellSludgeToMerchant(state) {
   if (state.phase === 'closed' && state.merchantGone) {
-    return fail(state, 'MERCHANT_GONE', 'A mercadora já seguiu viagem. Ela volta amanhã à noite.');
+    return fail(state, 'MERCHANT_GONE', L('A mercadora já seguiu viagem. Ela volta amanhã à noite.', 'The merchant has already moved on. She’ll be back tomorrow night.'));
   }
-  if (!isMerchantHere(state)) return fail(state, 'MERCHANT_AWAY', 'A mercadora só abre a banca no fim do dia.');
-  if (!((state.inventory || {}).lodo > 0)) return fail(state, 'NOT_IN_INVENTORY', 'Não há Lodo na prateleira.');
-  if (merchantSludgeLeft(state) < 1) return fail(state, 'MERCHANT_FULL', 'A carroça já está cheia de Lodo por hoje.');
+  if (!isMerchantHere(state)) return fail(state, 'MERCHANT_AWAY', L('A mercadora só abre a banca no fim do dia.', 'The merchant only opens her stall at the end of the day.'));
+  if (!((state.inventory || {}).lodo > 0)) return fail(state, 'NOT_IN_INVENTORY', L('Não há Lodo na prateleira.', 'There is no Sludge on the shelf.'));
+  if (merchantSludgeLeft(state) < 1) return fail(state, 'MERCHANT_FULL', L('A carroça já está cheia de Lodo por hoje.', 'The cart is already full of Sludge for today.'));
   const price = CONFIG.MERCHANT_SLUDGE_PRICE ?? 3;
   const next = addCoins(state, price);
   next.inventory.lodo -= 1;
@@ -578,10 +579,10 @@ export function sellSludgeToMerchant(state) {
 
 // Abre a loja no dia seguinte, com mais clientes.
 export function startNextDay(state, rng = Math.random) {
-  if (state.phase !== 'closed') return fail(state, 'DAY_OPEN', 'A loja já está aberta.');
-  if (state.landlord) return fail(state, 'LANDLORD_HERE', 'O senhorio está no balcão esperando o aluguel.');
-  if (state.evicted) return fail(state, 'EVICTED', 'A botica fechou as portas.');
-  if (isDemoOver(state)) return fail(state, 'DEMO_OVER', 'A demo termina aqui: o caderno fecha no fim do dia ' + CONFIG.DEMO_LAST_DAY + '.');
+  if (state.phase !== 'closed') return fail(state, 'DAY_OPEN', L('A loja já está aberta.', 'The shop is already open.'));
+  if (state.landlord) return fail(state, 'LANDLORD_HERE', L('O senhorio está no balcão esperando o aluguel.', 'The landlord is at the counter waiting for the rent.'));
+  if (state.evicted) return fail(state, 'EVICTED', L('A botica fechou as portas.', 'The apothecary has closed its doors.'));
+  if (isDemoOver(state)) return fail(state, 'DEMO_OVER', L('A demo termina aqui: o caderno fecha no fim do dia ' + CONFIG.DEMO_LAST_DAY + '.', 'The demo ends here: the notebook closes at the end of day ' + CONFIG.DEMO_LAST_DAY + '.'));
   const next = structuredClone(state);
   next.day = (Number.isInteger(next.day) && next.day > 0 ? next.day : 1) + 1;
   next.phase = 'open';
@@ -601,12 +602,12 @@ export function startNextDay(state, rng = Math.random) {
 
 export function buyUpgrade(state, upgradeId) {
   const upgrade = UPGRADES.find((u) => u.id === upgradeId);
-  if (!upgrade) return fail(state, 'INVALID_ID', 'Esse utensílio não existe.');
+  if (!upgrade) return fail(state, 'INVALID_ID', L('Esse utensílio não existe.', 'That tool doesn’t exist.'));
   if (state.upgrades?.[upgradeId] === true) {
-    return fail(state, 'ALREADY_OWNED', `${upgrade.name} já está na sua botica.`);
+    return fail(state, 'ALREADY_OWNED', L(`${upgrade.name} já está na sua botica.`, `${upgrade.name} is already in your apothecary.`));
   }
   if (!(state.coins >= upgrade.cost)) {
-    return fail(state, 'INSUFFICIENT_FUNDS', `A bolsa não alcança: ${upgrade.name} custa ${upgrade.cost} moedas.`);
+    return fail(state, 'INSUFFICIENT_FUNDS', L(`A bolsa não alcança: ${upgrade.name} custa ${upgrade.cost} moedas.`, `Not enough coins: ${upgrade.name} costs ${upgrade.cost} coins.`));
   }
   const next = structuredClone(state);
   next.coins -= upgrade.cost;
@@ -623,14 +624,14 @@ function undiscoveredRecipes(state) {
 
 export function canRequestHint(state) {
   if (state.upgrades?.lupa !== true) {
-    return { ok: false, error: { code: 'LOCKED', message: 'Compre a Lupa Arcana para estudar dicas pagas.' } };
+    return { ok: false, error: { code: 'LOCKED', message: L('Compre a Lupa Arcana para estudar dicas pagas.', 'Buy the Arcane Lens to study paid hints.') } };
   }
   if (!undiscoveredRecipes(state).length) {
-    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: 'O caderno está completo: não há segredos a revelar.' } };
+    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: L('O caderno está completo: não há segredos a revelar.', 'The notebook is complete: there are no secrets left to reveal.') } };
   }
   const cost = CONFIG.HINT_COST ?? 5;
   if (!(state.coins >= cost)) {
-    return { ok: false, error: { code: 'INSUFFICIENT_FUNDS', message: `Uma dica da Lupa custa ${cost} moedas.` } };
+    return { ok: false, error: { code: 'INSUFFICIENT_FUNDS', message: L(`Uma dica da Lupa custa ${cost} moedas.`, `A Lens hint costs ${cost} coins.`) } };
   }
   return { ok: true };
 }
@@ -661,18 +662,18 @@ export function freeHintWaitMs(state, now) {
 
 export function canRequestFreeHint(state, now) {
   if (!undiscoveredRecipes(state).length) {
-    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: 'O caderno está completo: não há segredos a revelar.' } };
+    return { ok: false, error: { code: 'NOTHING_TO_HINT', message: L('O caderno está completo: não há segredos a revelar.', 'The notebook is complete: there are no secrets left to reveal.') } };
   }
   const wait = freeHintWaitMs(state, now);
   if (wait > 0) {
     const min = Math.ceil(wait / 60000);
-    return { ok: false, error: { code: 'COOLDOWN', message: `A próxima dica grátis chega em ${min} min.` } };
+    return { ok: false, error: { code: 'COOLDOWN', message: L(`A próxima dica grátis chega em ${min} min.`, `The next free hint arrives in ${min} min.`) } };
   }
   return { ok: true };
 }
 
 export function requestFreeHint(state, now, rng = Math.random) {
-  if (!Number.isFinite(now)) return fail(state, 'INVALID_ID', 'Horário inválido.');
+  if (!Number.isFinite(now)) return fail(state, 'INVALID_ID', L('Horário inválido.', 'Invalid time.'));
   const check = canRequestFreeHint(state, now);
   if (!check.ok) return { ok: false, state, error: check.error };
   return giveHint(state, rng, (next) => { next.freeHintReadyAt = now + (CONFIG.FREE_HINT_COOLDOWN_MS ?? 240000); });

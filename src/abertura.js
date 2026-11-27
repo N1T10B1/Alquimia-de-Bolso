@@ -3,6 +3,7 @@
 import { INGREDIENTS } from './data.js';
 import { itemArt } from './art.js';
 import { STORY_PAGES, LETTER, TUTORIAL_NOTES, TUTORIAL_END, TUTORIAL_ORDER } from './story.js';
+import { L } from './idioma.js';
 
 export const TUTORIAL_KEY = 'alquimia-de-bolso-tutorial-v1';
 
@@ -31,7 +32,7 @@ export function cleanName(raw) {
 // O nome assinado na contracapa aparece no subtítulo do menu ("o caderno de Rafa").
 export function applyBookName(doc, name) {
   const sub = doc.querySelector('.menu-logo small');
-  if (sub) sub.textContent = name ? `o caderno de ${name}` : 'o caderno da boticária';
+  if (sub) sub.textContent = name ? L(`o caderno de ${name}`, `${name}’s notebook`) : L('o caderno da boticária', 'the apothecary’s notebook');
 }
 
 function artHTML(kind) {
@@ -80,8 +81,8 @@ export function createIntro(doc) {
   function letterHTML() {
     return `
       <article class="intro-page intro-letter" data-page="carta">
-        <p class="intro-kicker">Em cima do caderno, uma carta</p>
-        <h2 id="intro-title" class="sr-only">A carta da Mestra Benvinda</h2>
+        <p class="intro-kicker">${L('Em cima do caderno, uma carta', 'On top of the notebook, a letter')}</p>
+        <h2 id="intro-title" class="sr-only">${L('A carta da Mestra Benvinda', 'The letter from Mistress Benvinda')}</h2>
         <div class="letter">
           <p class="letter-greet">${esc(LETTER.greeting)}</p>
           ${LETTER.paragraphs.map((t, i) => `<p class="letter-p" style="--d:${i}">${esc(t)}</p>`).join('')}
@@ -95,14 +96,14 @@ export function createIntro(doc) {
     return `
       <article class="intro-page intro-sign" data-page="assinatura">
         ${artHTML('sino')}
-        <p class="intro-kicker">A contracapa do caderno</p>
-        <h2 id="intro-title" class="intro-title">Assine o seu nome</h2>
-        <p class="intro-text">O caderno agora é seu. Escreva o seu nome na contracapa, logo abaixo do nome da Mestra.</p>
+        <p class="intro-kicker">${L('A contracapa do caderno', 'The inside cover of the notebook')}</p>
+        <h2 id="intro-title" class="intro-title">${L('Assine o seu nome', 'Sign your name')}</h2>
+        <p class="intro-text">${L('O caderno agora é seu. Escreva o seu nome na contracapa, logo abaixo do nome da Mestra.', 'The notebook is yours now. Write your name on the inside cover, just below the Mistress’s name.')}</p>
         <form class="sign-form" data-intro="sign">
-          <label class="sign-label" for="intro-name">Este caderno pertence a</label>
+          <label class="sign-label" for="intro-name">${L('Este caderno pertence a', 'This notebook belongs to')}</label>
           <input id="intro-name" class="sign-input" type="text" maxlength="24" autocomplete="off" spellcheck="false"
-            placeholder="seu nome" value="${esc(name)}">
-          <p class="sign-hint">Pode deixar em branco. A freguesia vai chamar você de boticária de qualquer jeito.</p>
+            placeholder="${L('seu nome', 'your name')}" value="${esc(name)}">
+          <p class="sign-hint">${L('Pode deixar em branco. A freguesia vai chamar você de boticária de qualquer jeito.', 'You can leave it blank. The customers will call you apothecary either way.')}</p>
         </form>
       </article>`;
   }
@@ -117,9 +118,9 @@ export function createIntro(doc) {
         <footer class="intro-foot">
           ${dots()}
           <div class="intro-btns">
-            ${page > 0 ? '<button type="button" class="btn btn-small btn-quiet" data-intro="back">Voltar</button>' : ''}
-            ${!last ? '<button type="button" class="btn btn-small btn-quiet" data-intro="skip">Pular história</button>' : ''}
-            <button type="button" class="btn btn-primary" data-intro="next">${last ? 'Abrir a botica' : page === STORY_PAGES.length ? 'Guardar a carta' : 'Continuar'}</button>
+            ${page > 0 ? `<button type="button" class="btn btn-small btn-quiet" data-intro="back">${L('Voltar', 'Back')}</button>` : ''}
+            ${!last ? `<button type="button" class="btn btn-small btn-quiet" data-intro="skip">${L('Pular história', 'Skip story')}</button>` : ''}
+            <button type="button" class="btn btn-primary" data-intro="next">${last ? L('Abrir a botica', 'Open the apothecary') : page === STORY_PAGES.length ? L('Guardar a carta', 'Put the letter away') : L('Continuar', 'Continue')}</button>
           </div>
         </footer>
       </div>`;
@@ -268,13 +269,13 @@ export function createTutorial(doc, { getState } = {}) {
     if (key !== shownKey) {
       shownKey = key;
       note.innerHTML = `
-        <p class="tut-from"><img src="${itemArt('vela')}" alt="" aria-hidden="true"> Bilhete da Mestra</p>
+        <p class="tut-from"><img src="${itemArt('vela')}" alt="" aria-hidden="true"> ${L('Bilhete da Mestra', 'Note from the Mistress')}</p>
         <p class="tut-title">${esc(n.title)}</p>
         ${n.quote ? `<p class="tut-quote">“${esc(n.quote)}”</p>` : ''}
         <p class="tut-text">${esc(n.text)}</p>
         <div class="tut-btns">
           ${n.action ? `<button type="button" class="btn btn-small btn-primary" data-tut="ok">${esc(n.action)}</button>` : ''}
-          <button type="button" class="tut-skip" data-tut="skip">Pular tutorial</button>
+          <button type="button" class="tut-skip" data-tut="skip">${L('Pular tutorial', 'Skip tutorial')}</button>
         </div>`;
       note.classList.remove('is-new');
       void note.offsetWidth;
@@ -369,7 +370,7 @@ export function createTutorial(doc, { getState } = {}) {
       <div class="intro-sheet">
         <article class="intro-page">
           ${artHTML('caldeirao')}
-          <p class="intro-kicker">${esc(name ? `Caderno de ${name}` : 'Caderno da boticária')}</p>
+          <p class="intro-kicker">${esc(name ? L(`Caderno de ${name}`, `${name}’s notebook`) : L('Caderno da boticária', 'The apothecary’s notebook'))}</p>
           <h2 id="tut-end-title" class="intro-title">${esc(TUTORIAL_END.title)}</h2>
           <p class="intro-text">${esc(TUTORIAL_END.text)}</p>
           <ul class="tut-tips">${TUTORIAL_END.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>

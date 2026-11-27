@@ -1,11 +1,14 @@
 // História de origem da botica e roteiro do tutorial do primeiro dia (só texto e regras puras, sem DOM).
 // Texto aprovado pelo Rafael em 21/11/2026 (documento "Alquimia de Bolso: a história da loja").
 import { fillOrders } from './progression.js';
+// v1.30: o inglês da história e do tutorial fica em en.js.
+import { EN } from './idioma.js';
+import { MENTOR_EN, STORY_PAGES_EN, LETTER_EN, TUTORIAL_NOTES_EN, TUTORIAL_END_EN } from './en.js';
 
-export const MENTOR = Object.freeze({ name: 'Mestra Benvinda', village: 'Ladeira Torta' });
+const MENTOR_PT = Object.freeze({ name: 'Mestra Benvinda', village: 'Ladeira Torta' });
 
 // Páginas da abertura (Novo jogo). `art` é uma vinheta já existente no jogo.
-export const STORY_PAGES = Object.freeze([
+const STORY_PAGES_PT = Object.freeze([
   {
     id: 'chegada',
     kicker: 'Ladeira Torta, há quarenta invernos',
@@ -48,7 +51,7 @@ export const STORY_PAGES = Object.freeze([
   },
 ]);
 
-export const LETTER = Object.freeze({
+const LETTER_PT = Object.freeze({
   greeting: 'Minha querida,',
   paragraphs: [
     'A botica agora é sua. Não deixei receita nenhuma, de propósito. Você vai descobrir as doze do jeito que eu descobri: juntando duas coisas e prestando atenção no que sai do caldeirão.',
@@ -82,7 +85,7 @@ export function seedTutorialDay(state, rng = Math.random) {
 }
 
 // Bilhetes da Mestra na margem do caderno, um por passo do tutorial.
-export const TUTORIAL_NOTES = Object.freeze({
+const TUTORIAL_NOTES_PT = Object.freeze({
   balcao: {
     title: 'A primeira freguesa',
     text: 'Esta é a Vovó Quitéria, a freguesa mais antiga da botica. Repare: ela não diz o nome da poção, só conta o problema. Mão cortada pede algo que feche a ferida.',
@@ -147,7 +150,7 @@ export const TUTORIAL_NOTES = Object.freeze({
   },
 });
 
-export const TUTORIAL_END = Object.freeze({
+const TUTORIAL_END_PT = Object.freeze({
   title: 'O primeiro dia acabou',
   text: 'Daqui em diante, não deixo mais bilhetes. A botica é sua de verdade.',
   tips: [
@@ -158,3 +161,12 @@ export const TUTORIAL_END = Object.freeze({
   ],
   action: 'Abrir a loja',
 });
+
+// v1.30 — textos no idioma do jogo (as páginas da história mantêm id e arte; só o texto muda)
+export const MENTOR = EN ? MENTOR_EN : MENTOR_PT;
+export const STORY_PAGES = EN
+  ? Object.freeze(STORY_PAGES_PT.map((p) => Object.freeze({ ...p, ...STORY_PAGES_EN[p.id] })))
+  : STORY_PAGES_PT;
+export const LETTER = EN ? LETTER_EN : LETTER_PT;
+export const TUTORIAL_NOTES = EN ? TUTORIAL_NOTES_EN : TUTORIAL_NOTES_PT;
+export const TUTORIAL_END = EN ? TUTORIAL_END_EN : TUTORIAL_END_PT;

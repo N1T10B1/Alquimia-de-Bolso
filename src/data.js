@@ -1,4 +1,7 @@
 // Dados estáticos do jogo Alquimia de Bolso (sem DOM).
+// v1.30: textos em inglês em en.js (dados longos) ou em L('pt', 'en') aqui mesmo (textos curtos).
+import { EN, L } from './idioma.js';
+import { INGREDIENTS_EN, RECIPES_EN } from './en.js';
 
 // v1.28 — edição do jogo. A demo (index.html define globalThis.ALQUIMIA_EDICAO = 'demo') tem as
 // 12 receitas originais, 4 por categoria, e termina no fechamento do dia 5. Sem a marca, é a edição
@@ -11,7 +14,7 @@ export const DEMO_RECIPES = Object.freeze([
   'vapor', 'invisibilidade', 'eclipse', 'esporos', // travessura
 ]);
 // Na demo não há doses duplas: tira das fichas a frase que fala delas.
-const demoText = (t) => (IS_DEMO ? t.replace(/ Em dose dupla[^.]*\./g, '') : t);
+const demoText = (t) => (IS_DEMO ? t.replace(/ Em dose dupla[^.]*\./g, '').replace(/ In a double dose[^.]*\./g, '') : t);
 
 export const INGREDIENTS = Object.freeze([
   { id: 'agua', quality: 'úmido', name: 'Gota Lunar', cost: 4, element: 'água', icon: '💧',
@@ -46,7 +49,7 @@ export const INGREDIENTS = Object.freeze([
     lore: 'Pena de um pássaro que nunca pousa; flutua até dentro do frasco.',
     property: 'Leve e veloz. Espalha, levanta e carrega o efeito para longe.',
     helps: 'Moinhos parados, coisas que precisam se espalhar pelo ar, sumir sem deixar rastro. Em dose dupla, ninguém cai, só flutua.' },
-].map((i) => Object.freeze({ ...i, helps: demoText(i.helps) })));
+].map((i) => (EN ? { ...i, ...INGREDIENTS_EN[i.id] } : i)).map((i) => Object.freeze({ ...i, helps: demoText(i.helps) })));
 
 // Ordem a/b exatamente como escrita no GDD (a dica revela `a`).
 const ALL_RECIPES = Object.freeze([
@@ -221,7 +224,7 @@ const ALL_RECIPES = Object.freeze([
       "Quero ver o que o mago da torre esconde atrás da cortina.",
       "Preciso descobrir qual dos meus sócios sumiu com as moedas do baú.",
     ] },
-].map(Object.freeze));
+].map((r) => Object.freeze(EN ? { ...r, ...RECIPES_EN[r.id] } : r)));
 
 export const RECIPES = IS_DEMO
   ? Object.freeze(ALL_RECIPES.filter((r) => DEMO_RECIPES.includes(r.id)))
@@ -229,53 +232,58 @@ export const RECIPES = IS_DEMO
 
 // Categorias do Livro de Receitas.
 export const CATEGORIES = Object.freeze([
-  { id: 'cura', name: 'Cura', icon: '🩹' },
-  { id: 'protecao', name: 'Proteção', icon: '🛡️' },
-  { id: 'travessura', name: 'Travessura', icon: '🎭' },
+  { id: 'cura', name: L('Cura', 'Healing'), icon: '🩹' },
+  { id: 'protecao', name: L('Proteção', 'Protection'), icon: '🛡️' },
+  { id: 'travessura', name: L('Travessura', 'Mischief'), icon: '🎭' },
 ].map(Object.freeze));
 
-export const SLUDGE = Object.freeze({ id: 'lodo', name: 'Lodo Instável', price: 1, rarity: 'falha', icon: '🟤' });
+export const SLUDGE = Object.freeze({ id: 'lodo', name: L('Lodo Instável', 'Unstable Sludge'), price: 1, rarity: 'falha', icon: '🟤' });
 
 export const UPGRADES = Object.freeze([
   {
-    id: 'caldeirao', name: 'Caldeirão Eficiente', cost: 40, icon: '⚗️',
-    description: 'Cobre bem batido: em 1 de cada 5 misturas, os dois ingredientes voltam inteiros para a prateleira.',
+    id: 'caldeirao', name: L('Caldeirão Eficiente', 'Efficient Cauldron'), cost: 40, icon: '⚗️',
+    description: L('Cobre bem batido: em 1 de cada 5 misturas, os dois ingredientes voltam inteiros para a prateleira.',
+      'Well-hammered copper: in 1 of every 5 mixtures, both ingredients go back to the shelf untouched.'),
   },
   {
-    id: 'mercador', name: 'Marca do Mercador', cost: 90, icon: '🪙',
-    description: 'Um selo de confiança no balcão: +25% no preço das poções e nos pagamentos dos bilhetes (arredondado para baixo). O Lodo continua valendo 1.',
+    id: 'mercador', name: L('Marca do Mercador', 'Merchant’s Mark'), cost: 90, icon: '🪙',
+    description: L('Um selo de confiança no balcão: +25% no preço das poções e nos pagamentos dos bilhetes (arredondado para baixo). O Lodo continua valendo 1.',
+      'A seal of trust on the counter: +25% on potion prices and order payments (rounded down). Sludge is still worth 1.'),
   },
   {
-    id: 'lupa', name: 'Lupa Arcana', cost: 30, icon: '🔍',
-    description: 'Lente de latão para ler entrelinhas: por 5 moedas, revela um ingrediente de uma poção ainda fora do caderno.',
+    id: 'lupa', name: L('Lupa Arcana', 'Arcane Lens'), cost: 30, icon: '🔍',
+    description: L('Lente de latão para ler entrelinhas: por 5 moedas, revela um ingrediente de uma poção ainda fora do caderno.',
+      'A brass lens for reading between the lines: for 5 coins, it reveals one ingredient of a potion not yet in the notebook.'),
   },
   {
-    id: 'estufa', name: 'Estufa de Ervas', cost: 150, icon: '🪴',
-    description: 'Um canteiro de vidro nos fundos: toda manhã aparecem 1 Gota Lunar, 1 Folha Viva e 1 Cogumelo Azul na prateleira, de graça.',
+    id: 'estufa', name: L('Estufa de Ervas', 'Herb Greenhouse'), cost: 150, icon: '🪴',
+    description: L('Um canteiro de vidro nos fundos: toda manhã aparecem 1 Gota Lunar, 1 Folha Viva e 1 Cogumelo Azul na prateleira, de graça.',
+      'A glass garden out back: every morning 1 Moon Drop, 1 Living Leaf and 1 Blue Mushroom appear on the shelf, for free.'),
   },
   {
-    id: 'alambique', name: 'Alambique Duplo', cost: 240, icon: '⚗️',
-    description: 'Dois bicos de cobre: em 1 de cada 3 misturas de uma receita que já está no caderno, saem dois frascos em vez de um.',
+    id: 'alambique', name: L('Alambique Duplo', 'Double Still'), cost: 240, icon: '⚗️',
+    description: L('Dois bicos de cobre: em 1 de cada 3 misturas de uma receita que já está no caderno, saem dois frascos em vez de um.',
+      'Two copper spouts: in 1 of every 3 mixtures of a recipe already in the notebook, you get two flasks instead of one.'),
   },
 ].map(Object.freeze));
 
 // v1.15 — cada freguês tem a sua paciência (multiplica a do dia) e um jeito de esperar.
 export const CUSTOMERS = Object.freeze([
-  { id: 'bruxa-ofelia', name: 'Bruxa Ofélia', icon: '🧙‍♀️', patience: 1, temper: 'Espera o tempo de um feitiço' },
-  { id: 'cavaleiro-tadeu', name: 'Cavaleiro Tadeu', icon: '🛡️', patience: 0.8, temper: 'Está em missão urgente' },
-  { id: 'fada-lumi', name: 'Fada Lumi', icon: '🧚', patience: 0.85, temper: 'Não para quieta no balcão' },
-  { id: 'anao-baltazar', name: 'Anão Baltazar', icon: '⛏️', patience: 1, temper: 'Teimoso, mas espera' },
-  { id: 'bardo-cirilo', name: 'Bardo Cirilo', icon: '🎻', patience: 0.9, temper: 'Tem show daqui a pouco' },
-  { id: 'vovo-quiteria', name: 'Vovó Quitéria', icon: '👵', patience: 1.3, temper: 'Tem todo o tempo do mundo' },
-  { id: 'elfo-anselmo', name: 'Elfo Anselmo', icon: '🧝', patience: 1.2, temper: 'Vive séculos, sabe esperar' },
-  { id: 'pirata-dorotea', name: 'Pirata Dorotéia', icon: '🏴‍☠️', patience: 0.75, temper: 'A maré não espera' },
-  { id: 'gato-falante', name: 'Gato Falante Bartolomeu', icon: '🐈', patience: 1.2, temper: 'Gatos sabem esperar (ou dormir)' },
+  { id: 'bruxa-ofelia', name: L('Bruxa Ofélia', 'Ofélia the Witch'), icon: '🧙‍♀️', patience: 1, temper: L('Espera o tempo de um feitiço', 'Waits as long as a spell takes') },
+  { id: 'cavaleiro-tadeu', name: L('Cavaleiro Tadeu', 'Sir Tadeu the Knight'), icon: '🛡️', patience: 0.8, temper: L('Está em missão urgente', 'On an urgent quest') },
+  { id: 'fada-lumi', name: L('Fada Lumi', 'Lumi the Fairy'), icon: '🧚', patience: 0.85, temper: L('Não para quieta no balcão', 'Can’t sit still at the counter') },
+  { id: 'anao-baltazar', name: L('Anão Baltazar', 'Baltazar the Dwarf'), icon: '⛏️', patience: 1, temper: L('Teimoso, mas espera', 'Stubborn, but waits') },
+  { id: 'bardo-cirilo', name: L('Bardo Cirilo', 'Cirilo the Bard'), icon: '🎻', patience: 0.9, temper: L('Tem show daqui a pouco', 'Has a show soon') },
+  { id: 'vovo-quiteria', name: L('Vovó Quitéria', 'Granny Quitéria'), icon: '👵', patience: 1.3, temper: L('Tem todo o tempo do mundo', 'Has all the time in the world') },
+  { id: 'elfo-anselmo', name: L('Elfo Anselmo', 'Anselmo the Elf'), icon: '🧝', patience: 1.2, temper: L('Vive séculos, sabe esperar', 'Lives for centuries, knows how to wait') },
+  { id: 'pirata-dorotea', name: L('Pirata Dorotéia', 'Dorotéia the Pirate'), icon: '🏴‍☠️', patience: 0.75, temper: L('A maré não espera', 'The tide waits for no one') },
+  { id: 'gato-falante', name: L('Gato Falante Bartolomeu', 'Bartolomeu the Talking Cat'), icon: '🐈', patience: 1.2, temper: L('Gatos sabem esperar (ou dormir)', 'Cats know how to wait (or sleep)') },
 ].map(Object.freeze));
 
 // A mercadora não é freguesa: ela abre a banca de ingredientes no fim de cada dia.
-export const MERCHANT = Object.freeze({ id: 'mercadora-zuleica', name: 'Mercadora Zuleica' });
+export const MERCHANT = Object.freeze({ id: 'mercadora-zuleica', name: L('Mercadora Zuleica', 'Zuleica the Merchant') });
 // v1.27 — o dono do prédio da botica, que vem cobrar o aluguel atrasado
-export const LANDLORD = Object.freeze({ id: 'senhorio-leopoldo', name: 'Seu Leopoldo, o senhorio' });
+export const LANDLORD = Object.freeze({ id: 'senhorio-leopoldo', name: L('Seu Leopoldo, o senhorio', 'Mr. Leopoldo, the landlord') });
 
 export const CONFIG = Object.freeze({
   START_COINS: 40,
@@ -342,10 +350,10 @@ export const CONFIG = Object.freeze({
 
 // v1.14 — fama em faixas: cada faixa paga um extra por pedido e deixa a freguesia mais paciente.
 export const FAME_TIERS = Object.freeze([
-  { min: 0, name: 'Botica nova', coins: 0, patience: 0 },
-  { min: 10, name: 'Conhecida na ladeira', coins: 1, patience: 0 },
-  { min: 25, name: 'Falada na vila', coins: 2, patience: 0.1 },
-  { min: 50, name: 'Famosa no reino', coins: 3, patience: 0.2 },
+  { min: 0, name: L('Botica nova', 'New apothecary'), coins: 0, patience: 0 },
+  { min: 10, name: L('Conhecida na ladeira', 'Known on the hill'), coins: 1, patience: 0 },
+  { min: 25, name: L('Falada na vila', 'Talk of the village'), coins: 2, patience: 0.1 },
+  { min: 50, name: L('Famosa no reino', 'Famous in the realm'), coins: 3, patience: 0.2 },
 ].map(Object.freeze));
 
 export function fameTier(reputation) {
@@ -366,7 +374,7 @@ export function patienceForDay(day) {
 }
 
 // Dicas: aparecem uma vez na tela e ficam guardadas na aba "Anotações" do livro.
-export const TIPS = Object.freeze([
+const TIPS_PT = Object.freeze([
   { id: 'livro', title: 'O livro', text: 'Puxe a fita azul para baixo, ou toque nela, para abrir o livro: receitas, ingredientes e estas anotações.' },
   { id: 'pistas', title: 'Pistas do cliente', text: 'O cliente conta o problema, não o nome da poção. Procure no livro o ingrediente que ajuda naquilo.' },
   { id: 'mandar-embora', title: 'Mandar embora', text: 'Sem ingrediente ou sem ideia? Mandar o cliente embora custa 1 de fama e libera o balcão para o próximo.' },
@@ -383,6 +391,26 @@ export const TIPS = Object.freeze([
   { id: 'fama', title: 'Fama', text: 'Fama alta paga um extra em cada pedido e deixa a freguesia mais paciente. Um dia sem ninguém indo embora sem poção vale bônus e +1 de fama.' },
   { id: 'dica-gratis', title: 'Dica grátis', text: 'Nos utensílios, a vela dá uma dica grátis de tempos em tempos. A Lupa Arcana vende dicas a qualquer hora.' },
 ].map(Object.freeze));
+
+const TIPS_EN = Object.freeze([
+  { id: 'livro', title: 'The book', text: 'Pull the blue ribbon down, or tap it, to open the book: recipes, ingredients and these notes.' },
+  { id: 'pistas', title: 'Customer clues', text: 'Customers describe their problem, not the name of the potion. Look in the book for the ingredient that helps with it.' },
+  { id: 'mandar-embora', title: 'Sending away', text: 'Out of ingredients or ideas? Sending a customer away costs 1 fame and frees the counter for the next one.' },
+  { id: 'prateleira-vazia', title: 'Empty shelf', text: 'To hand something over, brew the potion in the cauldron first. If you are missing an ingredient, the merchant only comes at night.' },
+  { id: 'erro-revela', title: 'Wrong flask', text: 'A wrong guess doesn’t use up the potion, but it costs 1 fame. After 2 misses, the customer tells you the name of the potion.' },
+  { id: 'receita-nova', title: 'New recipe', text: 'Orders with the "New recipe" stamp pay a bonus and give more XP. Read the clues and experiment in the cauldron.' },
+  { id: 'cartas', title: 'Ingredient cards', text: 'Tap a card to put it in the cauldron.' + (IS_DEMO ? '' : ' You can use the same card twice.') },
+  { id: 'misturar', title: 'Mixing', text: 'With two cards in the cauldron, tap Mix. A wrong pair turns into Sludge: it’s worth 1 coin (the merchant pays 3 at night) and stays in the grimoire so you don’t repeat it.' + (IS_DEMO ? '' : ' Some ingredients can go into the cauldron twice.') },
+  { id: 'propriedades', title: 'Properties', text: 'Combine two properties that match the customer’s problem.' },
+  { id: 'mercadora', title: 'The merchant', text: 'Ingredients can only be bought at night, from the merchant. Buy with the next day’s customers in mind. She waits about 4 minutes (the clock stops while her stall is open) and then travels on until the next night. She also takes up to 3 Sludges a night, at 3 coins each.' },
+  { id: 'despesas', title: 'Rent', text: 'From day 2 on, the apothecary pays 15 coins of rent when the day closes. If your purse falls short, the rest goes on the landlord’s tab. Three closings in a row in debt and he comes to collect: if you can’t pay, the apothecary closes.' },
+  { id: 'paciencia', title: 'Customers in a hurry', text: 'From day 3 on, the lit candle on the counter shows the customer’s patience. Serving them with more than half the candle left earns a tip; if it goes out, the customer leaves (−2 fame). Those waiting in line tire more slowly.' },
+  { id: 'preparar-antes', title: 'Spare flasks', text: 'There’s no rush at night: brew the potions you already know and leave them on the shelf. That way you’ll have time for the new recipes.' },
+  { id: 'fama', title: 'Fame', text: 'High fame pays extra on every order and makes customers more patient. A day with nobody leaving without a potion earns a bonus and +1 fame.' },
+  { id: 'dica-gratis', title: 'Free hint', text: 'Among the tools, the candle gives a free hint every so often. The Arcane Lens sells hints at any time.' },
+].map(Object.freeze));
+
+export const TIPS = EN ? TIPS_EN : TIPS_PT;
 
 // Aluguel cobrado ao fechar o dia `day` (v1.27: valor fixo, o dia do tutorial é grátis).
 export function upkeepForDay(day) {

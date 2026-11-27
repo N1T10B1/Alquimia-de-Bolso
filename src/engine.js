@@ -3,6 +3,7 @@ import {
   INGREDIENTS, CONFIG, SLUDGE, customersForDay, fameTier,
   getIngredient, getRecipe, getItem, findRecipe, recipeKey,
 } from './data.js';
+import { L } from './idioma.js';
 
 function fail(state, code, message) {
   return { ok: false, state, error: { code, message } };
@@ -113,18 +114,18 @@ export function canMix(state, a, b) {
   const ia = getIngredient(a);
   const ib = getIngredient(b);
   if (!ia || !ib) {
-    return { ok: false, error: { code: 'INVALID_ID', message: 'Esses ingredientes não constam no caderno.' } };
+    return { ok: false, error: { code: 'INVALID_ID', message: L('Esses ingredientes não constam no caderno.', 'Those ingredients are not in the notebook.') } };
   }
   const stock = (state && state.stock) || {};
   if (a === b) {
     if ((stock[a] || 0) < 2) {
-      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: `Falta ${ia.name} na prateleira: a receita pede 2 porções.` } };
+      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: L(`Falta ${ia.name} na prateleira: a receita pede 2 porções.`, `Not enough ${ia.name} on the shelf: the recipe needs 2 portions.`) } };
     }
     return { ok: true };
   }
   for (const ing of [ia, ib]) {
     if ((stock[ing.id] || 0) < 1) {
-      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: `Falta ${ing.name} na prateleira.` } };
+      return { ok: false, error: { code: 'INSUFFICIENT_STOCK', message: L(`Falta ${ing.name} na prateleira.`, `No ${ing.name} left on the shelf.`) } };
     }
   }
   return { ok: true };
@@ -169,10 +170,10 @@ export function mix(state, a, b, rng = Math.random) {
 
 export function buyIngredient(state, ingredientId, qty = 1) {
   const ing = getIngredient(ingredientId);
-  if (!ing) return fail(state, 'INVALID_ID', 'O mercador não conhece esse ingrediente.');
-  if (!Number.isInteger(qty) || qty < 1) return fail(state, 'INVALID_ID', 'Quantidade inválida.');
+  if (!ing) return fail(state, 'INVALID_ID', L('O mercador não conhece esse ingrediente.', 'The merchant doesn’t know that ingredient.'));
+  if (!Number.isInteger(qty) || qty < 1) return fail(state, 'INVALID_ID', L('Quantidade inválida.', 'Invalid quantity.'));
   const cost = ing.cost * qty;
-  if (state.coins < cost) return fail(state, 'INSUFFICIENT_FUNDS', 'A bolsa não tem moedas para isso.');
+  if (state.coins < cost) return fail(state, 'INSUFFICIENT_FUNDS', L('A bolsa não tem moedas para isso.', 'Your purse doesn’t have enough coins for that.'));
   const next = structuredClone(state);
   next.coins -= cost;
   next.stock[ingredientId] = (next.stock[ingredientId] || 0) + qty;
@@ -181,9 +182,9 @@ export function buyIngredient(state, ingredientId, qty = 1) {
 
 export function sellItem(state, itemId) {
   const item = getItem(itemId);
-  if (!item) return fail(state, 'INVALID_ID', 'Esse frasco não está na prateleira.');
+  if (!item) return fail(state, 'INVALID_ID', L('Esse frasco não está na prateleira.', 'That flask is not on the shelf.'));
   if (!state.inventory || (state.inventory[itemId] || 0) < 1) {
-    return fail(state, 'NOT_IN_INVENTORY', `Não há ${item.name} na prateleira.`);
+    return fail(state, 'NOT_IN_INVENTORY', L(`Não há ${item.name} na prateleira.`, `There is no ${item.name} on the shelf.`));
   }
   const price = sellPrice(state, itemId);
   const next = addCoins(state, price);

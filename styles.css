@@ -129,6 +129,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .dialog-title { margin: 6px 0 10px; font-family: var(--font-title); font-weight: 600; font-size: 32px; line-height: 1.1; color: var(--gold); text-shadow: 2px 2px 0 var(--edge); }
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
 .dialog-actions .btn { flex: 1 1 150px; }
+.pause-actions { flex-direction: column; align-items: stretch; }
+.pause-actions .btn { flex: 0 0 auto; }
 .dialog-victory .dialog-body { background: linear-gradient(180deg, #4b3a6e, #34254f); }
 
 .noscript { padding: 16px; text-align: center; }
@@ -207,6 +209,26 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   position: absolute; left: 6vw; bottom: 16px; margin: 0;
   font-size: 13px; color: #8c8478;
 }
+/* v1.30: troca rápida de idioma no menu (canto de baixo). Arte do Rafael: etiqueta de bagagem
+   com rosa dos ventos (assets/ui/idioma-etiqueta*.webp, 3:1); a palavra fica na parte lisa da direita. */
+.menu-lang {
+  position: absolute; right: 4vw; bottom: 12px; width: 198px; height: 66px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 12px 3px 74px; border: 0; border-radius: 0; cursor: pointer;
+  background: url("assets/ui/idioma-etiqueta.webp") center / 100% 100% no-repeat;
+  color: #efe2c4; font: 600 17px/1 var(--font-ui); letter-spacing: 0.02em; text-shadow: 0 1px 0 #0d1019;
+}
+.menu-lang::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: url("assets/ui/idioma-etiqueta-acesa.webp") center / 100% 100% no-repeat;
+  transition: opacity 160ms ease;
+}
+.menu-lang span { position: relative; z-index: 1; transition: color 160ms ease; }
+.menu-lang svg { display: none; }
+.menu-lang:hover::after, .menu-lang:focus-visible::after, .menu-lang:active::after { opacity: 1; }
+.menu-lang:hover span, .menu-lang:focus-visible span, .menu-lang:active span { color: #f7c163; }
+.menu-lang:focus-visible { outline: 2px dashed #f7c163; outline-offset: 3px; }
+.reduce-motion .menu-lang::after, .reduce-motion .menu-lang span { transition: none; }
 @media (orientation: portrait), (max-aspect-ratio: 4/5) {
   .menu-panel {
     left: 50%; transform: translateX(-50%); top: max(24px, 6vh);
@@ -218,6 +240,7 @@ html[data-text-size="maior"] { --ui-zoom: 1.25; }
   .mb.primary { font-size: calc(clamp(22px, 6vw, 34px) * 1.12); }
   .menu-note { margin-left: 0; }
   .menu-version { left: 0; right: 0; text-align: center; }
+  .menu-lang { right: 50%; transform: translateX(50%); bottom: 38px; width: 180px; height: 60px; padding: 0 10px 3px 66px; font-size: 16px; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .menu-panel { top: 12px; }
@@ -2091,7 +2114,16 @@ html.reduce-motion .pot-raios, html.reduce-motion .pot-manicula { animation: non
   transform: translateX(50%); border-radius: 0; pointer-events: auto;
   background: var(--caldeirao-balcao) center bottom / contain no-repeat;
 }
-.balcao .pot-hotspot .pot-raios { top: 42%; width: 190%; height: 120%; }
+/* v1.29: os raios ficam ATRÁS do caldeirão (pedido do Rafael). A arte do caldeirão passa para um
+   ::before acima dos raios, e os raios mantêm a proporção do quadro (300 x 310) em vez de esticar
+   na largura, que era o que deixava a coroa achatada. */
+.balcao .pot-hotspot { isolation: isolate; background: none; }
+.balcao .pot-hotspot::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: var(--caldeirao-balcao) center bottom / contain no-repeat;
+}
+.balcao .pot-hotspot .pot-raios { z-index: 0; top: 44%; width: 172%; height: auto; aspect-ratio: 300 / 310; }
+.balcao .pot-hotspot .pot-hotspot-tag, .balcao .pot-hotspot .pot-manicula { z-index: 2; }
 .balcao .pot-hotspot .pot-hotspot-tag { bottom: -4%; }
 .balcao-vela { position: absolute; left: calc(var(--bh) * 0.75); bottom: calc(var(--bh) * 0.84); pointer-events: auto; }
 .balcao-vela .patience.patience-mesa { --vw: calc(var(--bh) * 0.17); display: block; position: relative; margin: 0; vertical-align: 0; }

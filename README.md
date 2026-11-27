@@ -33,6 +33,10 @@ node tools/build-standalone.mjs
 
 Nenhuma API, token ou conexão externa é necessária em nenhum dos modos.
 
+## Idioma (v1.30)
+
+O jogo fala português e inglês. Na primeira vez ele segue o idioma do navegador; depois vale a escolha do botão **English / Português** no canto do menu ou de **Opções › Idioma · Language** (trocar recarrega o jogo e mantém o caderno salvo). Textos em inglês: `src/en.js` e `L('pt', 'en')` nos arquivos; no `index.html`, atributos `data-en`.
+
 ## Menu principal
 
 O jogo abre no menu, sobre o fundo em xilogravura (versão horizontal no computador e vertical no celular):

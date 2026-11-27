@@ -2,7 +2,14 @@
 // saudações, agradecimentos, reações ao frasco errado e despedidas quando vai embora
 // sem poção. A escolha é estável por pedido (mesmo pedido, mesma fala), e varia entre pedidos.
 
-export const LINES = Object.freeze({
+// v1.30: o inglês das falas fica em en.js; aqui embaixo cada lista escolhe o idioma.
+import { EN } from './idioma.js';
+import {
+  LINES_EN, NOVEL_HINTS_EN, MERCHANT_LINES_EN, IMPATIENT_LINES_EN, HURRY_LINES_EN,
+  MERCHANT_HURRY_LINES_EN, MERCHANT_BYE_LINES_EN, demoLetterEN,
+} from './en.js';
+
+const LINES_PT = Object.freeze({
   'bruxa-ofelia': {
     greet: [
       'Minhas ervas acabaram, então vim bater na sua porta.',
@@ -122,14 +129,14 @@ export const LINES = Object.freeze({
 });
 
 // Abertura extra quando o pedido é de uma receita fora do caderno.
-export const NOVEL_HINTS = Object.freeze([
+const NOVEL_HINTS_PT = Object.freeze([
   'Disseram que ninguém na vila sabe fazer isto ainda.',
   'Sei que é coisa nova, mas pago bem pela novidade.',
   'Acho que nem está nos livros. Você topa inventar?',
 ]);
 
 // A mercadora no fim do dia.
-export const MERCHANT_LINES = Object.freeze([
+const MERCHANT_LINES_PT = Object.freeze([
   'Fim de expediente! Trouxe ingredientes frescos da estrada.',
   'Boa noite, boticária. A carroça chegou cheia hoje.',
   'Sei que o dia foi longo. Que tal reabastecer para amanhã?',
@@ -156,7 +163,7 @@ export function pickLine(list, seed) {
 }
 
 // v1.14 — quando a vela da paciência apaga e o cliente vai embora sozinho.
-export const IMPATIENT_LINES = Object.freeze([
+const IMPATIENT_LINES_PT = Object.freeze([
   'Esperei o quanto pude. Volto outro dia, quem sabe.',
   'A vela apagou e a minha paciência junto. Passar bem!',
   'Tenho mais o que fazer do que esperar no balcão.',
@@ -165,7 +172,7 @@ export const IMPATIENT_LINES = Object.freeze([
 ]);
 
 // v1.14 — o cliente começa a se impacientar (menos de 1/4 da vela).
-export const HURRY_LINES = Object.freeze([
+const HURRY_LINES_PT = Object.freeze([
   'Vai demorar muito?',
   'Hum… o sol já está baixando.',
   '(batuca os dedos no balcão)',
@@ -173,19 +180,19 @@ export const HURRY_LINES = Object.freeze([
 ]);
 
 // v1.23 — a mercadora com pressa (último quarto da vela) e indo embora.
-export const MERCHANT_HURRY_LINES = Object.freeze([
+const MERCHANT_HURRY_LINES_PT = Object.freeze([
   'A estrada até a próxima vila é longa… vai levar alguma coisa?',
   'Os burros já estão inquietos. Decide logo, boticária!',
   'Daqui a pouco eu fecho a banca, viu?',
 ]);
-export const MERCHANT_BYE_LINES = Object.freeze([
+const MERCHANT_BYE_LINES_PT = Object.freeze([
   'Bom, a estrada me chama. Até amanhã à noite!',
   'Fecho a banca por hoje. Amanhã eu passo de novo!',
   'Não dá para esperar mais: tenho entrega na serra. Até amanhã!',
 ]);
 
 // v1.28 — fim da demo: a Mestra Benvinda escreve do mar. `r` = demoSummary(state).
-export function demoLetter(r) {
+function demoLetterPT(r) {
   const all = r.found >= r.total;
   return {
     greeting: 'Minha querida,',
@@ -200,3 +207,13 @@ export function demoLetter(r) {
     signature: 'Benvinda',
   };
 }
+
+// v1.30 — listas no idioma do jogo
+export const LINES = EN ? LINES_EN : LINES_PT;
+export const NOVEL_HINTS = EN ? NOVEL_HINTS_EN : NOVEL_HINTS_PT;
+export const MERCHANT_LINES = EN ? MERCHANT_LINES_EN : MERCHANT_LINES_PT;
+export const IMPATIENT_LINES = EN ? IMPATIENT_LINES_EN : IMPATIENT_LINES_PT;
+export const HURRY_LINES = EN ? HURRY_LINES_EN : HURRY_LINES_PT;
+export const MERCHANT_HURRY_LINES = EN ? MERCHANT_HURRY_LINES_EN : MERCHANT_HURRY_LINES_PT;
+export const MERCHANT_BYE_LINES = EN ? MERCHANT_BYE_LINES_EN : MERCHANT_BYE_LINES_PT;
+export function demoLetter(r) { return EN ? demoLetterEN(r) : demoLetterPT(r); }

@@ -154,3 +154,20 @@ Feito: 12 receitas novas (24 no total, 8 por categoria), com as artes do Rafael 
 - Fim de jogo: tela `#gameover` (arte `assets/gameover/`: fundo PC/celular e carta do senhorio). Botões: Recomeçar a botica (`restartAfterEviction`: dia 1, sem tutorial, mantém receitas, grimório, dicas e anotações) e Menu inicial. O save é apagado ao perder.
 - Livro-caixa: linha "Aluguel do dia" e "Ficou na conta do senhorio"; aviso de dívida na noite; lembrete do aluguel na banca da mercadora.
 - Testes: 7 novos em tests/economy.test.mjs (116 no total).
+
+## Tela de carregamento (26/11/2026)
+
+- Tela antes do menu: título, frasco que enche e frases ("Acendendo a vela…"). CSS em `carregamento.css` (no `<head>`) e imagens em `assets/carregamento/` (provisórias: fundo do menu desfocado e frasco da Cura). Prompt da arte definitiva: `arte/prompt-tela-carregamento.md`.
+- `tools/build-standalone.mjs` agora põe a tela no começo do `jogar.html` e corta o `styles.css` e os módulos em pedaços, com `__carga.etapa(x)` entre eles: o frasco enche conforme o arquivo chega pela rede. Some depois das fontes e do fundo do menu decodificados (mínimo 1,4 s, limite 9 s).
+- Verificado no Chromium a ~1,3 MB/s (aparece em menos de 1 s, menu em ~9,6 s) e por file:// (~2,2 s), PC 1280×800 e celular 390×844, sem erros. 120 testes passando.
+## v1.29 (26/11/2026) — raios atrás do caldeirão
+
+- No hover/foco do caldeirão do balcão, os raios de tinta agora ficam atrás da arte do caldeirão (a arte foi para `.pot-hotspot::before`, acima dos raios) e mantêm a proporção do quadro (300 x 310). Antes eles ficavam por cima e esticados na largura, o que deformava a coroa.
+
+## v1.30 (26/11/2026) — jogo em inglês
+
+- Pedido do Rafael: o jogo em inglês, com opção para escolher o idioma. Todos os textos têm versão em inglês: menu, opções, créditos, história de abertura, carta da Mestra, tutorial, as 24 receitas com as pistas, ingredientes, falas dos 9 clientes, da mercadora e do senhorio, livro-caixa, game over, fim da demo e tela de carregamento.
+- Como escolhe: sem escolha guardada, segue o idioma do navegador (pt-* = português, o resto = inglês). Botão "English / Português" no canto do menu principal e "Idioma · Language" nas Opções. A escolha fica em `localStorage['alquimia-de-bolso-idioma-v1']` e trocar recarrega o jogo (o caderno salvo continua igual: o save só guarda ids).
+- Código: `src/idioma.js` (LANG, `L('pt', 'en')`, `aplicaIdiomaHTML`) e `src/en.js` (textos longos em inglês por id). Textos curtos ficam no próprio arquivo em `L(...)`; os do `index.html` levam o inglês em atributos `data-en`, `data-en-html` e `data-en-<atributo>`. O nome do jogo (Alquimia de Bolso) não é traduzido.
+- **Ao escrever texto novo:** em JS use `L('português', 'English')`; no HTML ponha `data-en="..."`; receita, cliente ou fala nova também precisa do inglês em `src/en.js`. `tests/idioma.test.mjs` (roda em inglês e na edição completa) avisa quando falta.
+- Testes: 6 novos (126 no total). Partida jogada no Chromium em inglês e português, PC 1366×768 e celular 390×844, sem erros.
