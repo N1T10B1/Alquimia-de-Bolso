@@ -71,7 +71,7 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 <li><strong>Bardo Cirilo</strong>: tem show daqui a pouco, e espalha a fama da botica pela vila.</li>
 <li><strong>Elfo Anselmo</strong>: vive séculos e sabe esperar.</li>
 <li><strong>Pirata Dorotéia</strong>: a maré não espera.</li>
-<li><strong>Bartolomeu</strong>: um gato que fala. Derruba frascos para chamar atenção e oferece pagar em peixe.</li>
+<li><strong>Bartolomeu</strong>: um gato que fala. Derruba frascos para chamar atenção e paga em peixe, se você deixar.</li>
 <li><strong>Bruxa Ofélia</strong>: espera o tempo de um feitiço.</li>
 </ul>
 <p>E à noite passa a mercadora <strong>Zuleica</strong>, com a carroça cheia de ingredientes.</p>
