@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Alquimia de Bolso",
+  "mainBinaryName": "Alquimia de Bolso",
+  "version": "1.28.0",
+  "identifier": "io.itch.n1t10b1.alquimiadebolso",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Alquimia de Bolso",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "center": true,
+        "resizable": true,
+        "maximized": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "N1T10B1",
+    "category": "Game",
+    "shortDescription": "Uma botica pequena, um caderno em branco e clientes com pedidos estranhos.",
+    "copyright": "© 2026 N1T10B1",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": { "type": "embedBootstrapper" },
+      "nsis": {
+        "languages": ["PortugueseBR", "English"],
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}
