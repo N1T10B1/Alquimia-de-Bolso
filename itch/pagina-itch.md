@@ -154,7 +154,7 @@ Esta é a demo de um jogo feito por uma pessoa só. Se você jogou, conta nos co
 
 ## Créditos
 
-Ideia, game design e direção de arte: Rafael (N1T10B1). Programação feita com o Claude, assistente de IA da Anthropic. Artes geradas com IA sob a direção de Rafael. Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), licença SIL Open Font License 1.1.
+Ideia, game design e direção de arte: N1T10B1. Programação feita com o Claude, assistente de IA da Anthropic. Artes geradas com IA sob a direção de N1T10B1. Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), licença SIL Open Font License 1.1.
 
 ---
 
