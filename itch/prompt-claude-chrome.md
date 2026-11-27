@@ -21,7 +21,7 @@ PARTE 1: CRIAR O PROJETO
 Vá em https://itch.io/game/new e preencha:
 - Title: Alquimia de Bolso
 - Project URL: alquimia-de-bolso
-- Short description or tagline: Uma botica pequena, um caderno em branco e clientes com pedidos estranhos.
+- Short description or tagline: Ninguém pede a poção pelo nome. O gato paga em peixe. | Nobody asks for a potion by name. The cat pays in fish.
 - Classification: Games
 - Kind of project: HTML
 - Release status: In development
@@ -47,7 +47,7 @@ Depois, volte para o modo visual e troque CADA marcador pela imagem de mesmo nom
 Se o editor não tiver modo HTML, digite o texto e use os botões do editor para formatar os títulos (h2), negritos, itálicos e listas.
 
 <p><em>Jogue no navegador, no Windows ou no Android. English version below.</em></p>
-<p><strong>Uma botica pequena, um caderno em branco e clientes com pedidos estranhos.</strong></p>
+<p><strong>Sua mestra sabia todas as receitas de cabeça. O caderno que ela deixou está em branco.</strong></p>
 <p>A Mestra Benvinda foi ver o mar e deixou para você a <strong>Alquimia de Bolso</strong>, a botica mais estreita de Ladeira Torta, espremida entre a padaria e o muro. Com ela vieram um caldeirão de cobre, alguns frascos e um caderno de receitas... com todas as páginas em branco. Ela nunca escreveu nada: sabia tudo de cabeça.</p>
 <p>Agora a freguesia está no balcão, e cada receita você vai ter que descobrir sozinha.</p>
 [[mistura]]
@@ -98,7 +98,7 @@ Se o editor não tiver modo HTML, digite o texto e use os botões do editor para
 <p>Ideia, game design e direção de arte: Rafael (N1T10B1). Programação feita com o Claude, assistente de IA da Anthropic. Artes geradas com IA sob a direção de Rafael. Fontes: Grenze Gotisch e Grenze (Omnibus-Type) e Alegreya Sans (Huerta Tipográfica), licença SIL Open Font License 1.1.</p>
 [[fig-divisoria]]
 <h2>English</h2>
-<p><strong>A tiny apothecary, a blank recipe book and customers with very strange requests.</strong></p>
+<p><strong>Your master knew every recipe by heart. The book she left you is blank.</strong></p>
 <p>Mistress Benvinda has gone to see the sea and left you <strong>Alquimia de Bolso</strong> ("Pocket Alchemy"), the narrowest shop in the village of Crooked Hill (Ladeira Torta), squeezed between the bakery and the wall. With it came a copper cauldron, a few flasks and a recipe book... with every single page blank. She never wrote anything down: she knew it all by heart.</p>
 <p>Now the customers are lining up at the counter, and every recipe is yours to discover.</p>
 [[mistura]]

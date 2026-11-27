@@ -109,7 +109,9 @@ Alquimia de Bolso
 
 ### Frase de gancho (Short description or tagline)
 
-Uma botica pequena, um caderno em branco e clientes com pedidos estranhos.
+Ninguém pede a poção pelo nome. O gato paga em peixe. | Nobody asks for a potion by name. The cat pays in fish.
+
+Primeira linha da descrição: "Sua mestra sabia todas as receitas de cabeça. O caderno que ela deixou está em branco." (em inglês: "Your master knew every recipe by heart. The book she left you is blank.")
 
 ### Descrição (Details)
 
